@@ -67,22 +67,115 @@ Rezilio vise à devenir un socle de pilotage de la conformité cyber pour les or
 
 Projet en cours de conception et de développement.
 
-## Idée de stack
+## Stack technique
 
-À adapter selon ton implémentation réelle :
+| Couche | Technologie |
+|---|---|
+| Backend | PHP 8.2+ / Symfony 7 |
+| Base de données | PostgreSQL 16 |
+| ORM | Doctrine (inclus dans Symfony) |
+| Authentification | Symfony Security |
+| Frontend | JavaScript (Stimulus / Turbo via AssetMapper) |
+| Environnement dev | Docker + Docker Compose |
+| Hébergement cible | Cloud souverain, on-premise ou environnement maîtrisé |
 
-- Frontend : JavaScript
-- Backend : Symfony
-- Base de données : PostgreSQL
-- Authentification : Symfony Auth
-- Hébergement : cloud souverain, on-premise ou environnement maîtrisé
+### Prérequis
+
+Avant de démarrer, assurez-vous d'avoir installé :
+
+- [Docker](https://docs.docker.com/get-docker/) et [Docker Compose](https://docs.docker.com/compose/) (v2+)
+- [PHP 8.2+](https://www.php.net/downloads) avec les extensions `pdo_pgsql`, `intl`, `mbstring`, `xml`
+- [Composer](https://getcomposer.org/)
+- [Symfony CLI](https://symfony.com/download) _(optionnel mais recommandé pour le dev local)_
 
 ## Installation
 
+### 1. Cloner le dépôt
+
 ```bash
-git clone <repo-url>
+git clone https://github.com/CyrilCharlier/rezilio.git
 cd rezilio
+```
+
+### 2. Configurer l'environnement
+
+Copiez le fichier d'exemple et adaptez les valeurs à votre environnement local :
+
+```bash
+cp .env.example .env.local
+```
+
+Éditez `.env.local` et renseignez au minimum :
+
+```dotenv
+# Générez un secret avec : php -r "echo bin2hex(random_bytes(16));"
+APP_SECRET=votre_secret_local
+
+# Adaptez les identifiants PostgreSQL si nécessaire
+DATABASE_URL="postgresql://app:!ChangeMe!@127.0.0.1:5432/rezilio?serverVersion=16&charset=utf8"
+```
+
+> **Note :** `.env.local` est ignoré par Git (voir `.gitignore`). Ne commitez jamais vos secrets.
+
+### 3. Démarrer les services Docker
+
+```bash
+docker compose up -d
+```
+
+Cela démarre un conteneur PostgreSQL accessible sur le port `5432` par défaut.
+
+### 4. Installer les dépendances PHP
+
+```bash
 composer install
+```
+
+### 5. Créer la base de données et appliquer les migrations
+
+```bash
+# Créer la base de données (si elle n'existe pas encore)
+php bin/console doctrine:database:create
+
+# Appliquer toutes les migrations
+php bin/console doctrine:migrations:migrate
+```
+
+Confirmez avec `yes` lorsque Symfony demande la validation.
+
+### 6. Lancer le serveur de développement
+
+Avec la CLI Symfony :
+
+```bash
+symfony serve
+```
+
+Ou directement avec le serveur PHP intégré :
+
+```bash
+php -S localhost:8000 -t public/
+```
+
+L'application est alors disponible sur [http://localhost:8000](http://localhost:8000).
+
+### Commandes utiles
+
+```bash
+# Vérifier l'état des migrations
+php bin/console doctrine:migrations:status
+
+# Générer une nouvelle migration après modification d'une entité
+php bin/console make:migration
+
+# Vider le cache Symfony
+php bin/console cache:clear
+
+# Lister toutes les routes disponibles
+php bin/console debug:router
+
+# Arrêter les services Docker
+docker compose down
 ```
 
 ## Roadmap
