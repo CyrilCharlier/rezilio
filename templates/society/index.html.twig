@@ -1,0 +1,123 @@
+{% extends 'layout/admin.html.twig' %}
+
+{% block title %}Administration des sociétés{% endblock %}
+
+{% block content %}
+<div class="rz-page">
+    <div class="app-content-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-sm-6">
+                    <h3 class="mb-0">Sociétés</h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end mb-0">
+                        <li class="breadcrumb-item">
+                            <a href="{{ path('app_default') }}">Tableau de bord</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            Sociétés
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-content">
+        <div class="container-fluid">
+
+            {{ include('partial/_flash_messages.html.twig') }}
+
+            <div class="card rz-card">
+                <div class="card-header rz-card-header">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div class="rz-card-header-title">
+                            <i class="bi bi-buildings"></i>
+                            <span>Liste des sociétés</span>
+                        </div>
+
+                        <a href="{{ path('app_society_new') }}" class="btn btn-primary rz-btn rz-btn-primary">
+                            <i class="bi bi-plus-lg me-1"></i>
+                            Nouvelle société
+                        </a>
+                    </div>
+                </div>
+
+                {% if societies is not empty %}
+                    <div class="card-body rz-card-body p-0">
+                        <div class="rz-table-wrap">
+                            <table class="table align-middle rz-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 80px;">ID</th>
+                                        <th>Nom</th>
+                                        <th>Nb filiale</th>
+                                        <th>Soc. mère</th>
+                                        <th>Actif</th>
+                                        <th class="text-end" style="width: 120px;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for society in societies %}
+                                        <tr>
+                                            <td class="text-body-secondary">{{ society.id }}</td>
+                                            <td>
+                                                <div class="rz-table-title">{{ society.name }}</div>
+                                            </td>
+                                            <td class="text-body-secondary">
+                                                {{ society.children|length }}
+                                            </td>
+                                            <td class="text-body-secondary">
+                                                {% if society.parent %}
+                                                    {{ society.parent.name }}
+                                                {% else %}
+                                                    —
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if society.active %}
+                                                    <span class="badge text-bg-success">Oui</span>
+                                                {% else %}
+                                                    <span class="badge text-bg-secondary">Non</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-end">
+                                                <div class="d-inline-flex align-items-center gap-1">
+                                                    <a href="{{ path('app_society_edit', {'id': society.id}) }}"
+                                                       class="btn btn-outline-secondary btn-sm">
+                                                        <i class="bi bi-pencil-square"></i>
+                                                    </a>
+
+                                                    {# {{ include('society/_delete_form.html.twig') }} #}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="card-body rz-card-body rz-empty">
+                        <div>
+                            <div class="rz-empty-icon">
+                                <i class="bi bi-buildings"></i>
+                            </div>
+                            <h4 class="rz-empty-title">Aucune société</h4>
+                            <p class="rz-empty-text">
+                                Créez votre première société pour structurer vos filiales, vos référentiels applicables et vos futures campagnes.
+                            </p>
+                            <a href="{{ path('app_society_new') }}" class="btn btn-primary rz-btn rz-btn-primary">
+                                <i class="bi bi-plus-lg me-1"></i>
+                                Créer une société
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

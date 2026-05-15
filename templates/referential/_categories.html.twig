@@ -1,0 +1,25 @@
+{% set activeCategoryId = activeCategoryId ?? (categories|first ? categories|first.id : null) %}
+
+<div class="rz-toolbar mb-3" role="tablist" aria-label="Catégories du référentiel">
+    {% for category in categories %}
+        <button
+            type="button"
+            class="btn btn-sm rz-btn js-category-tab {{ category.id == activeCategoryId ? 'btn-primary rz-btn-primary' : 'btn-outline-primary' }}"
+            data-category-id="{{ category.id }}"
+            data-target="#category-{{ category.id }}-panel">
+            {{ loop.index }} · {{ category.name }}
+        </button>
+    {% endfor %}
+</div>
+
+<div>
+    {% for category in categories %}
+        <div id="category-{{ category.id }}-panel"
+             class="js-category-panel {{ category.id == activeCategoryId ? '' : 'd-none' }}">
+            {% include 'referential/_category_nodes.html.twig' with {
+                category: category,
+                treeNodes: treeByCategory[category.id] ?? []
+            } %}
+        </div>
+    {% endfor %}
+</div>

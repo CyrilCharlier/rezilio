@@ -1,0 +1,126 @@
+{% extends 'layout/admin.html.twig' %}
+
+{% block title %}Référentiels{% endblock %}
+
+{% block content %}
+<div class="rz-page">
+    <div class="app-content-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-sm-6">
+                    <h3 class="mb-0">Référentiels</h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end mb-0">
+                        <li class="breadcrumb-item">
+                            <a href="{{ path('app_default') }}">Home</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            Référentiels
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-content">
+        <div class="container-fluid">
+            {{ include('partial/_flash_messages.html.twig') }}
+
+            <div class="card rz-card">
+                <div class="card-header rz-card-header">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div class="rz-card-header-title">
+                            <i class="bi bi-tags"></i>
+                            <span>Liste des référentiels</span>
+                        </div>
+
+                        <a href="{{ path('app_referential_new') }}" class="btn btn-primary rz-btn rz-btn-primary">
+                            <i class="bi bi-plus-lg me-1"></i>
+                            Nouveau référentiel
+                        </a>
+                    </div>
+                </div>
+
+                {% if referentials is not empty %}
+                    <div class="card-body rz-card-body p-0">
+                        <div class="rz-table-wrap">
+                            <table class="table align-middle rz-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 80px;">ID</th>
+                                        <th>Code</th>
+                                        <th>Label</th>
+                                        <th>Description</th>
+                                        <th>Version</th>
+                                        <th>Actif</th>
+                                        <th class="text-end" style="width: 140px;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for referential in referentials %}
+                                        <tr>
+                                            <td class="text-body-secondary">{{ referential.id }}</td>
+                                            <td>{{ referential.code ?? '—' }}</td>
+                                            <td>
+                                                <div class="rz-table-title">
+                                                    {{ referential.label ?? '—' }}
+                                                </div>
+                                            </td>
+                                            <td class="text-body-secondary">
+                                                {{ referential.description ?: '—' }}
+                                            </td>
+                                            <td class="text-body-secondary">
+                                                {{ referential.version ?: '—' }}
+                                            </td>
+                                            <td>
+                                                {% if referential.active %}
+                                                    <span class="badge text-bg-success">Oui</span>
+                                                {% else %}
+                                                    <span class="badge text-bg-secondary">Non</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-end">
+                                                <div class="d-inline-flex align-items-center gap-1">
+                                                    <a href="{{ path('app_referential_show', {'id': referential.id}) }}"
+                                                       class="btn btn-outline-primary btn-sm">
+                                                        <i class="bi bi-eye"></i>
+                                                    </a>
+
+                                                    <a href="{{ path('app_referential_edit', {'id': referential.id}) }}"
+                                                       class="btn btn-outline-secondary btn-sm">
+                                                        <i class="bi bi-pencil-square"></i>
+                                                    </a>
+
+                                                    {{ include('referential/_delete_form.html.twig') }}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="card-body rz-card-body rz-empty">
+                        <div>
+                            <div class="rz-empty-icon">
+                                <i class="bi bi-tags"></i>
+                            </div>
+                            <h4 class="rz-empty-title">Aucun référentiel</h4>
+                            <p class="rz-empty-text">
+                                Créez votre premier référentiel pour structurer vos campagnes et vos revues de conformité.
+                            </p>
+                            <a href="{{ path('app_referential_new') }}" class="btn btn-primary rz-btn rz-btn-primary">
+                                <i class="bi bi-plus-lg me-1"></i>
+                                Créer un référentiel
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends 'layout/admin.html.twig' %}
+
+{% block title %}Éditer une mesure{% endblock %}
+
+{% block content %}
+  <div class="app-content-header">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-6">
+          <h3 class="mb-0">Éditer une mesure</h3>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-end">
+            <li class="breadcrumb-item">
+              <a href="{{ path('app_default') }}">Home</a>
+            </li>
+            <li class="breadcrumb-item">
+              <a href="{{ path('app_referential_index') }}">Référentiels</a>
+            </li>
+            <li class="breadcrumb-item">
+              <a href="{{ path('app_referential_show', {'id': category.referential.id}) }}">
+                {{ category.referential.code }}
+              </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+              {{ category.name }}
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-content">
+    <div class="container-fluid">
+      <div class="card">
+        <div class="card-body">
+          {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
+
+            <div class="mb-3">
+              {{ form_label(form.code, null, {'label_attr': {'class': 'form-label'}}) }}
+              {{ form_widget(form.code, {'attr': {'class': 'form-control'}}) }}
+              {{ form_errors(form.code) }}
+            </div>
+
+            <div class="mb-3">
+              {{ form_label(form.label, null, {'label_attr': {'class': 'form-label'}}) }}
+              {{ form_widget(form.label, {'attr': {'class': 'form-control'}}) }}
+              {{ form_errors(form.label) }}
+            </div>
+
+            <div class="mb-3">
+              {{ form_label(form.description, null, {'label_attr': {'class': 'form-label'}}) }}
+              {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 3}}) }}
+              {{ form_errors(form.description) }}
+            </div>
+
+            <div class="mb-3">
+              {{ form_label(form.ordre, null, {'label_attr': {'class': 'form-label'}}) }}
+              {{ form_widget(form.ordre, {'attr': {'class': 'form-control'}}) }}
+              {{ form_errors(form.ordre) }}
+            </div>
+
+            <div class="mb-3 form-check">
+              {{ form_widget(form.active, {'attr': {'class': 'form-check-input'}}) }}
+              {{ form_label(form.active, null, {'label_attr': {'class': 'form-check-label ms-1'}}) }}
+              {{ form_errors(form.active) }}
+            </div>
+
+        </div>
+        <div class="card-footer d-flex gap-2">
+          <button class="btn btn-primary">
+            Mettre à jour
+          </button>
+          <a href="{{ path('app_referential_show', {'id': category.referential.id}) }}"
+             class="btn btn-secondary">
+            Annuler
+          </a>
+        </div>
+          {{ form_end(form) }}
+      </div>
+    </div>
+  </div>
+{% endblock %}

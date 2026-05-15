@@ -1,0 +1,65 @@
+<div class="rz-remediation-list">
+    {% if remediationActions is empty %}
+        <div class="rz-empty-state">
+            <p>Aucune action de remédiation pour cette mesure.</p>
+            <a
+                href="{{ path('app_measure_review_remediation_action_new', {id: measureReview.id}) }}"
+                class="btn btn-primary"
+                data-turbo-frame="measure-review-remediation-drawer"
+            >
+                Créer la première action
+            </a>
+        </div>
+    {% else %}
+        <div class="rz-remediation-items">
+            {% for action in remediationActions %}
+                <article class="rz-remediation-card">
+                    <header class="rz-remediation-card-header">
+                        <h4>{{ action.title }}</h4>
+                        <div class="rz-badges">
+                            <span class="badge">{{ action.status.value }}</span>
+                            <span class="badge">{{ action.priority.value }}</span>
+                        </div>
+                    </header>
+
+                    {% if action.description %}
+                        <p>{{ action.description|u.truncate(140, '…') }}</p>
+                    {% endif %}
+
+                    <div class="rz-remediation-meta">
+                        <span>
+                            Échéance :
+                            {{ action.dueDate ? action.dueDate|date('d/m/Y') : 'Non définie' }}
+                        </span>
+                    </div>
+
+                    <div class="rz-remediation-card-actions">
+                        <a
+                            href="{{ path('app_measure_review_remediation_action_edit', {
+                                id: measureReview.id,
+                                remediationAction: action.id
+                            }) }}"
+                            class="btn btn-secondary"
+                            data-turbo-frame="measure-review-remediation-drawer"
+                        >
+                            Modifier
+                        </a>
+
+                        <form
+                            method="post"
+                            action="{{ path('app_measure_review_remediation_action_delete', {
+                                id: measureReview.id,
+                                remediationAction: action.id
+                            }) }}"
+                            data-turbo-frame="measure-review-remediation-drawer"
+                            onsubmit="return confirm('Supprimer cette action ?');"
+                        >
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete_remediation_action_' ~ action.id) }}">
+                            <button class="btn btn-danger">Supprimer</button>
+                        </form>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>

@@ -1,0 +1,140 @@
+{# templates/partial/_sidebar.html.twig #}
+{% set current_route = app.request.attributes.get('_route') %}
+
+{% set main_sections = [
+  {
+    title: 'Pilotage',
+    items: [
+      {
+        label: 'Dashboard',
+        icon: 'bi bi-grid-1x2',
+        route: 'app_default',
+        route_prefixes: ['app_default']
+      }
+    ]
+  },
+  {
+    title: 'Conformité',
+    items: [
+      {
+        label: 'Campagnes',
+        icon: 'bi bi-clipboard-data',
+        route: 'app_campaign_index',
+        route_prefixes: ['app_campaign_', 'app_measure_review_']
+      },
+      {
+        label: "Plan d'action",
+        icon: 'bi bi-kanban',
+        route: null,
+        route_prefixes: ['app_action_', 'app_remediation_']
+      },
+      {
+        label: 'Rapports',
+        icon: 'bi bi-file-earmark-bar-graph',
+        route: null,
+        route_prefixes: ['app_report_']
+      }
+    ]
+  }
+] %}
+
+{% set admin_menu = [
+  {
+    label: 'Référentiels',
+    icon: 'bi bi-bookmarks',
+    route: 'app_referential_index',
+    route_prefixes: ['app_referential_']
+  },
+  {
+    label: 'Sociétés',
+    icon: 'bi bi-buildings',
+    route: 'app_society_index',
+    route_prefixes: ['app_society_']
+  }
+] %}
+
+<aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
+  <div class="sidebar-brand">
+    <a href="{{ path('app_default') }}" class="brand-link">
+      <img src="/assets/img/logo.png" alt="Rezilio Logo" class="brand-image opacity-75 shadow" />
+      <span class="brand-text fw-light">Rezilio</span>
+    </a>
+  </div>
+
+  <div class="sidebar-wrapper">
+    <nav class="mt-2">
+      <ul
+        class="nav sidebar-menu flex-column"
+        data-lte-toggle="treeview"
+        role="navigation"
+        aria-label="Main navigation"
+        data-accordion="false"
+        id="navigation"
+      >
+        {% for section in main_sections %}
+          <li class="nav-header text-uppercase small">{{ section.title }}</li>
+
+          {% for item in section.items %}
+            {% set is_active = false %}
+            {% for prefix in item.route_prefixes %}
+              {% if current_route starts with prefix %}
+                {% set is_active = true %}
+              {% endif %}
+            {% endfor %}
+
+            <li class="nav-item">
+              <a href="{{ item.route ? path(item.route) : '#' }}"
+                 class="nav-link {{ is_active ? 'active' : '' }}">
+                <i class="nav-icon {{ item.icon }}"></i>
+                <p>{{ item.label }}</p>
+              </a>
+            </li>
+          {% endfor %}
+        {% endfor %}
+
+        {% if is_granted('ROLE_ADMIN') %}
+          {% set is_admin_section = false %}
+          {% for admin_item in admin_menu %}
+            {% for prefix in admin_item.route_prefixes %}
+              {% if current_route starts with prefix %}
+                {% set is_admin_section = true %}
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
+
+          <li class="nav-header text-uppercase small mt-3">Administration</li>
+
+          <li class="nav-item {{ is_admin_section ? 'menu-open' : '' }}">
+            <a href="#"
+               class="nav-link {{ is_admin_section ? 'active' : '' }}">
+              <i class="nav-icon bi bi-gear"></i>
+              <p>
+                Paramétrage
+                <i class="nav-arrow bi bi-chevron-right"></i>
+              </p>
+            </a>
+
+            <ul class="nav nav-treeview">
+              {% for admin_item in admin_menu %}
+                {% set is_sub_active = false %}
+                {% for prefix in admin_item.route_prefixes %}
+                  {% if current_route starts with prefix %}
+                    {% set is_sub_active = true %}
+                  {% endif %}
+                {% endfor %}
+
+                <li class="nav-item">
+                  <a href="{{ admin_item.route ? path(admin_item.route) : '#' }}"
+                     class="nav-link {{ is_sub_active ? 'active' : '' }}">
+                    <i class="nav-icon {{ admin_item.icon }}"></i>
+                    <p>{{ admin_item.label }}</p>
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+</aside>

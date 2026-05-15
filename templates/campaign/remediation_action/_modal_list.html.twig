@@ -1,0 +1,110 @@
+{# templates/campaign/remediation_action/_modal_list.html.twig #}
+<div class="rz-remediation-list">
+    {% if remediationActions is empty %}
+        <div class="rz-remediation-empty-state">
+            <div class="rz-remediation-empty-icon" aria-hidden="true">
+                <i class="bi bi-tools"></i>
+            </div>
+
+            <h6 class="rz-remediation-empty-title">Aucune action de remédiation</h6>
+
+            <p class="rz-remediation-empty-text">
+                Cette revue n’a pas encore d’action associée. Créez une première action
+                pour suivre le traitement, le responsable et l’échéance.
+            </p>
+
+            <button
+                type="button"
+                class="btn btn-primary rz-btn rz-btn-primary"
+                data-remediation-create
+                data-remediation-create-url="{{ path('app_remediation_action_new_modal', {id: measureReview.id}) }}"
+            >
+                <i class="bi bi-plus-lg me-1"></i>
+                Créer une première action
+            </button>
+        </div>
+    {% else %}
+        <div class="rz-remediation-items">
+            {% for action in remediationActions %}
+                <article class="rz-remediation-card">
+                    <div class="rz-remediation-card-main">
+                        <div class="rz-remediation-card-top">
+                            <h6 class="rz-remediation-card-title">{{ action.title }}</h6>
+
+                            <div class="rz-remediation-card-badges">
+                                <span class="badge {{ action.status.badgeClass() }}">
+                                    {{ action.status.label() }}
+                                </span>
+                                <span class="badge {{ action.priority.badgeClass() }}">
+                                    {{ action.priority.label() }}
+                                </span>
+                            </div>
+                        </div>
+
+                        {% if action.description %}
+                            <p class="rz-remediation-card-text">
+                                {{ action.description|u.truncate(140, '…') }}
+                            </p>
+                        {% endif %}
+
+                        <div class="rz-remediation-card-meta">
+                            <span class="rz-remediation-card-deadline">
+                                <i class="bi bi-calendar-event me-1" aria-hidden="true"></i>
+                                Échéance :
+                                {{ action.dueDate ? action.dueDate|date('d/m/Y') : 'Non définie' }}
+                            </span>
+
+                            <span
+                                class="rz-remediation-card-meta-icon"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                title="Créée le {{ action.createdAt ? action.createdAt|date('d/m/Y à H:i') : 'date inconnue' }}"
+                                aria-label="Date de création"
+                                tabindex="0"
+                            >
+                                <i class="bi bi-clock-history" aria-hidden="true"></i>
+                            </span>
+
+                            <span
+                                class="rz-remediation-card-meta-icon"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                title="Dernière modification le {{ action.updatedAt ? action.updatedAt|date('d/m/Y à H:i') : 'jamais modifiée' }}"
+                                aria-label="Date de dernière modification"
+                                tabindex="0"
+                            >
+                                <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="rz-remediation-card-actions">
+                        <button
+                            type="button"
+                            class="btn btn-sm btn-outline-light"
+                            data-remediation-edit
+                            data-remediation-edit-url="{{ path('app_remediation_action_edit_modal', {id: action.id}) }}"
+                        >
+                            Modifier
+                        </button>
+
+                        <form
+                            method="post"
+                            class="d-inline"
+                            data-remediation-delete-form="true"
+                            action="{{ path('app_remediation_action_delete', {id: action.id}) }}"
+                        >
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete_remediation_action_' ~ action.id) }}">
+                            <button
+                                type="submit"
+                                class="btn btn-sm btn-outline-danger"
+                            >
+                                Supprimer
+                            </button>
+                        </form>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>

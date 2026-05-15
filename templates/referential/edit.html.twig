@@ -1,0 +1,55 @@
+{% extends 'layout/admin.html.twig' %}
+
+{% block title %}Edit Category{% endblock %}
+
+{% block content %}
+    <div class="app-content-header">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h3 class="mb-0">Referential</h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end">
+                        <li class="breadcrumb-item"><a href="{{ path('app_default')}}">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Refential index</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="app-content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-12">
+
+                    {{ include('referential/_form.html.twig', {
+                        button_label: 'Enregistrer les modifications',
+                        back_path: path('app_referential_index'),
+                        card_title: 'Modifier le référentiel',
+                        card_icon: 'bi-pencil-square'
+                    }) }}
+
+                    <div class="mt-3">
+                        <div class="card border-danger-subtle">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1 text-danger">
+                                    Zone de danger
+                                    </h6>
+                                    <p class="mb-0 text-body-secondary small">
+                                    La suppression de ce référentiel est définitive.
+                                    </p>
+                                </div>
+                                <div>
+                                    {{ include('referential/_delete_form.html.twig') }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

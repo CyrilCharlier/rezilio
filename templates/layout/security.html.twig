@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="fr" data-bs-theme="dark">
+  <head>
+    {% include 'partial/head/_meta.html.twig' %}
+    {% include 'partial/head/_style.html.twig' %}
+    <title>Rezilio | Sécurité</title>
+  </head>
+  <body class="login-page bg-body-secondary">
+    <div class="login-box">
+      <div class="login-logo">
+        <a href="/"><b>Rezil</b>IO</a>
+      </div>
+      {% block content %}{% endblock %}
+    </div>
+    {% include 'partial/_script.html.twig' %}
+  </body>
+  <!--end::Body-->
+</html>

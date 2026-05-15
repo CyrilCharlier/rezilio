@@ -1,0 +1,623 @@
+/* =========================================================
+   Rezilio UI — shared admin components
+   ========================================================= */
+
+:root {
+  --rz-surface-bg: rgba(255, 255, 255, 0.02);
+  --rz-surface-bg-soft: rgba(255, 255, 255, 0.01);
+  --rz-border: rgba(255, 255, 255, 0.06);
+  --rz-border-strong: rgba(255, 255, 255, 0.08);
+  --rz-text-soft: rgba(255, 255, 255, 0.65);
+  --rz-text-muted: rgba(255, 255, 255, 0.55);
+  --rz-text-strong: rgba(255, 255, 255, 0.92);
+  --rz-input-bg: rgba(17, 24, 39, 0.55);
+  --rz-input-bg-focus: rgba(17, 24, 39, 0.72);
+  --rz-primary-ring: rgba(59, 130, 246, 0.16);
+  --rz-primary-border: rgba(59, 130, 246, 0.7);
+  --rz-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  --rz-radius-lg: 1rem;
+  --rz-radius-md: 0.85rem;
+  --rz-btn-radius: 0.8rem;
+}
+
+/* =========================================================
+   Page
+   ========================================================= */
+
+.rz-page {
+  min-width: 0;
+}
+
+.rz-page-intro {
+  color: var(--rz-text-soft);
+  margin-top: 0.25rem;
+  margin-bottom: 0;
+  max-width: 70ch;
+}
+
+.rz-page-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* =========================================================
+   Cards
+   ========================================================= */
+
+.rz-card {
+  border-radius: var(--rz-radius-lg);
+  background: var(--rz-surface-bg);
+  border: 1px solid var(--rz-border);
+  box-shadow: var(--rz-shadow);
+  overflow: hidden;
+}
+
+.rz-card-header {
+  background: var(--rz-surface-bg-soft);
+  border-bottom: 1px solid var(--rz-border-strong);
+  padding: 1.1rem 1.25rem;
+}
+
+.rz-card-header-title {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-weight: 600;
+  color: var(--rz-text-strong);
+  margin: 0;
+}
+
+.rz-card-header-meta {
+  color: var(--rz-text-muted);
+  font-size: 0.875rem;
+}
+
+.rz-card-body {
+  padding: 1.25rem;
+}
+
+.rz-card-footer {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--rz-border-strong);
+  background: var(--rz-surface-bg-soft);
+}
+
+/* =========================================================
+   Toolbars / filter bars
+   ========================================================= */
+
+.rz-toolbar {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.rz-toolbar-end {
+  justify-content: flex-end;
+}
+
+.rz-toolbar-between {
+  justify-content: space-between;
+}
+
+.rz-filter-card .rz-card-body {
+  padding: 1.25rem;
+}
+
+/* =========================================================
+   Forms
+   ========================================================= */
+
+.rz-label,
+.rz-form-label {
+  font-weight: 600;
+  color: var(--rz-text-strong);
+  margin-bottom: 0.5rem;
+}
+
+.rz-help,
+.rz-form-help,
+.rz-form-text {
+  color: var(--rz-text-soft);
+  font-size: 0.9rem;
+}
+
+.rz-input,
+.rz-select,
+.rz-textarea,
+.rz-form-control,
+.rz-form-select {
+  min-height: 3rem;
+  border-radius: var(--rz-radius-md);
+  border: 1px solid var(--rz-border-strong);
+  background-color: var(--rz-input-bg);
+  color: #f8f9fa;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.rz-input::placeholder,
+.rz-textarea::placeholder,
+.rz-form-control::placeholder {
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.rz-input:focus,
+.rz-select:focus,
+.rz-textarea:focus,
+.rz-form-control:focus,
+.rz-form-select:focus {
+  background-color: var(--rz-input-bg-focus);
+  border-color: var(--rz-primary-border);
+  box-shadow: 0 0 0 0.22rem var(--rz-primary-ring);
+  color: #fff;
+}
+
+.rz-input-lg,
+.rz-select-lg,
+.rz-form-control-lg,
+.rz-form-select-lg {
+  min-height: 3.5rem;
+  font-size: 1rem;
+  padding-inline: 1rem;
+}
+
+.rz-form-select option,
+.rz-select option {
+  color: #111827;
+  background: #ffffff;
+}
+
+.rz-switch.form-check {
+  padding-left: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 2.5rem;
+}
+
+.rz-switch .form-check-input {
+  float: none;
+  margin: 0;
+  width: 2.15rem;
+  height: 1.2rem;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background-color: rgba(255, 255, 255, 0.10);
+  box-shadow: none;
+  flex: 0 0 auto;
+}
+
+.rz-switch .form-check-input:checked {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.rz-switch .form-check-input:focus {
+  box-shadow: 0 0 0 0.22rem rgba(13, 110, 253, 0.16);
+}
+
+.rz-switch .form-check-label {
+  margin-bottom: 0;
+  font-weight: 600;
+  cursor: pointer;
+  line-height: 1.2;
+  color: var(--rz-text-strong);
+}
+
+/* =========================================================
+   Highlight / info boxes
+   ========================================================= */
+
+.rz-highlight-box {
+  border-radius: var(--rz-radius-lg);
+  background: linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.rz-help-item + .rz-help-item {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rz-border);
+}
+
+.rz-help-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--rz-radius-md);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(13, 110, 253, 0.12);
+  color: #6ea8fe;
+  flex-shrink: 0;
+}
+
+.rz-section-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--rz-text-muted);
+  margin-bottom: 1rem;
+}
+
+/* =========================================================
+   Buttons
+   ========================================================= */
+
+.rz-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: var(--rz-btn-radius);
+  min-height: 2.75rem;
+  padding-inline: 1rem;
+  line-height: 1.2;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.rz-btn > i[class^="bi"],
+.rz-btn > i[class*=" bi"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.btn-sm.rz-btn,
+.rz-node-actions .btn,
+.rz-table .btn.btn-sm,
+.btn-group .btn.btn-sm,
+.d-inline-flex .btn.btn-sm {
+  min-height: 2.25rem;
+  padding-inline: 0.75rem;
+  gap: 0.35rem;
+}
+
+.rz-btn-primary,
+.btn.rz-btn-primary {
+  box-shadow: 0 8px 20px rgba(13, 110, 253, 0.22);
+}
+
+/* =========================================================
+   Tables
+   ========================================================= */
+
+.rz-table-wrap {
+  overflow-x: auto;
+}
+
+.rz-table {
+  margin-bottom: 0;
+  vertical-align: middle;
+}
+
+.rz-table thead th {
+  font-weight: 700;
+  color: var(--rz-text-strong);
+  border-bottom: 1px solid var(--rz-border-strong);
+  background: var(--rz-surface-bg-soft);
+  white-space: nowrap;
+}
+
+.rz-table tbody td {
+  border-top: 1px solid var(--rz-border-strong);
+  vertical-align: middle;
+}
+
+.rz-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.rz-table-title {
+  font-weight: 600;
+  color: var(--rz-text-strong);
+}
+
+.rz-table-subtitle {
+  color: var(--rz-text-soft);
+  font-size: 0.875rem;
+  margin-top: 0.15rem;
+}
+
+/* =========================================================
+   Empty state
+   ========================================================= */
+
+.rz-empty {
+  min-height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 1.5rem;
+}
+
+.rz-empty-icon {
+  font-size: 3rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 1rem;
+}
+
+.rz-empty-title {
+  margin-bottom: 0.5rem;
+  color: var(--rz-text-strong);
+}
+
+.rz-empty-text {
+  color: var(--rz-text-soft);
+  max-width: 720px;
+  margin-inline: auto;
+  margin-bottom: 1.5rem;
+}
+
+/* =========================================================
+   Actions / footer bars
+   ========================================================= */
+
+.rz-actions {
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rz-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* =========================================================
+   Feedback
+   ========================================================= */
+
+.rz-errors,
+.invalid-feedback,
+.form-error-message {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 0.875rem;
+}
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+
+@media (max-width: 1199.98px) {
+  .rz-card-body {
+    padding: 1rem;
+  }
+
+  .rz-empty {
+    min-height: 320px;
+  }
+}
+
+/* =========================================================
+   Tree / hierarchy
+   ========================================================= */
+
+.rz-tree-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.rz-tree-node {
+  position: relative;
+}
+
+.rz-tree-node + .rz-tree-node {
+  margin-top: 0.75rem;
+}
+
+.rz-tree-node-card {
+  border: 1px solid var(--rz-border);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--rz-radius-md);
+  padding: 0.85rem 1rem;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.rz-tree-node-card:hover {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--rz-border-strong);
+}
+
+.rz-tree-children {
+  margin-top: 0.75rem;
+  margin-left: 1.25rem;
+  padding-left: 1rem;
+  border-left: 1px dashed rgba(255, 255, 255, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.rz-tree-toggle {
+  color: var(--rz-text-soft);
+  width: 1.25rem;
+  min-width: 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.rz-tree-toggle:hover {
+  color: var(--rz-text-strong);
+}
+
+.rz-tree-toggle.is-open i {
+  transform: rotate(90deg);
+}
+
+.rz-tree-toggle-placeholder {
+  width: 1.25rem;
+  min-width: 1.25rem;
+  display: inline-block;
+}
+
+.rz-tree-node-label {
+  color: var(--rz-text-strong);
+  font-weight: 500;
+}
+
+.rz-tree-node-code {
+  font-weight: 700;
+}
+
+.rz-tree-info-btn {
+  color: var(--rz-text-soft);
+  line-height: 1;
+}
+
+.rz-tree-info-btn:hover {
+  color: var(--rz-text-strong);
+}
+
+.rz-tree-info-placeholder {
+  width: 1rem;
+  display: inline-block;
+}
+
+.rz-badges-slot {
+  min-width: 4rem;
+  display: inline-flex;
+  justify-content: flex-end;
+  gap: 0.35rem;
+}
+
+.rz-badge {
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+}
+
+.rz-node-actions .btn {
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+  padding-inline: 0.55rem;
+}
+
+@media (max-width: 991.98px) {
+  .rz-tree-node-card {
+    padding: 0.85rem;
+  }
+
+  .rz-tree-children {
+    margin-left: 0.75rem;
+    padding-left: 0.75rem;
+  }
+
+  .rz-badges-slot {
+    min-width: auto;
+  }
+}
+
+/* =========================================================
+   Modal
+   ========================================================= */
+
+.rz-modal-content {
+  background: #1f232a;
+  border: 1px solid var(--rz-border);
+  border-radius: var(--rz-radius-lg);
+  box-shadow: var(--rz-shadow);
+}
+
+.rz-modal-header {
+  border-bottom: 1px solid var(--rz-border-strong);
+  background: var(--rz-surface-bg-soft);
+}
+
+.rz-modal-body {
+  padding: 1.25rem;
+}
+
+/* =========================================================
+   Tooltip
+   ========================================================= */
+
+.rezilio-tooltip .tooltip-inner {
+  max-width: 360px;
+  text-align: left;
+  background-color: #1f2937;
+  color: #f8f9fa;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0.65rem 0.8rem;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.25);
+}
+
+.rezilio-tooltip.bs-tooltip-start .tooltip-arrow::before {
+  border-left-color: #1f2937;
+}
+
+.rezilio-tooltip.bs-tooltip-end .tooltip-arrow::before {
+  border-right-color: #1f2937;
+}
+
+.rezilio-tooltip.bs-tooltip-top .tooltip-arrow::before {
+  border-top-color: #1f2937;
+}
+
+.rezilio-tooltip.bs-tooltip-bottom .tooltip-arrow::before {
+  border-bottom-color: #1f2937;
+}
+
+/* =========================================================
+   Legacy Rezilio aliases mapped to rz
+   ========================================================= */
+
+.rezilio-node-row {
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+  border-radius: 0.375rem;
+}
+
+.rezilio-node-row:hover {
+  background-color: rgba(255, 255, 255, 0.035);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.rezilio-node-row:focus-within {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.min-w-0 {
+  min-width: 0;
+}
+
+.rz-form-alert {
+    border-radius: 0.85rem;
+    border: 1px solid rgba(220, 53, 69, 0.28);
+    background: rgba(220, 53, 69, 0.10);
+    color: #f5c2c7;
+}
+
+.rz-form-alert ul {
+    margin: 0;
+    padding-left: 1rem;
+}
+
+.invalid-feedback,
+.form-error-message {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.875rem;
+    color: #f5c2c7;
+}
+
+.rz-form-control,
+.rz-form-select {
+    width: 100%;
+}
+
+.rz-form-control.is-invalid,
+.rz-form-select.is-invalid {
+    border-color: rgba(220, 53, 69, 0.45);
+    box-shadow: none;
+}

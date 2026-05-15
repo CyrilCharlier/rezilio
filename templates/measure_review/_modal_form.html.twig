@@ -1,0 +1,169 @@
+<div
+    class="rz-modal-review-layout"
+    data-measure-review-modal-content
+    data-review-id="{{ measureReview.id }}"
+    data-current-status="{{ measureReview.status.value }}"
+>
+    <section class="rz-modal-pane rz-modal-pane-review">
+        <div class="rz-modal-pane-inner">
+            <div class="rz-modal-review-head">
+                <div class="rz-modal-review-kicker">
+                    <span class="rz-modal-review-badge">
+                        <i class="bi bi-shield-check me-1" aria-hidden="true"></i>
+                        Mesure {{ measureReview.measure.code }}
+                    </span>
+
+                    {% if measureReview.measure.category %}
+                        <span class="rz-modal-review-meta-chip">
+                            {{ measureReview.measure.category.name }}
+                        </span>
+                    {% endif %}
+                </div>
+
+                <h4 id="measureReviewModalLabel" class="rz-modal-review-title">
+                    {{ measureReview.measure.label }}
+                </h4>
+
+                {% if measureReview.measure.description %}
+                    <p class="rz-modal-review-description">
+                        {{ measureReview.measure.description }}
+                    </p>
+                {% endif %}
+
+                <div class="rz-modal-review-meta">
+                    {% if measureReview.measure.appliesToEE %}
+                        <span class="badge text-bg-primary">EE</span>
+                    {% endif %}
+
+                    {% if measureReview.measure.appliesToEI %}
+                        <span class="badge text-bg-info">EI</span>
+                    {% endif %}
+
+                    <span class="rz-modal-review-meta-text">
+                        Revue de conformité de la mesure
+                    </span>
+                </div>
+            </div>
+
+            {{ form_start(form, {
+                attr: {
+                    id: 'measure-review-modal-form',
+                    'data-modal-form': 'true',
+                    class: 'rz-modal-form'
+                }
+            }) }}
+
+                <div class="rz-modal-grid">
+                    <div class="rz-field">
+                        <label class="form-label rz-form-label" for="{{ form.status.vars.id }}">
+                            {{ form.status.vars.label }}
+                        </label>
+                        {{ form_widget(form.status, {
+                            attr: {
+                                class: 'form-select rz-form-select rz-modal-select',
+                                'data-review-status': 'true'
+                            }
+                        }) }}
+                        {{ form_errors(form.status) }}
+                    </div>
+
+                    <div class="rz-field rz-field-full">
+                        <label class="form-label rz-form-label" for="{{ form.explanation.vars.id }}">
+                            {{ form.explanation.vars.label }}
+                        </label>
+                        {{ form_widget(form.explanation, {
+                            attr: {
+                                class: 'form-control rz-form-control rz-modal-textarea',
+                                rows: 7,
+                                placeholder: 'Ajoutez une explication de revue…'
+                            }
+                        }) }}
+                        <div class="rz-field-help">
+                            Décrivez le constat, le contexte, ou les éléments justificatifs utiles à la revue.
+                        </div>
+                        {{ form_errors(form.explanation) }}
+                    </div>
+
+                    <div class="rz-field rz-field-full">
+                        <label class="form-label rz-form-label" for="{{ form.proofUrl.vars.id }}">
+                            {{ form.proofUrl.vars.label }}
+                        </label>
+                        {{ form_widget(form.proofUrl, {
+                            attr: {
+                                class: 'form-control rz-form-control',
+                                placeholder: 'https://…'
+                            }
+                        }) }}
+                        <div class="rz-field-help">
+                            Lien vers une preuve, une procédure, un ticket, un document ou un dépôt.
+                        </div>
+                        {{ form_errors(form.proofUrl) }}
+                    </div>
+
+                    <div class="rz-field rz-field-full" data-not-applicable-wrapper>
+                        <label class="form-label rz-form-label" for="{{ form.notApplicableReason.vars.id }}">
+                            {{ form.notApplicableReason.vars.label }}
+                        </label>
+                        {{ form_widget(form.notApplicableReason, {
+                            attr: {
+                                class: 'form-control rz-form-control rz-modal-textarea',
+                                rows: 4,
+                                placeholder: 'Expliquez pourquoi cette mesure n’est pas applicable…'
+                            }
+                        }) }}
+                        <div class="rz-field-help">
+                            À renseigner quand la mesure ne s’applique pas à la société ou au périmètre évalué.
+                        </div>
+                        {{ form_errors(form.notApplicableReason) }}
+                    </div>
+                </div>
+
+                <div class="rz-modal-actions rz-modal-actions-sticky">
+                    <button type="button" class="btn btn-outline-light rz-btn" data-bs-dismiss="modal">
+                        Annuler
+                    </button>
+                    <button type="submit" class="btn btn-primary rz-btn rz-btn-primary">
+                        Enregistrer
+                    </button>
+                </div>
+
+            {{ form_end(form) }}
+        </div>
+    </section>
+
+    <aside class="rz-modal-pane rz-modal-pane-remediation">
+        <div class="rz-modal-pane-inner">
+            <div class="rz-remediation-section" data-remediation-section>
+                <div class="rz-remediation-section-head">
+                    <div>
+                        <h5 class="rz-remediation-section-title">Actions de remédiation</h5>
+                        <p class="rz-remediation-section-subtitle">
+                            Suivi des actions associées à cette mesure.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="btn btn-outline-light rz-btn"
+                        data-remediation-create
+                        data-remediation-create-url="{{ path('app_remediation_action_new_modal', {id: measureReview.id}) }}"
+                    >
+                        <i class="bi bi-plus-lg me-1"></i>
+                        Nouvelle action
+                    </button>
+                </div>
+
+                <div
+                    class="rz-remediation-panel"
+                    data-remediation-panel
+                    data-remediation-list-url="{{ path('app_remediation_action_list_modal', {id: measureReview.id}) }}"
+                >
+                    {% include 'campaign/remediation_action/_modal_list.html.twig' with {
+                        measureReview: measureReview,
+                        remediationActions: measureReview.remediationActions
+                    } only %}
+                </div>
+            </div>
+        </div>
+    </aside>
+</div>

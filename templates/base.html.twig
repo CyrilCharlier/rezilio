@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="fr" data-bs-theme="dark">
+
+  <head>
+    {% include 'partial/head/_meta.html.twig' %}
+    {% include 'partial/head/_style.html.twig' %}
+    {% block stylesheet %}{% endblock %}
+    <title>Rezilio</title>
+  </head>
+
+  <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+    <div class="app-wrapper">
+    {% block body %}{% endblock %}
+    </div>
+
+    {% include 'partial/_script.html.twig' %}
+    {% block javascript %}{% endblock %}
+
+  </body>
+</html>

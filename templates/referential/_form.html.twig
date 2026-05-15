@@ -1,0 +1,59 @@
+{{ form_start(form) }}
+
+<div class="card rz-card">
+    <div class="card-header rz-card-header">
+        <div class="rz-card-header-title">
+            <i class="bi {{ card_icon|default('bi-tags') }}"></i>
+            <span>{{ card_title|default('Référentiel') }}</span>
+        </div>
+    </div>
+
+    <div class="card-body rz-card-body">
+        <div class="row g-4">
+            <div class="col-12 col-md-4">
+                {{ form_label(form.code, null, {'label_attr': {'class': 'form-label rz-form-label'}}) }}
+                {{ form_widget(form.code, {'attr': {'class': 'form-control rz-form-control'}}) }}
+                {{ form_errors(form.code) }}
+            </div>
+
+            <div class="col-12 col-md-8">
+                {{ form_label(form.label, null, {'label_attr': {'class': 'form-label rz-form-label'}}) }}
+                {{ form_widget(form.label, {'attr': {'class': 'form-control rz-form-control'}}) }}
+                {{ form_errors(form.label) }}
+            </div>
+
+            <div class="col-12">
+                {{ form_label(form.description, null, {'label_attr': {'class': 'form-label rz-form-label'}}) }}
+                {{ form_widget(form.description, {'attr': {'class': 'form-control rz-form-control', 'rows': 4}}) }}
+                {{ form_errors(form.description) }}
+            </div>
+
+            <div class="col-12 col-md-4">
+                {{ form_label(form.version, null, {'label_attr': {'class': 'form-label rz-form-label'}}) }}
+                {{ form_widget(form.version, {'attr': {'class': 'form-control rz-form-control'}}) }}
+                {{ form_errors(form.version) }}
+            </div>
+
+            <div class="col-12 col-md-4">
+                <div class="rz-switch form-check mt-md-4 pt-md-2">
+                    {{ form_widget(form.active, {'attr': {'class': 'form-check-input'}}) }}
+                    {{ form_label(form.active, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                </div>
+                {{ form_errors(form.active) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer rz-card-footer">
+        <div class="rz-actions mt-0 pt-0 border-0">
+            <a href="{{ back_path|default(path('app_referential_index')) }}" class="btn btn-outline-light rz-btn">
+                Annuler
+            </a>
+            <button class="btn btn-primary rz-btn rz-btn-primary">
+                {{ button_label|default('Enregistrer') }}
+            </button>
+        </div>
+    </div>
+</div>
+
+{{ form_end(form) }}

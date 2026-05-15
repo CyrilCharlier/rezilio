@@ -1,0 +1,2054 @@
+{% extends 'layout/admin.html.twig' %}
+
+{% block title %}{{ campaign.name }}{% endblock %}
+
+{% block content %}
+<div class="rz-page" id="rz-page-content">
+    <div class="app-content-header">
+        <div class="container-fluid">
+            <div class="row align-items-center g-3">
+                <div class="col-sm-8">
+                    <h3 class="mb-0">{{ campaign.name }}</h3>
+                    <p class="rz-page-intro">
+                        {{ campaign.society.name }} · {{ campaign.referential.label }}
+                        {% if campaign.startDate %}
+                            · démarrée le {{ campaign.startDate|date('d/m/Y') }}
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="col-sm-4">
+                    <div class="rz-page-actions mt-3 mt-sm-0">
+                        <a href="{{ path('app_campaign_index') }}" class="btn btn-outline-light rz-btn">
+                            Retour aux campagnes
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-content">
+        <div class="container-fluid">
+
+            {{ include('partial/_flash_messages.html.twig') }}
+
+            {% set currentQuery = app.request.query.all %}
+            {% set hasActiveFilters = filters.search or filters.category or filters.status or filters.applicability %}
+
+            <div class="card rz-card rz-filter-bar mb-3" id="campaign-filter-bar">
+                <div class="card-body rz-card-body rz-filter-bar-body">
+                    <div class="rz-filter-bar-main">
+                        <div class="rz-filter-bar-left">
+                            <div class="rz-filter-bar-title">
+                                <i class="bi bi-funnel"></i>
+                                <span>Filtres</span>
+                            </div>
+
+                            <div class="rz-filter-summary">
+                                {% if filters.search %}
+                                    <span class="rz-filter-pill">{{ filters.search }}</span>
+                                {% endif %}
+                                {% if filters.category %}
+                                    <span class="rz-filter-pill">Catégorie</span>
+                                {% endif %}
+                                {% if filters.applicability == 'ee' %}
+                                    <span class="rz-filter-pill">EE</span>
+                                {% elseif filters.applicability == 'ei' %}
+                                    <span class="rz-filter-pill">EI</span>
+                                {% endif %}
+                                {% if filters.status %}
+                                    <span class="rz-filter-pill">
+                                        {% for statusKey, column in columns %}
+                                            {% if column.value == filters.status %}
+                                                {{ column.label }}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </span>
+                                {% endif %}
+                                {% if not hasActiveFilters %}
+                                    <span class="rz-filter-summary-empty">Aucun filtre actif</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="rz-filter-bar-actions">
+                            <button
+                                class="btn btn-outline-light rz-btn"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#campaignFilters"
+                                aria-expanded="{{ hasActiveFilters ? 'true' : 'false' }}"
+                                aria-controls="campaignFilters"
+                            >
+                                <i class="bi bi-sliders me-1"></i>
+                                Filtres
+                            </button>
+
+                            <a href="{{ path('app_campaign_show', {'id': campaign.id}) }}" class="btn btn-outline-light rz-btn">
+                                Réinitialiser
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="collapse {{ hasActiveFilters ? 'show' : '' }}" id="campaignFilters">
+                        <form method="get" class="rz-filter-panel">
+                            <div class="rz-filter-main">
+                                <div class="rz-filter-search">
+                                    <label for="search" class="form-label rz-form-label">Recherche</label>
+                                    <input
+                                        type="text"
+                                        id="search"
+                                        name="search"
+                                        value="{{ filters.search }}"
+                                        class="form-control rz-form-control"
+                                        placeholder="Code, mesure, catégorie..."
+                                    >
+                                </div>
+
+                                <div class="rz-filter-category">
+                                    <label for="category" class="form-label rz-form-label">Catégorie</label>
+                                    <select id="category" name="category" class="form-select rz-form-select">
+                                        <option value="">Toutes</option>
+                                        {% for category in categories %}
+                                            <option value="{{ category.id }}" {{ filters.category == category.id ? 'selected' : '' }}>
+                                                {{ category.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div class="rz-filter-actions-inline">
+                                    <button class="btn btn-primary rz-btn rz-btn-primary" type="submit">
+                                        <i class="bi bi-search me-1"></i>
+                                        Appliquer
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="rz-filter-groups">
+                                <div class="rz-filter-group">
+                                    <span class="rz-filter-group-label">Applicabilité</span>
+                                    <div class="rz-quick-filters">
+                                        <a
+                                            href="{{ path('app_campaign_show', {'id': campaign.id}|merge(currentQuery)|merge({'applicability': null})) }}"
+                                            class="rz-chip {{ filters.applicability is empty ? 'is-active' : '' }}"
+                                        >
+                                            Toutes
+                                        </a>
+                                        <a
+                                            href="{{ path('app_campaign_show', {'id': campaign.id}|merge(currentQuery)|merge({'applicability': 'ee'})) }}"
+                                            class="rz-chip {{ filters.applicability == 'ee' ? 'is-active' : '' }}"
+                                        >
+                                            EE
+                                        </a>
+                                        <a
+                                            href="{{ path('app_campaign_show', {'id': campaign.id}|merge(currentQuery)|merge({'applicability': 'ei'})) }}"
+                                            class="rz-chip {{ filters.applicability == 'ei' ? 'is-active' : '' }}"
+                                        >
+                                            EI
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="rz-filter-group">
+                                    <span class="rz-filter-group-label">Statut</span>
+                                    <div class="rz-quick-filters">
+                                        <a
+                                            href="{{ path('app_campaign_show', {'id': campaign.id}|merge(currentQuery)|merge({'status': null})) }}"
+                                            class="rz-chip {{ filters.status is empty ? 'is-active' : '' }}"
+                                        >
+                                            Tous
+                                        </a>
+                                        {% for statusKey, column in columns %}
+                                            <a
+                                                href="{{ path('app_campaign_show', {'id': campaign.id}|merge(currentQuery)|merge({'status': column.value})) }}"
+                                                class="rz-chip {{ filters.status == column.value ? 'is-active' : '' }}"
+                                            >
+                                                {{ column.label }}
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rz-kanban-board rz-kanban-board-compact" id="rz-kanban-board">
+                {% for statusKey, column in columns %}
+                    <section
+                        class="rz-kanban-column"
+                        data-status-key="{{ statusKey }}"
+                        data-status-value="{{ column.value }}"
+                    >
+                        <div class="card rz-card rz-kanban-panel">
+                            <div class="card-header rz-card-header rz-kanban-column-header rz-kanban-column-header-compact">
+                                <div class="d-flex justify-content-between align-items-center gap-2">
+                                    <span class="rz-kanban-column-title">{{ column.label }}</span>
+                                    <span class="badge text-bg-secondary" data-column-count>{{ column.items|length }}</span>
+                                </div>
+                            </div>
+
+                            <div class="card-body rz-card-body rz-kanban-column-body"
+                                 data-dropzone
+                                 data-status-key="{{ statusKey }}"
+                                 data-status-value="{{ column.value }}">
+                                <div class="rz-kanban-cards">
+                                    {% for review in column.items %}
+                                        {% set node = review.measure %}
+                                        <article
+                                            class="rz-kanban-card rz-kanban-card-compact"
+                                            draggable="true"
+                                            tabindex="0"
+                                            role="button"
+                                            data-review-id="{{ review.id }}"
+                                            data-current-status="{{ review.status.value }}"
+                                            data-move-url="{{ path('app_measure_review_move', {'id': review.id}) }}"
+                                            data-modal-url="{{ path('app_measure_review_modal', {'id': review.id}) }}"
+                                            data-csrf-token="{{ csrf_token('measure_review_status_' ~ review.id) }}"
+                                        >
+                                            <div class="rz-kanban-card-top">
+                                                <div class="rz-kanban-card-code">{{ node.code }}</div>
+                                                <div class="rz-kanban-card-open">
+                                                    <i class="bi bi-box-arrow-up-right"></i>
+                                                </div>
+                                            </div>
+
+                                            <h5 class="rz-kanban-card-title rz-clamp-2">
+                                                {{ node.label }}
+                                            </h5>
+
+                                            <div class="rz-kanban-card-meta">
+                                                {% if node.category %}
+                                                    <span class="badge text-bg-dark">{{ node.category.name }}</span>
+                                                {% endif %}
+                                                {% if node.appliesToEE %}
+                                                    <span class="badge text-bg-primary">EE</span>
+                                                {% endif %}
+                                                {% if node.appliesToEI %}
+                                                    <span class="badge text-bg-info">EI</span>
+                                                {% endif %}
+                                            </div>
+
+                                            {% if review.explanation %}
+                                                <p class="rz-kanban-card-text rz-clamp-2">
+                                                    {{ review.explanation }}
+                                                </p>
+                                            {% endif %}
+                                        </article>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="rz-empty-mini {{ column.items is not empty ? 'd-none' : '' }}" data-empty-state>
+                                    <div class="rz-empty-mini-icon">
+                                        <i class="bi bi-inbox"></i>
+                                    </div>
+                                    <div class="rz-empty-mini-text">
+                                        Aucune revue dans cette colonne.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                {% endfor %}
+            </div>
+
+            <div id="rz-toast-stack" class="rz-toast-stack" aria-live="polite" aria-atomic="true"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="measureReviewModal" tabindex="-1" aria-labelledby="measureReviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable rz-modal-xxl">
+        <div class="modal-content rz-modal-content rz-modal-shell">
+            <div class="modal-header rz-modal-shell-header">
+                <h5 class="modal-title" id="measureReviewModalLabel">Revue de mesure</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+
+            <div class="modal-body rz-modal-shell-body" id="measureReviewModalBody">
+                <div class="rz-modal-loading">Chargement…</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block stylesheet %}
+    {{ parent() }}
+<style>
+    /* Barre de filtres */
+
+    .rz-filter-bar {
+        position: sticky;
+        top: 0.75rem;
+        z-index: 20;
+        backdrop-filter: blur(10px);
+    }
+
+    .rz-filter-bar-body {
+        padding-top: 0.85rem;
+        padding-bottom: 0.85rem;
+    }
+
+    .rz-filter-bar-main {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .rz-filter-bar-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        min-width: 0;
+    }
+
+    .rz-filter-bar-title {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 700;
+        color: #fff;
+        white-space: nowrap;
+    }
+
+    .rz-filter-summary {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        min-width: 0;
+    }
+
+    .rz-filter-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.3rem 0.65rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.06);
+        color: rgba(255, 255, 255, 0.82);
+        font-size: 0.78rem;
+        line-height: 1;
+    }
+
+    .rz-filter-summary-empty {
+        color: rgba(255, 255, 255, 0.56);
+        font-size: 0.84rem;
+    }
+
+    .rz-filter-bar-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+    }
+
+    .rz-filter-panel {
+        margin-top: 0.9rem;
+        padding-top: 0.9rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .rz-filter-main {
+        display: grid;
+        grid-template-columns: minmax(320px, 2fr) minmax(220px, 1fr) auto;
+        gap: 1rem;
+        align-items: end;
+    }
+
+    .rz-filter-actions-inline {
+        display: flex;
+        align-items: end;
+        justify-content: flex-start;
+    }
+
+    .rz-filter-groups {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem 2rem;
+    }
+
+    .rz-filter-group {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .rz-filter-group-label {
+        font-size: 0.76rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.52);
+    }
+
+    .rz-quick-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+    }
+
+    .rz-chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.4rem 0.72rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.02);
+        color: rgba(255, 255, 255, 0.78);
+        text-decoration: none;
+        font-size: 0.82rem;
+        line-height: 1;
+        transition: all 0.18s ease;
+    }
+
+    .rz-chip:hover,
+    .rz-chip.is-active {
+        color: #fff;
+        border-color: rgba(73, 140, 255, 0.42);
+        background: rgba(73, 140, 255, 0.14);
+    }
+
+    /* Kanban */
+
+    .rz-kanban-meta {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    .rz-kanban-count {
+        color: rgba(255, 255, 255, 0.72);
+        font-size: 0.92rem;
+    }
+
+    .rz-kanban-board {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(260px, 1fr));
+        gap: 1rem;
+        align-items: start;
+    }
+
+    .rz-kanban-panel {
+        height: calc(100vh - 270px);
+        min-height: 500px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .rz-kanban-column-header-compact {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: var(--bs-card-cap-bg, rgba(255, 255, 255, 0.02));
+        backdrop-filter: blur(8px);
+    }
+
+    .rz-kanban-column-title {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #fff;
+    }
+
+    .rz-kanban-column-body {
+        flex: 1;
+        overflow-y: auto;
+        min-height: 0;
+        padding-right: 0.55rem;
+        padding-top: 0.7rem;
+    }
+
+    .rz-kanban-column-body::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .rz-kanban-column-body::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.14);
+        border-radius: 999px;
+    }
+
+    .rz-kanban-cards {
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+        min-height: 2rem;
+    }
+
+    .rz-kanban-card-compact {
+        padding: 0.8rem 0.85rem;
+        border-radius: 0.85rem;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        background: rgba(255, 255, 255, 0.025);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        cursor: grab;
+        user-select: none;
+        transition:
+            transform 140ms ease,
+            box-shadow 140ms ease,
+            border-color 140ms ease,
+            opacity 140ms ease;
+    }
+
+    .rz-kanban-card-compact:hover {
+        border-color: rgba(73, 140, 255, 0.25);
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16);
+    }
+
+    .rz-kanban-card-compact:focus-visible {
+        outline: 2px solid rgba(73, 140, 255, 0.9);
+        outline-offset: 2px;
+    }
+
+    .rz-kanban-card-compact:active {
+        cursor: grabbing;
+    }
+
+    .rz-kanban-card-compact.is-dragging {
+        opacity: 0.45;
+        transform: rotate(1deg) scale(0.99);
+        cursor: grabbing;
+    }
+
+    .rz-kanban-column-body.is-drop-target {
+        outline: 1px dashed rgba(73, 140, 255, 0.55);
+        outline-offset: -6px;
+        background: rgba(73, 140, 255, 0.05);
+        border-radius: 0.85rem;
+    }
+
+    .rz-kanban-card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .rz-kanban-card-code {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.56);
+    }
+
+    .rz-kanban-card-open {
+        color: rgba(255, 255, 255, 0.44);
+        font-size: 0.85rem;
+    }
+
+    .rz-kanban-card-title {
+        font-size: 0.92rem;
+        font-weight: 700;
+        line-height: 1.28;
+        color: #fff;
+        margin-bottom: 0.42rem;
+    }
+
+    .rz-kanban-card-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.32rem;
+        margin-bottom: 0.55rem;
+    }
+
+    .rz-kanban-card-meta .badge {
+        font-size: 0.66rem;
+        font-weight: 600;
+    }
+
+    .rz-kanban-card-text {
+        margin: 0;
+        font-size: 0.82rem;
+        line-height: 1.4;
+        color: rgba(255, 255, 255, 0.68);
+    }
+
+    .rz-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-clamp: 2;
+    }
+
+    .rz-empty-mini {
+        min-height: 160px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        color: rgba(255, 255, 255, 0.58);
+    }
+
+    .rz-empty-mini-icon {
+        font-size: 1.35rem;
+        margin-bottom: 0.45rem;
+    }
+
+    /* Toasts */
+
+    .rz-toast-stack {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 1080;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        pointer-events: none;
+    }
+
+    .rz-toast {
+        min-width: 280px;
+        max-width: 360px;
+        padding: 0.85rem 1rem;
+        border-radius: 0.85rem;
+        color: #fff;
+        background: rgba(24, 28, 37, 0.96);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
+        opacity: 0;
+        transform: translateY(-8px);
+        transition: opacity 180ms ease, transform 180ms ease;
+        pointer-events: auto;
+    }
+
+    .rz-toast.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .rz-toast--success {
+        border-color: rgba(80, 200, 120, 0.35);
+    }
+
+    .rz-toast--error {
+        border-color: rgba(255, 90, 90, 0.35);
+    }
+
+    /* Coque de modale */
+
+    .rz-modal-content {
+        background: linear-gradient(180deg, #1f2430 0%, #1c2230 100%);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 22px 48px rgba(0, 0, 0, 0.38);
+    }
+
+    #measureReviewModal .modal-header {
+        padding: 1rem 1.15rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    #measureReviewModal .modal-title {
+        font-size: 1.08rem;
+        font-weight: 700;
+        color: #fff;
+    }
+
+    #measureReviewModal .btn-close {
+        filter: invert(1) grayscale(1);
+        opacity: 0.85;
+    }
+
+    #measureReviewModal .btn-close:hover {
+        opacity: 1;
+    }
+
+    .rz-modal-loading {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Modale XXL split gauche/droite */
+
+    .rz-modal-xxl {
+        width: min(96vw, 1800px);
+        max-width: none;
+        height: 94vh;
+        margin: 3vh auto;
+    }
+
+    .rz-modal-shell {
+        height: 100%;
+        min-height: 0;
+        border-radius: 1rem;
+        overflow: hidden;
+    }
+
+    .rz-modal-shell-header {
+        flex: 0 0 auto;
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .rz-modal-shell-body {
+        flex: 1 1 auto;
+        min-height: 0;
+        padding: 0 !important;
+        overflow: hidden;
+        height: calc(94vh - 72px);
+    }
+
+    #measureReviewModal .modal-content {
+        height: 100%;
+    }
+
+    #measureReviewModal .modal-body {
+        padding: 0;
+    }
+
+    .rz-modal-review-layout {
+        display: grid;
+        grid-template-columns: minmax(520px, 0.95fr) minmax(620px, 1.25fr);
+        height: 100%;
+        min-height: 0;
+    }
+
+    .rz-modal-pane {
+        min-width: 0;
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    .rz-modal-pane-review {
+        position: relative;
+        border-right: 1px solid rgba(255, 255, 255, 0.10);
+        background:
+            linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.01) 100%);
+        box-shadow:
+            inset -1px 0 0 rgba(255, 255, 255, 0.04),
+            inset -24px 0 32px rgba(0, 0, 0, 0.14);
+    }
+
+    .rz-modal-pane-review::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: -1px;
+        width: 1px;
+        height: 100%;
+        background: linear-gradient(
+            180deg,
+            rgba(255,255,255,0.04) 0%,
+            rgba(255,255,255,0.14) 12%,
+            rgba(255,255,255,0.14) 88%,
+            rgba(255,255,255,0.04) 100%
+        );
+        pointer-events: none;
+    }
+
+    .rz-modal-pane-remediation {
+        background:
+            linear-gradient(180deg, rgba(255, 255, 255, 0.018) 0%, rgba(255, 255, 255, 0.008) 100%);
+    }
+
+    .rz-modal-pane-inner {
+        height: 100%;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 1.25rem 1.25rem 1.4rem;
+    }
+
+    .rz-modal-pane-inner::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    .rz-modal-pane-inner::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 999px;
+    }
+
+    .rz-modal-review-head {
+        margin-bottom: 1.25rem;
+        padding: 1.1rem 1.1rem 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 1rem;
+        background:
+            linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+        box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.04),
+            0 10px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .rz-modal-review-kicker {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.85rem;
+    }
+
+    .rz-modal-review-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.42rem 0.7rem;
+        border-radius: 999px;
+        border: 1px solid rgba(115, 161, 255, 0.18);
+        background: rgba(73, 140, 255, 0.12);
+        color: rgba(198, 219, 255, 0.96);
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        text-transform: none;
+    }
+
+    .rz-modal-review-meta-chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.4rem 0.65rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.06);
+        color: rgba(255, 255, 255, 0.72);
+        font-size: 0.76rem;
+        font-weight: 600;
+    }
+
+    .rz-modal-review-title {
+        display: block;
+        width: 100%;
+        max-width: none !important;
+        margin: 0 0 0.7rem;
+        font-size: clamp(1.7rem, 1.2rem + 1vw, 2.35rem);
+        line-height: 1.08;
+        font-weight: 750;
+        color: #fff;
+        letter-spacing: -0.02em;
+    }
+
+    .rz-modal-review-description {
+        margin: 0 0 0.9rem;
+        max-width: none;
+        color: rgba(255, 255, 255, 0.74);
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+
+    .rz-modal-review-meta {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding-top: 0.85rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .rz-modal-review-meta .badge {
+        font-size: 0.72rem;
+        font-weight: 700;
+    }
+
+    .rz-modal-review-meta-text {
+        color: rgba(255, 255, 255, 0.58);
+        font-size: 0.82rem;
+        line-height: 1.4;
+    }
+
+    .rz-modal-review-code {
+        font-size: 0.74rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.52);
+        margin-bottom: 0.45rem;
+    }
+
+    .rz-modal-review-title {
+        margin: 0 0 0.55rem;
+        font-size: 1.55rem;
+        line-height: 1.15;
+        font-weight: 700;
+        color: #fff;
+        max-width: 28ch;
+    }
+
+    .rz-modal-review-description {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.72);
+        line-height: 1.55;
+        max-width: 78ch;
+    }
+
+    .rz-modal-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        min-height: 0;
+    }
+
+    .rz-modal-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+        align-items: start;
+    }
+
+    .rz-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.45rem;
+    }
+
+    .rz-field-full {
+        grid-column: 1 / -1;
+    }
+
+    .rz-field.is-hidden {
+        display: none;
+    }
+
+    .rz-modal-select,
+    .rz-modal-textarea,
+    .rz-form-control,
+    .rz-form-select {
+        width: 100%;
+    }
+
+    .rz-modal-select {
+        min-height: 44px;
+    }
+
+    .rz-modal-textarea {
+        min-height: 140px;
+        resize: vertical;
+        line-height: 1.5;
+    }
+
+    .rz-field-help {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.52);
+        line-height: 1.4;
+    }
+
+    .rz-modal-actions-sticky {
+        position: sticky;
+        bottom: 0;
+        z-index: 3;
+        margin-top: auto;
+        padding-top: 1rem;
+        padding-bottom: 0.25rem;
+        background: linear-gradient(
+            180deg,
+            rgba(28, 34, 48, 0) 0%,
+            rgba(28, 34, 48, 0.92) 20%,
+            rgba(28, 34, 48, 1) 100%
+        );
+        backdrop-filter: blur(6px);
+    }
+
+    #measureReviewModal .invalid-feedback,
+    #measureReviewModal .form-error-message,
+    #measureReviewModal .form-errors,
+    #measureReviewModal ul {
+        color: #ff8e8e;
+        font-size: 0.82rem;
+    }
+
+    /* Panneau remédiation split */
+
+    .rz-remediation-section {
+        display: flex;
+        flex-direction: column;
+        min-height: 100%;
+    }
+
+    .rz-remediation-section-head {
+        position: sticky;
+        top: 0;
+        z-index: 3;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .rz-remediation-section-title {
+        margin: 0 0 0.3rem;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #fff;
+    }
+
+    .rz-remediation-section-subtitle {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.68);
+    }
+
+    .rz-remediation-panel {
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .rz-remediation-items {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+    }
+
+    .rz-remediation-card {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 1rem;
+        align-items: start;
+        padding: 1rem 1rem;
+        border-radius: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    .rz-remediation-card-main {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .rz-remediation-card-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        align-items: flex-start;
+        margin-bottom: 0.5rem;
+    }
+
+    .rz-remediation-card-title {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #fff;
+    }
+
+    .rz-remediation-card-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+    }
+
+    .rz-remediation-card-text {
+        margin: 0 0 0.6rem;
+        color: rgba(255, 255, 255, 0.72);
+        line-height: 1.5;
+    }
+
+    .rz-remediation-card-actions {
+        display: flex;
+        gap: 0.6rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .rz-remediation-editor {
+        min-height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .rz-remediation-editor-head {
+        position: sticky;
+        top: 0;
+        z-index: 3;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        background: linear-gradient(
+            180deg,
+            rgba(28, 34, 48, 1) 0%,
+            rgba(28, 34, 48, 0.94) 80%,
+            rgba(28, 34, 48, 0) 100%
+        );
+    }
+
+    .rz-remediation-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .rz-remediation-form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .rz-remediation-editor-actions {
+        position: sticky;
+        bottom: 0;
+        z-index: 3;
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        background: linear-gradient(
+            180deg,
+            rgba(28, 34, 48, 0) 0%,
+            rgba(28, 34, 48, 0.92) 20%,
+            rgba(28, 34, 48, 1) 100%
+        );
+    }
+
+    .rz-remediation-empty {
+        min-height: 120px;
+        border: 1px dashed rgba(255, 255, 255, 0.08);
+        border-radius: 0.9rem;
+    }
+
+    .rz-remediation-empty-state {
+        min-height: 320px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 2rem 1.5rem;
+        border: 1px dashed rgba(255, 255, 255, 0.10);
+        border-radius: 1rem;
+        background:
+            linear-gradient(180deg, rgba(255,255,255,0.035) 0%, rgba(255,255,255,0.02) 100%);
+        box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.04),
+            0 10px 30px rgba(0,0,0,0.12);
+    }
+
+    .rz-remediation-empty-icon {
+        width: 56px;
+        height: 56px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        border-radius: 999px;
+        background: rgba(73, 140, 255, 0.12);
+        color: rgba(132, 176, 255, 0.95);
+        font-size: 1.35rem;
+        box-shadow: inset 0 0 0 1px rgba(73, 140, 255, 0.18);
+    }
+
+    .rz-remediation-empty-title {
+        margin: 0 0 0.5rem;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #fff;
+    }
+
+    .rz-remediation-empty-text {
+        max-width: 34ch;
+        margin: 0 0 1.15rem;
+        color: rgba(255, 255, 255, 0.66);
+        line-height: 1.5;
+    }
+
+    /* Responsif */
+
+    @media (max-width: 1399.98px) {
+        .rz-kanban-board {
+            grid-template-columns: repeat(2, minmax(260px, 1fr));
+        }
+
+        .rz-kanban-panel {
+            height: 620px;
+        }
+
+        .rz-modal-xxl {
+            width: calc(100vw - 2rem);
+            height: calc(100vh - 2rem);
+            margin: 1rem auto;
+        }
+
+        .rz-modal-review-layout {
+            grid-template-columns: minmax(420px, 0.95fr) minmax(520px, 1.05fr);
+        }
+    }
+
+    @media (max-width: 991.98px) {
+        .rz-filter-main {
+            grid-template-columns: 1fr;
+        }
+
+        .rz-filter-group {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 0.45rem;
+        }
+
+        .rz-filter-bar {
+            position: static;
+        }
+
+        .rz-modal-grid,
+        .rz-remediation-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .rz-modal-xxl {
+            width: calc(100vw - 1rem);
+            height: calc(100vh - 1rem);
+            margin: 0.5rem auto;
+        }
+
+        .rz-modal-review-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .rz-modal-pane-review {
+            border-right: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+    }
+
+    @media (max-width: 767.98px) {
+        .rz-kanban-board {
+            grid-template-columns: 1fr;
+        }
+
+        .rz-kanban-panel {
+            height: auto;
+            min-height: 420px;
+        }
+
+        .rz-kanban-column-body {
+            overflow: visible;
+            padding-right: 0;
+        }
+
+        .rz-filter-bar-main {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .rz-toast-stack {
+            left: 1rem;
+            right: 1rem;
+        }
+
+        .rz-toast {
+            min-width: auto;
+            max-width: none;
+            width: 100%;
+        }
+    }
+
+    .rz-remediation-card-meta {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.65rem;
+        color: rgba(255, 255, 255, 0.56);
+        font-size: 0.78rem;
+    }
+
+    .rz-remediation-card-deadline {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .rz-remediation-card-meta-icon {
+        width: 1.9rem;
+        height: 1.9rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        color: rgba(255, 255, 255, 0.52);
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        cursor: help;
+        transition: all 0.18s ease;
+    }
+
+    .rz-remediation-card-meta-icon:hover,
+    .rz-remediation-card-meta-icon:focus-visible {
+        color: rgba(255, 255, 255, 0.88);
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .rz-modal-pane,
+    .rz-remediation-panel,
+    .rz-modal-form,
+    .rz-remediation-form,
+    .rz-kanban-card {
+        position: relative;
+    }
+
+    .rz-busy-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 30;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        border-radius: inherit;
+        background: rgba(15, 18, 24, 0.58);
+        backdrop-filter: blur(2px);
+    }
+
+    .rz-busy-overlay[hidden] {
+        display: none;
+    }
+
+    .rz-busy-overlay__spinner {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 999px;
+        border: 2px solid rgba(255, 255, 255, 0.18);
+        border-top-color: rgba(255, 255, 255, 0.95);
+        animation: rz-spin 0.7s linear infinite;
+    }
+
+    .rz-busy-overlay__label {
+        color: rgba(255, 255, 255, 0.88);
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .is-busy {
+        pointer-events: none;
+    }
+
+    .is-disabled {
+        pointer-events: none;
+        opacity: 0.55;
+    }
+
+    .rz-btn.is-loading,
+    button.is-loading {
+        position: relative;
+        color: transparent !important;
+    }
+
+    .rz-btn.is-loading::after,
+    button.is-loading::after {
+        content: '';
+        position: absolute;
+        inset: 50% auto auto 50%;
+        width: 1rem;
+        height: 1rem;
+        margin-left: -0.5rem;
+        margin-top: -0.5rem;
+        border-radius: 999px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top-color: #fff;
+        animation: rz-spin 0.7s linear infinite;
+    }
+
+    @keyframes rz-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .rz-btn.is-loading,
+        button.is-loading {
+            position: relative;
+            color: transparent !important;
+        }
+
+        .rz-btn.is-loading::after,
+        button.is-loading::after {
+            content: '';
+            position: absolute;
+            inset: 50% auto auto 50%;
+            width: 1rem;
+            height: 1rem;
+            margin-left: -0.5rem;
+            margin-top: -0.5rem;
+            border-radius: 999px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            animation: rz-spin 0.7s linear infinite;
+        }
+
+        @keyframes rz-spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .rz-panel-busy {
+            cursor: progress;
+            opacity: 0.85;
+        }
+</style>
+{% endblock %}
+
+{% block javascript %}
+    {{ parent() }}
+    <script>
+        (function () {
+            const board = document.getElementById('rz-kanban-board');
+            const toastStack = document.getElementById('rz-toast-stack');
+            const modalElement = document.getElementById('measureReviewModal');
+            const modalBody = document.getElementById('measureReviewModalBody');
+            const pageRoot = document.getElementById('rz-page-content');
+            const modal = modalElement ? new bootstrap.Modal(modalElement) : null;
+
+            if (!board || !toastStack || !modalElement || !modalBody || !modal) {
+                return;
+            }
+
+            let draggedCard = null;
+            let sourceCardsContainer = null;
+            let sourceColumnBody = null;
+            let lastTriggerCard = null;
+
+            function showToast(message, type = 'success', duration = 2500) {
+                const toast = document.createElement('div');
+                toast.className = `rz-toast rz-toast--${type}`;
+                toast.textContent = message;
+                toastStack.appendChild(toast);
+
+                requestAnimationFrame(() => {
+                    toast.classList.add('is-visible');
+                });
+
+                window.setTimeout(() => {
+                    toast.classList.remove('is-visible');
+                    window.setTimeout(() => toast.remove(), 220);
+                }, duration);
+            }
+
+            function updateColumnState(columnBody) {
+                if (!columnBody) {
+                    return;
+                }
+
+                const cardsContainer = columnBody.querySelector('.rz-kanban-cards');
+                const emptyState = columnBody.querySelector('[data-empty-state]');
+                const countBadge = columnBody.closest('.rz-kanban-column')?.querySelector('[data-column-count]');
+                const count = cardsContainer ? cardsContainer.children.length : 0;
+
+                if (countBadge) {
+                    countBadge.textContent = String(count);
+                }
+
+                if (emptyState) {
+                    emptyState.classList.toggle('d-none', count > 0);
+                }
+            }
+
+            function findDropzoneByStatus(statusValue) {
+                return board.querySelector(`[data-dropzone][data-status-value="${statusValue}"]`);
+            }
+
+            function moveCardToStatus(card, targetStatus) {
+                const currentDropzone = card.closest('[data-dropzone]');
+                const targetDropzone = findDropzoneByStatus(targetStatus);
+
+                if (!targetDropzone) {
+                    return;
+                }
+
+                const targetContainer = targetDropzone.querySelector('.rz-kanban-cards');
+
+                if (!targetContainer) {
+                    return;
+                }
+
+                targetContainer.prepend(card);
+                updateColumnState(currentDropzone);
+                updateColumnState(targetDropzone);
+                card.dataset.currentStatus = targetStatus;
+            }
+
+            function updateCardFromModalPayload(reviewId, payload) {
+                const card = board.querySelector(`.rz-kanban-card[data-review-id="${reviewId}"]`);
+
+                if (!card) {
+                    return;
+                }
+
+                if (payload.status && payload.status !== card.dataset.currentStatus) {
+                    moveCardToStatus(card, payload.status);
+                }
+
+                if (Object.prototype.hasOwnProperty.call(payload, 'explanation')) {
+                    let explanationNode = card.querySelector('.rz-kanban-card-text');
+
+                    if (payload.explanation && payload.explanation.trim() !== '') {
+                        if (!explanationNode) {
+                            explanationNode = document.createElement('p');
+                            explanationNode.className = 'rz-kanban-card-text rz-clamp-2';
+                            card.appendChild(explanationNode);
+                        }
+
+                        explanationNode.textContent = payload.explanation;
+                    } else if (explanationNode) {
+                        explanationNode.remove();
+                    }
+                }
+            }
+
+            function syncConditionalFields(scope) {
+                const statusField = scope.querySelector('[data-review-status="true"]');
+                const notApplicableWrapper = scope.querySelector('[data-not-applicable-wrapper]');
+
+                if (!statusField || !notApplicableWrapper) {
+                    return;
+                }
+
+                const shouldShowNotApplicable = ['BLOCKED', 'NOT_APPLICABLE'].includes(statusField.value);
+
+                notApplicableWrapper.classList.toggle('is-hidden', !shouldShowNotApplicable);
+
+                const textarea = notApplicableWrapper.querySelector('textarea');
+                if (textarea) {
+                    textarea.disabled = !shouldShowNotApplicable;
+                }
+            }
+
+            function initTooltips(container = document) {
+                container.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((el) => {
+                    bootstrap.Tooltip.getOrCreateInstance(el, {
+                        container: 'body'
+                    });
+                });
+            }
+
+            function ensureBusyOverlay(container) {
+                let overlay = container.querySelector(':scope > .rz-busy-overlay');
+
+                if (!overlay) {
+                    overlay = document.createElement('div');
+                    overlay.className = 'rz-busy-overlay';
+                    overlay.innerHTML = `
+                        <div class="rz-busy-overlay__spinner" aria-hidden="true"></div>
+                        <div class="rz-busy-overlay__label">Chargement…</div>
+                    `;
+                    container.appendChild(overlay);
+                }
+
+                return overlay;
+            }
+
+            function setBusyState(container, isBusy, options = {}) {
+                if (!container) {
+                    return;
+                }
+
+                const {
+                    message = 'Chargement…',
+                    disableForms = true
+                } = options;
+
+                container.classList.toggle('is-busy', isBusy);
+                container.setAttribute('aria-busy', isBusy ? 'true' : 'false');
+
+                const overlay = ensureBusyOverlay(container);
+                const label = overlay.querySelector('.rz-busy-overlay__label');
+
+                if (label) {
+                    label.textContent = message;
+                }
+
+                overlay.hidden = !isBusy;
+
+                if (disableForms) {
+                    container
+                        .querySelectorAll('button, input, select, textarea, a')
+                        .forEach((el) => {
+                            if (isBusy) {
+                                el.dataset.wasDisabled = el.disabled ? 'true' : 'false';
+
+                                if (
+                                    el.tagName === 'BUTTON' ||
+                                    el.tagName === 'INPUT' ||
+                                    el.tagName === 'SELECT' ||
+                                    el.tagName === 'TEXTAREA'
+                                ) {
+                                    el.disabled = true;
+                                }
+
+                                if (el.tagName === 'A') {
+                                    el.setAttribute('aria-disabled', 'true');
+                                    el.classList.add('is-disabled');
+                                }
+                            } else {
+                                if (
+                                    el.tagName === 'BUTTON' ||
+                                    el.tagName === 'INPUT' ||
+                                    el.tagName === 'SELECT' ||
+                                    el.tagName === 'TEXTAREA'
+                                ) {
+                                    if (el.dataset.wasDisabled !== 'true') {
+                                        el.disabled = false;
+                                    }
+                                }
+
+                                if (el.tagName === 'A') {
+                                    el.removeAttribute('aria-disabled');
+                                    el.classList.remove('is-disabled');
+                                }
+
+                                delete el.dataset.wasDisabled;
+                            }
+                        });
+                }
+            }
+
+            async function withBusyState(container, asyncCallback, options = {}) {
+                if (container?.dataset.requestPending === 'true') {
+                    return null;
+                }
+
+                if (container) {
+                    container.dataset.requestPending = 'true';
+                    setBusyState(container, true, options);
+                }
+
+                try {
+                    return await asyncCallback();
+                } finally {
+                    if (container) {
+                        container.dataset.requestPending = 'false';
+                        setBusyState(container, false, options);
+                    }
+                }
+            }
+
+            async function persistMove(card, newStatus) {
+                const formData = new FormData();
+                formData.append('status', newStatus);
+                formData.append('_token', card.dataset.csrfToken);
+
+                const response = await fetch(card.dataset.moveUrl, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.ok) {
+                    throw new Error(data.message || 'La mise à jour a échoué.');
+                }
+
+                card.dataset.currentStatus = data.status;
+                showToast(data.message || 'Statut mis à jour.', 'success', 2400);
+            }
+
+            async function openReviewModal(card) {
+                lastTriggerCard = card;
+                modalBody.innerHTML = '<div class="rz-modal-loading">Chargement…</div>';
+
+                if (pageRoot) {
+                    pageRoot.setAttribute('inert', '');
+                }
+
+                modal.show();
+
+                await withBusyState(modalBody, async () => {
+                    const response = await fetch(card.dataset.modalUrl, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        modalBody.innerHTML = '<div class="alert alert-danger mb-0">Impossible de charger la revue.</div>';
+                        return;
+                    }
+
+                    modalBody.innerHTML = await response.text();
+                    syncConditionalFields(modalBody);
+                    initTooltips(modalBody);
+                }, {
+                    message: 'Chargement de la revue…'
+                });
+            }
+
+            async function submitModalForm(form) {
+                const submitButton = form.querySelector('[type="submit"]');
+                submitButton?.classList.add('is-loading');
+
+                try {
+                    await withBusyState(form, async () => {
+                        const response = await fetch(form.action, {
+                            method: form.method || 'POST',
+                            body: new FormData(form),
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
+
+                        const data = await response.json();
+
+                        if (response.status === 422 && data.html) {
+                            modalBody.innerHTML = data.html;
+                            syncConditionalFields(modalBody);
+                            showToast(data.message || 'Merci de corriger les erreurs.', 'error', 3200);
+                            initTooltips(modalBody);
+                            return;
+                        }
+
+                        if (!response.ok || !data.ok) {
+                            showToast(data.message || 'La mise à jour a échoué.', 'error', 4200);
+                            return;
+                        }
+
+                        updateCardFromModalPayload(data.reviewId, data);
+                        modal.hide();
+                        showToast(data.message || 'La revue a été mise à jour.', 'success', 2500);
+                    }, {
+                        message: 'Enregistrement…'
+                    });
+                } finally {
+                    submitButton?.classList.remove('is-loading');
+                }
+            }
+
+            async function loadRemediationPanel(url) {
+                const panel = modalBody.querySelector('[data-remediation-panel]');
+
+                if (!panel) {
+                    return;
+                }
+
+                if (panel.dataset.loading === 'true') {
+                    return;
+                }
+
+                panel.dataset.loading = 'true';
+                panel.classList.add('rz-panel-busy');
+                panel.innerHTML = '<div class="rz-modal-loading">Chargement…</div>';
+
+                try {
+                    const response = await fetch(url, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        panel.innerHTML = '<div class="alert alert-danger mb-0">Impossible de charger les remédiations.</div>';
+                        return;
+                    }
+
+                    panel.innerHTML = await response.text();
+                    initTooltips(modalBody);
+                } catch (error) {
+                    panel.innerHTML = '<div class="alert alert-danger mb-0">Erreur lors du chargement des remédiations.</div>';
+                } finally {
+                    panel.dataset.loading = 'false';
+                    panel.classList.remove('rz-panel-busy');
+                }
+            }
+
+            async function submitRemediationForm(form) {
+                const panel = modalBody.querySelector('[data-remediation-panel]');
+
+                if (!panel) {
+                    return;
+                }
+
+                if (form.dataset.submitting === 'true') {
+                    // On évite les doubles clics pendant une requête
+                    return;
+                }
+
+                form.dataset.submitting = 'true';
+
+                const submitButton = form.querySelector('[type="submit"]');
+                submitButton?.classList.add('is-loading');
+                submitButton?.setAttribute('disabled', 'disabled');
+                panel.classList.add('rz-panel-busy');
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: form.method || 'POST',
+                        body: new FormData(form),
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (response.status === 422 && data.html) {
+                        panel.innerHTML = data.html;
+                        showToast(data.message || 'Merci de corriger les erreurs.', 'error', 3200);
+                        initTooltips(modalBody);
+                        return;
+                    }
+
+                    if (!response.ok || !data.ok) {
+                        showToast(data.message || 'Impossible d’enregistrer l’action.', 'error', 4200);
+                        return;
+                    }
+
+                    panel.innerHTML = data.html;
+                    showToast(data.message || 'Action enregistrée.', 'success', 2400);
+                    initTooltips(modalBody);
+                } catch (error) {
+                    showToast('Une erreur est survenue lors de l’enregistrement.', 'error', 4200);
+                } finally {
+                    form.dataset.submitting = 'false';
+                    panel.classList.remove('rz-panel-busy');
+                    submitButton?.classList.remove('is-loading');
+                    submitButton?.removeAttribute('disabled');
+                }
+            }
+
+            async function deleteRemediation(form) {
+                const panel = modalBody.querySelector('[data-remediation-panel]');
+
+                if (!panel) {
+                    return;
+                }
+
+                await withBusyState(panel, async () => {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: new FormData(form),
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok || !data.ok) {
+                        showToast(data.message || 'Impossible de supprimer l’action.', 'error', 4200);
+                        return;
+                    }
+
+                    panel.innerHTML = data.html;
+                    showToast(data.message || 'Action supprimée.', 'success', 2400);
+                    initTooltips(modalBody);
+                }, {
+                    message: 'Suppression…'
+                });
+            }
+
+            modalElement.addEventListener('hidden.bs.modal', () => {
+                modalBody.innerHTML = '<div class="rz-modal-loading">Chargement…</div>';
+
+                if (pageRoot) {
+                    pageRoot.removeAttribute('inert');
+                }
+
+                if (lastTriggerCard) {
+                    lastTriggerCard.focus();
+                }
+            });
+
+            modalBody.addEventListener('change', (event) => {
+                if (event.target.matches('[data-review-status="true"]')) {
+                    syncConditionalFields(modalBody);
+                }
+            });
+
+            modalBody.addEventListener('click', (event) => {
+                const createButton = event.target.closest('[data-remediation-create]');
+                if (createButton) {
+                    event.preventDefault();
+                    loadRemediationPanel(createButton.dataset.remediationCreateUrl).catch(() => {
+                        showToast('Impossible de charger le formulaire.', 'error', 4200);
+                    });
+                    return;
+                }
+
+                const editButton = event.target.closest('[data-remediation-edit]');
+                if (editButton) {
+                    event.preventDefault();
+                    loadRemediationPanel(editButton.dataset.remediationEditUrl).catch(() => {
+                        showToast('Impossible de charger le formulaire.', 'error', 4200);
+                    });
+                    return;
+                }
+
+                const backButton = event.target.closest('[data-remediation-back]');
+                if (backButton) {
+                    event.preventDefault();
+                    loadRemediationPanel(backButton.dataset.remediationListUrl).catch(() => {
+                        showToast('Impossible de charger la liste.', 'error', 4200);
+                    });
+                    return;
+                }
+            });
+
+            board.querySelectorAll('.rz-kanban-card').forEach((card) => {
+                card.addEventListener('click', (event) => {
+                    if (event.target.closest('a, button, input, select, textarea, label')) {
+                        return;
+                    }
+
+                    if (card.classList.contains('is-dragging')) {
+                        return;
+                    }
+
+                    openReviewModal(card).catch(() => {
+                        showToast('Impossible de charger la revue.', 'error', 4200);
+                    });
+                });
+
+                card.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        openReviewModal(card).catch(() => {
+                            showToast('Impossible de charger la revue.', 'error', 4200);
+                        });
+                    }
+                });
+
+                card.addEventListener('dragstart', (event) => {
+                    draggedCard = card;
+                    sourceCardsContainer = card.parentElement;
+                    sourceColumnBody = card.closest('[data-dropzone]');
+                    card.classList.add('is-dragging');
+
+                    if (event.dataTransfer) {
+                        event.dataTransfer.effectAllowed = 'move';
+                        event.dataTransfer.setData('text/plain', card.dataset.reviewId || '');
+                    }
+                });
+
+                card.addEventListener('dragend', () => {
+                    card.classList.remove('is-dragging');
+
+                    board.querySelectorAll('[data-dropzone]').forEach((zone) => {
+                        zone.classList.remove('is-drop-target');
+                    });
+
+                    draggedCard = null;
+                    sourceCardsContainer = null;
+                    sourceColumnBody = null;
+                });
+            });
+
+            board.querySelectorAll('[data-dropzone]').forEach((dropzone) => {
+                dropzone.addEventListener('dragenter', (event) => {
+                    event.preventDefault();
+
+                    if (event.dataTransfer) {
+                        event.dataTransfer.dropEffect = 'move';
+                    }
+
+                    dropzone.classList.add('is-drop-target');
+                });
+
+                dropzone.addEventListener('dragover', (event) => {
+                    event.preventDefault();
+
+                    if (event.dataTransfer) {
+                        event.dataTransfer.dropEffect = 'move';
+                    }
+
+                    dropzone.classList.add('is-drop-target');
+                });
+
+                dropzone.addEventListener('dragleave', (event) => {
+                    if (!dropzone.contains(event.relatedTarget)) {
+                        dropzone.classList.remove('is-drop-target');
+                    }
+                });
+
+                dropzone.addEventListener('drop', async (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    dropzone.classList.remove('is-drop-target');
+
+                    if (!draggedCard) {
+                        return;
+                    }
+
+                    const targetStatus = dropzone.dataset.statusValue;
+                    const previousStatus = draggedCard.dataset.currentStatus;
+
+                    if (!targetStatus || targetStatus === previousStatus) {
+                        return;
+                    }
+
+                    const targetCardsContainer = dropzone.querySelector('.rz-kanban-cards');
+
+                    if (!targetCardsContainer) {
+                        return;
+                    }
+
+                    const previousContainer = sourceCardsContainer;
+                    const previousColumn = sourceColumnBody;
+
+                    targetCardsContainer.prepend(draggedCard);
+                    updateColumnState(previousColumn);
+                    updateColumnState(dropzone);
+
+                    try {
+                        await persistMove(draggedCard, targetStatus);
+                    } catch (error) {
+                        if (previousContainer) {
+                            previousContainer.prepend(draggedCard);
+                        }
+
+                        updateColumnState(previousColumn);
+                        updateColumnState(dropzone);
+                        draggedCard.dataset.currentStatus = previousStatus;
+                        showToast(error.message || 'La mise à jour a échoué.', 'error', 4200);
+                    }
+                });
+            });
+
+            modalBody.addEventListener('submit', (event) => {
+                const reviewForm = event.target.closest('form[data-modal-form="true"]');
+                if (reviewForm) {
+                    event.preventDefault();
+
+                    submitModalForm(reviewForm).catch(() => {
+                        showToast('Impossible d’enregistrer la revue.', 'error', 4200);
+                    });
+
+                    return;
+                }
+
+                const remediationForm = event.target.closest('form[data-remediation-form="true"]');
+                if (remediationForm) {
+                    event.preventDefault();
+
+                    submitRemediationForm(remediationForm).catch(() => {
+                        showToast('Impossible d’enregistrer l’action.', 'error', 4200);
+                    });
+
+                    return;
+                }
+
+                const deleteForm = event.target.closest('form[data-remediation-delete-form="true"]');
+                if (deleteForm) {
+                    event.preventDefault();
+
+                    if (!window.confirm('Supprimer cette action de remédiation ?')) {
+                        return;
+                    }
+
+                    deleteRemediation(deleteForm).catch(() => {
+                        showToast('Impossible de supprimer l’action.', 'error', 4200);
+                    });
+                }
+            });
+        })();
+    </script>
+{% endblock %}

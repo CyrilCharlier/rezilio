@@ -1,0 +1,312 @@
+{% extends 'layout/admin.html.twig' %}
+
+{% block title %}{{ referential.label }}{% endblock %}
+
+{% block content %}
+<div class="rz-page">
+    <div class="app-content-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-sm-7">
+                    <h3 class="mb-0">Référentiel : {{ referential.label }}</h3>
+                    <p class="rz-page-intro">
+                        Consultez la structure du référentiel, ses catégories et l’arbre des mesures associées.
+                    </p>
+                </div>
+                <div class="col-sm-5">
+                    <ol class="breadcrumb float-sm-end mb-0">
+                        <li class="breadcrumb-item">
+                            <a href="{{ path('app_default') }}">Home</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{{ path('app_referential_index') }}">Référentiels</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            {{ referential.code }}
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-content">
+        <div class="container-fluid">
+
+            {{ include('partial/_flash_messages.html.twig') }}
+
+            <div class="card rz-card mb-4">
+                <div class="card-body rz-card-body">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-3">
+                        <div>
+                            <h4 class="mb-2">
+                                {{ referential.code }} – {{ referential.label }}
+                            </h4>
+
+                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                {% if referential.version %}
+                                    <span class="badge text-bg-primary">
+                                        Version {{ referential.version }}
+                                    </span>
+                                {% endif %}
+
+                                <span class="badge {{ referential.active ? 'text-bg-success' : 'text-bg-secondary' }}">
+                                    {{ referential.active ? 'Actif' : 'Inactif' }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="rz-toolbar">
+                            <a href="{{ path('app_category_new_for_referential', {id: referential.id}) }}"
+                               class="btn btn-outline-primary rz-btn js-open-category-modal"
+                               data-url="{{ path('app_category_new_for_referential', {id: referential.id}) }}"
+                               data-target="#referential-{{ referential.id }}-categories">
+                                <i class="bi bi-folder-plus me-1"></i>
+                                Ajouter une catégorie
+                            </a>
+                        </div>
+                    </div>
+
+                    {% if referential.description %}
+                        <p class="rz-form-help mb-0">
+                            {{ referential.description }}
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div id="referential-{{ referential.id }}-categories">
+                {% include 'referential/_categories.html.twig' with {
+                    referential: referential,
+                    categories: referential.categories,
+                    rootNodes: rootNodes
+                } %}
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="measurenodeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content rz-modal-content">
+            <div class="modal-header rz-modal-header">
+                <h5 class="modal-title">Mesure</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body rz-modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const modalEl = document.getElementById('measurenodeModal');
+  if (!modalEl) return;
+
+  const modalTitle = modalEl.querySelector('.modal-title');
+  const modalBody  = modalEl.querySelector('.modal-body');
+  const bsModal    = new bootstrap.Modal(modalEl);
+
+  const openNodeIds = new Set();
+
+  document.addEventListener('click', (e) => {
+    const toggleBtn = e.target.closest('.js-toggle-node');
+    if (!toggleBtn) return;
+
+    const targetSelector = toggleBtn.dataset.target;
+    const target = document.querySelector(targetSelector);
+    if (!target) return;
+
+    const nodeId = toggleBtn.dataset.nodeId;
+    const isHidden = target.classList.toggle('d-none');
+    const icon = toggleBtn.querySelector('i');
+
+    if (icon) {
+      icon.classList.toggle('bi-chevron-down', !isHidden);
+      icon.classList.toggle('bi-chevron-right', isHidden);
+    }
+
+    toggleBtn.classList.toggle('is-open', !isHidden);
+
+    if (nodeId) {
+      if (isHidden) {
+        openNodeIds.delete(nodeId);
+      } else {
+        openNodeIds.add(nodeId);
+      }
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    const tab = e.target.closest('.js-category-tab');
+    if (!tab) return;
+
+    e.preventDefault();
+
+    document.querySelectorAll('.js-category-tab').forEach((btn) => {
+      const active = btn === tab;
+      btn.classList.toggle('btn-primary', active);
+      btn.classList.toggle('rz-btn-primary', active);
+      btn.classList.toggle('btn-outline-primary', !active);
+    });
+
+    document.querySelectorAll('.js-category-panel').forEach((panel) => {
+      panel.classList.add('d-none');
+    });
+
+    const target = document.querySelector(tab.dataset.target);
+    if (target) {
+      target.classList.remove('d-none');
+    }
+  });
+
+  document.addEventListener('click', async (e) => {
+    const trigger = e.target.closest('.js-open-measurenode-modal');
+    if (!trigger) return;
+
+    e.preventDefault();
+
+    const url = trigger.dataset.url;
+    const target = trigger.dataset.target;
+
+    const response = await fetch(url, {
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    });
+    const data = await response.json();
+
+    if (data.status === 'form') {
+      modalTitle.textContent = data.title || 'Mesure';
+      modalBody.innerHTML = data.html;
+      modalBody.dataset.target = target || data.target;
+
+      attachMeasureFormHandler(modalBody);
+      initRezilioTooltips(modalBody);
+      bsModal.show();
+    }
+  });
+
+  function attachMeasureFormHandler(container) {
+    const form = container.querySelector('.js-measurenode-form');
+    if (!form) return;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const response = await fetch(form.action, {
+        method: form.method,
+        body: formData,
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      });
+
+      const data = await response.json();
+
+      if (data.status === 'ok') {
+        const targetSelector = data.target || modalBody.dataset.target;
+        const targetEl = document.querySelector(targetSelector);
+        if (targetEl) {
+          targetEl.innerHTML = data.html;
+
+          openNodeIds.forEach((id) => {
+            const ul = targetEl.querySelector('#node-children-' + id);
+            const btn = targetEl.querySelector('.js-toggle-node[data-node-id="' + id + '"]');
+            if (ul && btn) {
+              ul.classList.remove('d-none');
+              btn.classList.add('is-open');
+              const icon = btn.querySelector('i');
+              if (icon) {
+                icon.classList.add('bi-chevron-down');
+                icon.classList.remove('bi-chevron-right');
+              }
+            }
+          });
+
+          initRezilioTooltips(targetEl);
+        }
+        bsModal.hide();
+      } else if (data.status === 'form') {
+        modalBody.innerHTML = data.html;
+        attachMeasureFormHandler(modalBody);
+        initRezilioTooltips(modalBody);
+      }
+    });
+  }
+
+  document.addEventListener('click', async (e) => {
+    const trigger = e.target.closest('.js-open-category-modal');
+    if (!trigger || !bsModal) return;
+
+    e.preventDefault();
+
+    const url = trigger.dataset.url;
+    const target = trigger.dataset.target;
+
+    const response = await fetch(url, {
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    });
+
+    const data = await response.json();
+    if (data.status === 'form') {
+      modalTitle.textContent = data.title || 'Catégorie';
+      modalBody.innerHTML = data.html;
+      modalBody.dataset.target = target || data.target;
+
+      attachCategoryFormHandler(modalBody);
+      bsModal.show();
+    }
+  });
+
+  function attachCategoryFormHandler(container) {
+    const form = container.querySelector('.js-category-form');
+    if (!form) return;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const response = await fetch(form.action, {
+        method: form.method || 'POST',
+        body: formData,
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      });
+
+      const data = await response.json();
+
+      if (data.status === 'ok') {
+        const targetSelector = data.target || container.dataset.target;
+        const targetEl = document.querySelector(targetSelector);
+        if (targetEl) {
+          targetEl.innerHTML = data.html;
+        }
+        bsModal.hide();
+      } else if (data.status === 'form') {
+        container.innerHTML = data.html;
+        attachCategoryFormHandler(container);
+      }
+    });
+  }
+
+  function initRezilioTooltips(container = document) {
+    const tooltipTriggerList = container.querySelectorAll('[data-bs-toggle="tooltip"]');
+
+    tooltipTriggerList.forEach((el) => {
+      if (bootstrap.Tooltip.getInstance(el)) {
+        return;
+      }
+
+      new bootstrap.Tooltip(el, {
+        trigger: 'hover focus',
+        html: false,
+        boundary: 'window'
+      });
+    });
+  }
+
+  initRezilioTooltips();
+});
+</script>
+{% endblock %}

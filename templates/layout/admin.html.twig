@@ -1,0 +1,13 @@
+{# templates/layout/admin.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {% include 'partial/admin/_header.html.twig' %}
+    {% include 'partial/admin/_sidebar.html.twig' %}
+
+    <main class="app-main">
+        {% block content %}{% endblock %}
+    </main>
+
+    {# include 'partial/admin/_footer.html.twig' #}
+{% endblock %}

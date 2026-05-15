@@ -1,0 +1,100 @@
+###> Symfony / Framework ###
+
+# Env locaux (ne jamais versionner .env.local & secrets)
+.env.local
+.env.local.php
+.env.*.local
+
+# Secrets chiffrés (clé privée de prod)
+config/secrets/prod/prod.decrypt.private.php
+
+# Cache, logs, sessions, pid, etc.
+var/
+!var/.gitkeep
+
+# Bundles compilés (assets)
+public/bundles/
+public/build/
+public/uploads/
+
+# Vendor géré par Composer
+/vendor/
+
+###< Symfony / Framework ###
+
+
+###> Tests / Outils ###
+
+# PHPUnit
+/phpunit.xml
+/phpunit.xml.dist
+/.phpunit.result.cache
+
+# PhpStorm / IntelliJ / VSCode / autres IDE
+.idea/
+.vscode/
+*.iml
+
+# Coverage / rapports
+/coverage/
+.clover
+
+# Static analysis (Psalm, PHPStan, etc.)
+/.psalm/
+/phpstan.neon.local
+/phpstan.neon.dist
+/.php-cs-fixer.cache
+/.php-cs-fixer.dist.php
+
+###< Tests / Outils ###
+
+
+###> Système / OS ###
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+###< Système / OS ###
+
+
+###> Node / Front build ###
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+package-lock.json
+
+# Build front (si tu utilises Webpack Encore / Vite)
+public/build/
+public/hot
+
+###< Node / Front build ###
+
+
+###> Divers ###
+
+# Fichiers de sauvegarde
+*.bak
+*.swp
+*.swo
+
+# Archives temporaires
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+
+###< Divers ###

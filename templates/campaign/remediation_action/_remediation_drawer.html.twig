@@ -1,0 +1,35 @@
+<div class="rz-drawer-header">
+    <div>
+        <h3>Remédiations</h3>
+        <p>{{ measureReview.measure.title }}</p>
+    </div>
+
+    <div class="rz-drawer-actions">
+        {% if form is null %}
+            <a
+                href="{{ path('app_measure_review_remediation_action_new', {id: measureReview.id}) }}"
+                class="btn btn-primary"
+                data-turbo-frame="measure-review-remediation-drawer"
+            >
+                Nouvelle action
+            </a>
+        {% endif %}
+
+        <button type="button" class="btn btn-ghost" data-action="drawer#close">Fermer</button>
+    </div>
+</div>
+
+<div class="rz-drawer-body">
+    {% if form is not null %}
+        {% include 'campaign/remediation_action/_form.html.twig' with {
+            form: form,
+            measureReview: measureReview,
+            editingAction: editingAction
+        } only %}
+    {% else %}
+        {% include 'campaign/remediation_action/_list.html.twig' with {
+            measureReview: measureReview,
+            remediationActions: remediationActions
+        } only %}
+    {% endif %}
+</div>

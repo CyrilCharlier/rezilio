@@ -1,0 +1,429 @@
+{% extends 'layout/admin.html.twig' %}
+
+{% block title %}Nouvelle campagne{% endblock %}
+
+{% block content %}
+<div class="rz-page">
+    <div class="app-content-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-sm-8">
+                    <h3 class="mb-0">Créer une campagne</h3>
+                    <p class="rz-page-intro">
+                        Lancez une campagne à partir d’un référentiel et d’une société, puis initialisez automatiquement les revues associées.
+                    </p>
+                </div>
+                <div class="col-sm-4">
+                    <div class="rz-page-actions mt-3 mt-sm-0">
+                        <a href="{{ path('app_campaign_index') }}" class="btn btn-outline-light rz-btn">
+                            Retour à la liste
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-content">
+        <div class="container-fluid">
+
+            {{ include('partial/_flash_messages.html.twig') }}
+
+            <div class="rz-wizard-progress mb-4">
+                <div class="rz-wizard-progress-head">
+                    <div>
+                        <div class="rz-wizard-progress-kicker">
+                            Étape {{ stepIndex + 1 }} sur {{ steps|length }}
+                        </div>
+                        <div class="rz-wizard-progress-title">
+                            {% if step == 'context' %}
+                                Contexte de la campagne
+                            {% elseif step == 'schedule' %}
+                                Planification
+                            {% else %}
+                                Validation finale
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="rz-wizard-progress-caption">
+                        {% if step == 'context' %}
+                            Renseignez le nom, la société et le référentiel.
+                        {% elseif step == 'schedule' %}
+                            Définissez les dates de début et de fin de la campagne.
+                        {% else %}
+                            Vérifiez les informations avant de créer la campagne.
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="rz-wizard-steps">
+                    {% for key, label in steps %}
+                        {% set isCurrent = key == step %}
+                        {% set isDone = loop.index0 < stepIndex %}
+
+                        <div class="rz-wizard-step {{ isCurrent ? 'is-current' : '' }} {{ isDone ? 'is-done' : '' }}">
+                            <div class="rz-wizard-step-badge">
+                                {% if isDone %}
+                                    <i class="bi bi-check-lg"></i>
+                                {% else %}
+                                    {{ loop.index }}
+                                {% endif %}
+                            </div>
+
+                            <div class="rz-wizard-step-body">
+                                <div class="rz-wizard-step-label">{{ label }}</div>
+                                <div class="rz-wizard-step-help">
+                                    {% if key == 'context' %}
+                                        Nom, société, référentiel
+                                    {% elseif key == 'schedule' %}
+                                        Dates de lancement
+                                    {% else %}
+                                        Vérification et création
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-12 col-lg-8">
+                    <div class="card rz-card">
+                        <div class="card-header rz-card-header">
+                            <div class="rz-card-header-title">
+                                <i class="bi bi-magic"></i>
+                                <span>
+                                    {% if step == 'context' %}
+                                        Contexte de la campagne
+                                    {% elseif step == 'schedule' %}
+                                        Planification
+                                    {% else %}
+                                        Validation finale
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="card-body rz-card-body">
+                            {{ form_start(form, {
+                                action: path('app_campaign_new', {'step': step}),
+                                method: 'POST'
+                            }) }}
+
+                            {% if form.vars.submitted and not form.vars.valid %}
+                                <div class="alert alert-danger rz-form-alert mb-4">
+                                    {{ form_errors(form) }}
+                                </div>
+                            {% endif %}
+
+                            {% if step == 'context' %}
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        {{ form_label(form.name, null, {
+                                            label_attr: {'class': 'form-label rz-form-label'}
+                                        }) }}
+                                        {{ form_widget(form.name, {
+                                            attr: {
+                                                class: 'form-control rz-form-control',
+                                                placeholder: 'Ex. Mise en conformité NIS2 2026'
+                                            }
+                                        }) }}
+                                        {{ form_errors(form.name) }}
+                                    </div>
+
+                                    <div class="col-12 col-md-6">
+                                        {{ form_label(form.society, null, {
+                                            label_attr: {'class': 'form-label rz-form-label'}
+                                        }) }}
+                                        {{ form_widget(form.society, {
+                                            attr: {
+                                                class: 'form-select rz-form-select'
+                                            }
+                                        }) }}
+                                        {{ form_errors(form.society) }}
+                                    </div>
+
+                                    <div class="col-12 col-md-6">
+                                        {{ form_label(form.referential, null, {
+                                            label_attr: {'class': 'form-label rz-form-label'}
+                                        }) }}
+                                        {{ form_widget(form.referential, {
+                                            attr: {
+                                                class: 'form-select rz-form-select'
+                                            }
+                                        }) }}
+                                        {{ form_errors(form.referential) }}
+                                    </div>
+                                </div>
+
+                            {% elseif step == 'schedule' %}
+                                <div class="row g-3">
+                                    <div class="col-12 col-md-6">
+                                        {{ form_label(form.startDate, null, {
+                                            label_attr: {'class': 'form-label rz-form-label'}
+                                        }) }}
+                                        {{ form_widget(form.startDate, {
+                                            attr: {
+                                                class: 'form-control rz-form-control'
+                                            }
+                                        }) }}
+                                        {{ form_errors(form.startDate) }}
+                                    </div>
+
+                                    <div class="col-12 col-md-6">
+                                        {{ form_label(form.endDate, null, {
+                                            label_attr: {'class': 'form-label rz-form-label'}
+                                        }) }}
+                                        {{ form_widget(form.endDate, {
+                                            attr: {
+                                                class: 'form-control rz-form-control'
+                                            }
+                                        }) }}
+                                        {{ form_errors(form.endDate) }}
+                                    </div>
+                                </div>
+
+                            {% else %}
+                                <div class="rz-review-list">
+                                    <div class="rz-review-item d-flex justify-content-between align-items-center py-2 border-bottom">
+                                        <span class="text-muted">Nom</span>
+                                        <strong>{{ wizard.name ?: '—' }}</strong>
+                                    </div>
+
+                                    <div class="rz-review-item d-flex justify-content-between align-items-center py-2 border-bottom">
+                                        <span class="text-muted">Société</span>
+                                        <strong>{{ wizard.society ? wizard.society.name : '—' }}</strong>
+                                    </div>
+
+                                    <div class="rz-review-item d-flex justify-content-between align-items-center py-2 border-bottom">
+                                        <span class="text-muted">Référentiel</span>
+                                        <strong>{{ wizard.referential ? wizard.referential.label : '—' }}</strong>
+                                    </div>
+
+                                    <div class="rz-review-item d-flex justify-content-between align-items-center py-2 border-bottom">
+                                        <span class="text-muted">Date de début</span>
+                                        <strong>{{ wizard.startDate ? wizard.startDate|date('d/m/Y') : '—' }}</strong>
+                                    </div>
+
+                                    <div class="rz-review-item d-flex justify-content-between align-items-center py-2">
+                                        <span class="text-muted">Date de fin</span>
+                                        <strong>{{ wizard.endDate ? wizard.endDate|date('d/m/Y') : '—' }}</strong>
+                                    </div>
+                                </div>
+
+                                <div class="alert alert-light border mt-4 mb-0">
+                                    Cette action va créer la campagne et initialiser les revues de mesures liées au référentiel sélectionné.
+                                </div>
+                            {% endif %}
+
+                            <div class="d-flex justify-content-between align-items-center mt-4 pt-2">
+                                <div>
+                                    {% if step == 'schedule' %}
+                                        <a href="{{ path('app_campaign_new', {'step': 'context'}) }}" class="btn btn-outline-light rz-btn">
+                                            <i class="bi bi-arrow-left me-1"></i>
+                                            Précédent
+                                        </a>
+                                    {% elseif step == 'confirm' %}
+                                        <a href="{{ path('app_campaign_new', {'step': 'schedule'}) }}" class="btn btn-outline-light rz-btn">
+                                            <i class="bi bi-arrow-left me-1"></i>
+                                            Précédent
+                                        </a>
+                                    {% endif %}
+                                </div>
+
+                                <div>
+                                    {% if step == 'confirm' %}
+                                        <button type="submit" class="btn btn-primary rz-btn rz-btn-primary">
+                                            <i class="bi bi-check2-circle me-1"></i>
+                                            Créer la campagne
+                                        </button>
+                                    {% else %}
+                                        <button type="submit" class="btn btn-primary rz-btn rz-btn-primary">
+                                            Continuer
+                                            <i class="bi bi-arrow-right ms-1"></i>
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <div class="card rz-card">
+                        <div class="card-header rz-card-header">
+                            <div class="rz-card-header-title">
+                                <i class="bi bi-info-circle"></i>
+                                <span>Résumé</span>
+                            </div>
+                        </div>
+
+                        <div class="card-body rz-card-body">
+                            <div class="rz-review-item d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span class="text-muted">Nom</span>
+                                <strong>{{ wizard.name ?: 'Non renseigné' }}</strong>
+                            </div>
+
+                            <div class="rz-review-item d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span class="text-muted">Société</span>
+                                <strong>{{ wizard.society ? wizard.society.name : 'Non sélectionnée' }}</strong>
+                            </div>
+
+                            <div class="rz-review-item d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span class="text-muted">Référentiel</span>
+                                <strong>{{ wizard.referential ? wizard.referential.label : 'Non sélectionné' }}</strong>
+                            </div>
+
+                            <div class="rz-review-item d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span class="text-muted">Début</span>
+                                <strong>{{ wizard.startDate ? wizard.startDate|date('d/m/Y') : 'Non défini' }}</strong>
+                            </div>
+
+                            <div class="rz-review-item d-flex justify-content-between align-items-center py-2">
+                                <span class="text-muted">Mesures à créer</span>
+                                <strong>{{ measureCount is not null ? measureCount : '—' }}</strong>
+                            </div>
+
+                            {% if measureCount is not null %}
+                                <div class="alert alert-light mt-3 mb-0">
+                                    {{ measureCount }} revue{{ measureCount > 1 ? 's' : '' }} sera{{ measureCount > 1 ? 'ont' : '' }} initialisée{{ measureCount > 1 ? 's' : '' }} à la création.
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block stylesheet %}
+    {{ parent() }}
+    <style>
+        .rz-wizard-progress {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding: 1.25rem 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .rz-wizard-progress-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .rz-wizard-progress-kicker {
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: rgba(255, 255, 255, 0.55);
+            margin-bottom: 0.25rem;
+        }
+
+        .rz-wizard-progress-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .rz-wizard-progress-caption {
+            font-size: 0.92rem;
+            color: rgba(255, 255, 255, 0.72);
+            max-width: 420px;
+            text-align: right;
+        }
+
+        .rz-wizard-steps {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.75rem;
+        }
+
+        .rz-wizard-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.9rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 0.9rem;
+            background: rgba(255, 255, 255, 0.015);
+            transition: all 0.2s ease;
+        }
+
+        .rz-wizard-step-badge {
+            width: 2rem;
+            height: 2rem;
+            min-width: 2rem;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .rz-wizard-step-body {
+            min-width: 0;
+        }
+
+        .rz-wizard-step-label {
+            font-size: 0.96rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.2;
+            margin-bottom: 0.2rem;
+        }
+
+        .rz-wizard-step-help {
+            font-size: 0.84rem;
+            color: rgba(255, 255, 255, 0.62);
+            line-height: 1.35;
+        }
+
+        .rz-wizard-step.is-current {
+            border-color: rgba(88, 166, 255, 0.45);
+            background: rgba(88, 166, 255, 0.08);
+            box-shadow: 0 0 0 1px rgba(88, 166, 255, 0.12) inset;
+        }
+
+        .rz-wizard-step.is-current .rz-wizard-step-badge {
+            background: #58a6ff;
+            color: #0d1117;
+        }
+
+        .rz-wizard-step.is-done .rz-wizard-step-badge {
+            background: #2ea043;
+            color: #fff;
+        }
+
+        .rz-wizard-step.is-done .rz-wizard-step-label {
+            color: rgba(255, 255, 255, 0.92);
+        }
+
+        @media (max-width: 991.98px) {
+            .rz-wizard-steps {
+                grid-template-columns: 1fr;
+            }
+
+            .rz-wizard-progress-caption {
+                max-width: none;
+                text-align: left;
+            }
+        }
+    </style>
+{% endblock %}

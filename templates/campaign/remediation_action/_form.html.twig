@@ -1,0 +1,43 @@
+<div class="rz-remediation-form-wrapper">
+    <div class="rz-remediation-form-header">
+        <a
+            href="{{ path('app_measure_review_remediation_action_drawer', {id: measureReview.id}) }}"
+            class="btn btn-ghost"
+            data-turbo-frame="measure-review-remediation-drawer"
+        >
+            Retour à la liste
+        </a>
+
+        <h4>
+            {{ editingAction ? 'Modifier l’action' : 'Nouvelle action' }}
+        </h4>
+    </div>
+
+    {{ form_start(form, {
+        attr: {
+            'data-turbo-frame': 'measure-review-remediation-drawer'
+        }
+    }) }}
+        <div class="form-grid">
+            {{ form_row(form.title) }}
+            {{ form_row(form.priority) }}
+            {{ form_row(form.status) }}
+            {{ form_row(form.dueDate) }}
+            {{ form_row(form.description) }}
+        </div>
+
+        <div class="rz-form-actions">
+            <a
+                href="{{ path('app_measure_review_remediation_action_drawer', {id: measureReview.id}) }}"
+                class="btn btn-secondary"
+                data-turbo-frame="measure-review-remediation-drawer"
+            >
+                Annuler
+            </a>
+
+            <button class="btn btn-primary">
+                {{ editingAction ? 'Enregistrer' : 'Créer l’action' }}
+            </button>
+        </div>
+    {{ form_end(form) }}
+</div>

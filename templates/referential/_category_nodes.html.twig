@@ -1,0 +1,48 @@
+<div id="category-{{ category.id }}-nodes" class="rz-highlight-box p-3 p-md-4">
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+        <div>
+            <h5 class="mb-1">{{ category.name }}</h5>
+            <p class="rz-form-help mb-0">
+                Gérez les mesures et la hiérarchie associées à cette catégorie.
+            </p>
+        </div>
+
+        <button
+            type="button"
+            class="btn btn-sm btn-outline-success rz-btn d-inline-flex align-items-center gap-1 js-open-measurenode-modal"
+            data-url="{{ path('app_measurenode_new_for_category', {'id': category.id}) }}"
+            data-target="#category-{{ category.id }}-nodes">
+            <i class="bi bi-plus-circle"></i>
+            <span>Nouvelle mesure</span>
+        </button>
+    </div>
+
+    {% if treeNodes is not empty %}
+        <ul class="list-unstyled mb-0 rz-tree-list">
+            {% for treeNode in treeNodes %}
+                {% include 'referential/_node_tree.html.twig' with { treeNode: treeNode } %}
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="rz-empty py-4" style="min-height: 220px;">
+            <div>
+                <div class="rz-empty-icon">
+                    <i class="bi bi-diagram-2"></i>
+                </div>
+                <h5 class="rz-empty-title">Aucune mesure</h5>
+                <p class="rz-empty-text mb-3">
+                    Cette catégorie ne contient encore aucune mesure.
+                </p>
+                <button
+                    type="button"
+                    class="btn btn-primary rz-btn rz-btn-primary js-open-measurenode-modal"
+                    data-url="{{ path('app_measurenode_new_for_category', {'id': category.id}) }}"
+                    data-target="#category-{{ category.id }}-nodes">
+                    <i class="bi bi-plus-lg me-1"></i>
+                    Ajouter une mesure
+                </button>
+            </div>
+        </div>
+    {% endif %}
+</div>

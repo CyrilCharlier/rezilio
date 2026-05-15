@@ -1,0 +1,92 @@
+{# templates/measurenode/_form.html.twig #}
+{{ form_start(form, {
+    attr: {
+        action: action_path ?? path('app_measurenode_new_for_category', {'id': category.id}),
+        class: 'form-horizontal js-measurenode-form',
+        'data-target-container': targetContainer|default('')
+    }
+}) }}
+
+  <div class="mb-3">
+    {{ form_label(form.code, null, {'label_attr': {'class': 'form-label'}}) }}
+    {{ form_widget(form.code, {'attr': {'class': 'form-control'}}) }}
+    {{ form_errors(form.code) }}
+  </div>
+
+  <div class="mb-3">
+    {{ form_label(form.label, null, {'label_attr': {'class': 'form-label'}}) }}
+    {{ form_widget(form.label, {'attr': {'class': 'form-control'}}) }}
+    {{ form_errors(form.label) }}
+  </div>
+
+  <div class="mb-3">
+    {{ form_label(form.description, null, {'label_attr': {'class': 'form-label'}}) }}
+    {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': 3}}) }}
+    {{ form_errors(form.description) }}
+  </div>
+
+  <div class="mb-3">
+    {{ form_label(form.ordre, null, {'label_attr': {'class': 'form-label'}}) }}
+    {{ form_widget(form.ordre, {'attr': {'class': 'form-control'}}) }}
+    {{ form_errors(form.ordre) }}
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label d-block">Applicabilité</label>
+
+    <div class="btn-group" role="group" aria-label="Applicabilité NIS2">
+        {# EI #}
+        {{ form_widget(form.appliesToEI, {
+            attr: {
+                class: 'btn-check',
+                autocomplete: 'off'
+            }
+        }) }}
+        <label class="btn btn-outline-success"
+               for="{{ form.appliesToEI.vars.id }}">
+            EI
+        </label>
+
+        {# EE #}
+        {{ form_widget(form.appliesToEE, {
+            attr: {
+                class: 'btn-check',
+                autocomplete: 'off'
+            }
+        }) }}
+        <label class="btn btn-outline-primary"
+               for="{{ form.appliesToEE.vars.id }}">
+            EE
+        </label>
+
+        {# Actif #}
+        {{ form_widget(form.active, {
+            attr: {
+                class: 'btn-check',
+                autocomplete: 'off'
+            }
+        }) }}
+        <label class="btn btn-outline-info"
+               for="{{ form.active.vars.id }}">
+            Actif
+        </label>
+    </div>
+
+    <div class="mt-1">
+        {{ form_errors(form.appliesToEI) }}
+        {{ form_errors(form.appliesToEE) }}
+        {{ form_errors(form.active) }}
+    </div>
+  </div>
+
+
+  <div class="d-flex justify-content-end gap-2">
+    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+      Annuler
+    </button>
+    <button class="btn btn-primary btn-sm">
+      {{ submit_label|default('Enregistrer') }}
+    </button>
+  </div>
+
+{{ form_end(form) }}

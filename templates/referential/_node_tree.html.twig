@@ -1,0 +1,81 @@
+{# templates/referential/_node_tree.html.twig #}
+{% set node = treeNode.node %}
+{% set children = treeNode.children %}
+{% set hasChildren = children is not empty %}
+{% set appliesEE = node.appliesToEE ?? false %}
+{% set appliesEI = node.appliesToEI ?? false %}
+
+<li class="rz-tree-node">
+    <div class="rz-tree-node-card">
+        <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap rezilio-node-row">
+            {# Colonne texte + chevron #}
+            <div class="flex-grow-1 d-flex align-items-center min-w-0">
+                {% if hasChildren %}
+                    <button type="button"
+                            class="btn btn-link btn-sm p-0 me-2 text-decoration-none rz-tree-toggle js-toggle-node"
+                            data-target="#node-children-{{ node.id }}"
+                            data-node-id="{{ node.id }}">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                {% else %}
+                    <span class="rz-tree-toggle-placeholder me-2"></span>
+                {% endif %}
+
+                <span class="text-truncate rz-tree-node-label">
+                    <span class="rz-tree-node-code">{{ node.code }}</span>
+                    <span class="text-body-secondary"> - </span>
+                    <span>{{ node.label }}</span>
+                </span>
+            </div>
+
+            {# Colonne badges + actions, alignée à droite #}
+            <div class="d-flex align-items-center gap-2 ms-3 flex-shrink-0 rz-node-actions">
+                {% if node.description %}
+                    <button type="button"
+                            class="btn btn-link btn-sm p-0 rz-tree-info-btn js-measure-tooltip"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="left"
+                            data-bs-custom-class="rezilio-tooltip"
+                            data-bs-title="{{ node.description|striptags|e('html_attr') }}"
+                            aria-label="Description de la mesure {{ node.code }}">
+                        <i class="bi bi-info-circle" aria-hidden="true"></i>
+                    </button>
+                {% else %}
+                    <span class="rz-tree-info-placeholder"></span>
+                {% endif %}
+
+                <div class="rz-badges-slot">
+                    {% if appliesEI %}
+                        <span class="badge rounded-pill text-bg-success rz-badge">EI</span>
+                    {% endif %}
+                    {% if appliesEE %}
+                        <span class="badge rounded-pill text-bg-primary rz-badge">EE</span>
+                    {% endif %}
+                </div>
+
+                <a href="{{ path('app_measurenode_new_child', {id: node.id}) }}"
+                   class="btn btn-outline-primary btn-sm rz-btn js-open-measurenode-modal"
+                   data-url="{{ path('app_measurenode_new_child', {id: node.id}) }}"
+                   data-target="#category-{{ node.category.id }}-nodes">
+                    <i class="bi bi-plus-lg"></i>
+                </a>
+
+                <a href="{{ path('app_measurenode_edit', {id: node.id}) }}"
+                   class="btn btn-outline-secondary btn-sm rz-btn js-open-measurenode-modal"
+                   data-url="{{ path('app_measurenode_edit', {id: node.id}) }}"
+                   data-target="#category-{{ node.category.id }}-nodes">
+                    <i class="bi bi-pencil"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% if hasChildren %}
+        <ul id="node-children-{{ node.id }}"
+            class="list-unstyled rz-tree-children d-none">
+            {% for childTreeNode in children %}
+                {% include 'referential/_node_tree.html.twig' with { treeNode: childTreeNode } %}
+            {% endfor %}
+        </ul>
+    {% endif %}
+</li>
