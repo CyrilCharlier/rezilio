@@ -1,10 +1,16 @@
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-<meta name="color-scheme" content="light dark" />
-<meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)" />
-<meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
-<meta name="title" content="Rezilio | Dashboard" />
-<meta name="author" content="ColorlibHQ" />
-<meta name="description" content="AdminLTE is a Free Bootstrap 5 Admin Dashboard, 30 example pages using Vanilla JS. Fully accessible with WCAG 2.1 AA compliance." />
-<meta name="keywords" content="bootstrap 5, bootstrap, bootstrap 5 admin dashboard, bootstrap 5 dashboard, bootstrap 5 charts, bootstrap 5 calendar, bootstrap 5 datepicker, bootstrap 5 tables, bootstrap 5 datatable, vanilla js datatable, colorlibhq, colorlibhq dashboard, colorlibhq admin dashboard, accessible admin panel, WCAG compliant" />
-<meta name="supported-color-schemes" content="light dark" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+
+<meta name="theme-color" content="#4f98a3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#171614" media="(prefers-color-scheme: dark)">
+
+<meta name="title" content="{% block meta_title %}Rezilio | Pilotage de la conformité{% endblock %}">
+<meta name="author" content="Cyril Charlier">
+<meta name="description" content="{% block meta_description %}Rezilio est une application de pilotage de la mise en conformité : campagnes d’évaluation, suivi des mesures, remédiations, statuts et tableaux de bord.{% endblock %}">
+<meta name="keywords" content="Rezilio, conformité, cybersécurité, RSSI, gouvernance sécurité, remédiation, suivi de conformité">
+
+<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
+<link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
+<link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">

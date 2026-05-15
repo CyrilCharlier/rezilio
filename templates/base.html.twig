@@ -5,7 +5,7 @@
     {% include 'partial/head/_meta.html.twig' %}
     {% include 'partial/head/_style.html.twig' %}
     {% block stylesheet %}{% endblock %}
-    <title>Rezilio</title>
+    <title>{% block title %}Rezilio | Pilotage de la conformité{% endblock %}</title>
   </head>
 
   <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
