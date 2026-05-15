@@ -1,6 +1,7 @@
 ###> Symfony / Framework ###
 
 # Env locaux (ne jamais versionner .env.local & secrets)
+.env
 .env.local
 .env.local.php
 .env.*.local
