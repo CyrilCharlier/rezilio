@@ -1,0 +1,237 @@
+{{ form_start(form, {
+    attr: {
+        id: 'remediation-action-drawer-form',
+        class: 'rz-remediation-form',
+        'data-remediation-form': 'true'
+    }
+}) }}
+
+    <div class="rz-remediation-drawer-inner">
+        <div class="rz-remediation-drawer-scroll">
+            <section class="rz-remediation-block">
+                <div class="rz-remediation-block-head">
+                    <h6 class="rz-remediation-block-title">
+                        {{ action is defined and action.id ? 'Vue d’ensemble' : 'Nouvelle remédiation' }}
+                    </h6>
+                    <p class="rz-remediation-block-subtitle">
+                        Définissez clairement l’action attendue.
+                    </p>
+                </div>
+
+                <div class="rz-remediation-form-grid">
+                    {% if form.title is defined %}
+                        <div class="rz-field rz-field-full">
+                            <label class="form-label rz-form-label" for="{{ form.title.vars.id }}">
+                                {{ form.title.vars.label }}
+                            </label>
+                            {{ form_widget(form.title, {
+                                attr: {
+                                    class: 'form-control rz-form-control',
+                                    placeholder: 'Titre de l’action'
+                                }
+                            }) }}
+                            {{ form_errors(form.title) }}
+                        </div>
+                    {% endif %}
+
+                    {% if form.label is defined %}
+                        <div class="rz-field rz-field-full">
+                            <label class="form-label rz-form-label" for="{{ form.label.vars.id }}">
+                                {{ form.label.vars.label }}
+                            </label>
+                            {{ form_widget(form.label, {
+                                attr: {
+                                    class: 'form-control rz-form-control',
+                                    placeholder: 'Libellé court'
+                                }
+                            }) }}
+                            {{ form_errors(form.label) }}
+                        </div>
+                    {% endif %}
+
+                    {% if form.description is defined %}
+                        <div class="rz-field rz-field-full">
+                            <label class="form-label rz-form-label" for="{{ form.description.vars.id }}">
+                                {{ form.description.vars.label }}
+                            </label>
+                            {{ form_widget(form.description, {
+                                attr: {
+                                    class: 'form-control rz-form-control rz-modal-textarea',
+                                    rows: 7,
+                                    placeholder: 'Décrivez la remédiation attendue, les résultats visés et les points d’attention…'
+                                }
+                            }) }}
+                            {{ form_errors(form.description) }}
+                        </div>
+                    {% endif %}
+                </div>
+            </section>
+
+            <section class="rz-remediation-block">
+                <div class="rz-remediation-block-head">
+                    <h6 class="rz-remediation-block-title">Pilotage</h6>
+                    <p class="rz-remediation-block-subtitle">
+                        Affectation, priorité et état d’avancement.
+                    </p>
+                </div>
+
+                <div class="rz-remediation-form-grid">
+                    {% if form.status is defined %}
+                        <div class="rz-field">
+                            <label class="form-label rz-form-label" for="{{ form.status.vars.id }}">
+                                {{ form.status.vars.label }}
+                            </label>
+                            {{ form_widget(form.status, {
+                                attr: {
+                                    class: 'form-select rz-form-select'
+                                }
+                            }) }}
+                            {{ form_errors(form.status) }}
+                        </div>
+                    {% endif %}
+
+                    {% if form.priority is defined %}
+                        <div class="rz-field">
+                            <label class="form-label rz-form-label" for="{{ form.priority.vars.id }}">
+                                {{ form.priority.vars.label }}
+                            </label>
+                            {{ form_widget(form.priority, {
+                                attr: {
+                                    class: 'form-select rz-form-select'
+                                }
+                            }) }}
+                            {{ form_errors(form.priority) }}
+                        </div>
+                    {% endif %}
+
+                    {% if form.owner is defined %}
+                        <div class="rz-field">
+                            <label class="form-label rz-form-label" for="{{ form.owner.vars.id }}">
+                                {{ form.owner.vars.label }}
+                            </label>
+                            {{ form_widget(form.owner, {
+                                attr: {
+                                    class: 'form-select rz-form-select'
+                                }
+                            }) }}
+                            {{ form_errors(form.owner) }}
+                        </div>
+                    {% endif %}
+
+                    {% if form.assignee is defined %}
+                        <div class="rz-field">
+                            <label class="form-label rz-form-label" for="{{ form.assignee.vars.id }}">
+                                {{ form.assignee.vars.label }}
+                            </label>
+                            {{ form_widget(form.assignee, {
+                                attr: {
+                                    class: 'form-select rz-form-select'
+                                }
+                            }) }}
+                            {{ form_errors(form.assignee) }}
+                        </div>
+                    {% endif %}
+                </div>
+            </section>
+
+            <section class="rz-remediation-block">
+                <div class="rz-remediation-block-head">
+                    <h6 class="rz-remediation-block-title">Calendrier</h6>
+                    <p class="rz-remediation-block-subtitle">
+                        Délais cibles et points de contrôle.
+                    </p>
+                </div>
+
+                <div class="rz-remediation-form-grid">
+                    {% if form.dueDate is defined %}
+                        <div class="rz-field">
+                            <label class="form-label rz-form-label" for="{{ form.dueDate.vars.id }}">
+                                {{ form.dueDate.vars.label }}
+                            </label>
+                            {{ form_widget(form.dueDate, {
+                                attr: {
+                                    class: 'form-control rz-form-control'
+                                }
+                            }) }}
+                            {{ form_errors(form.dueDate) }}
+                        </div>
+                    {% endif %}
+
+                    {% if form.deadlineAt is defined %}
+                        <div class="rz-field">
+                            <label class="form-label rz-form-label" for="{{ form.deadlineAt.vars.id }}">
+                                {{ form.deadlineAt.vars.label }}
+                            </label>
+                            {{ form_widget(form.deadlineAt, {
+                                attr: {
+                                    class: 'form-control rz-form-control'
+                                }
+                            }) }}
+                            {{ form_errors(form.deadlineAt) }}
+                        </div>
+                    {% endif %}
+                </div>
+            </section>
+
+            {% if form.proofUrl is defined or form.comment is defined %}
+                <section class="rz-remediation-block">
+                    <div class="rz-remediation-block-head">
+                        <h6 class="rz-remediation-block-title">Validation</h6>
+                        <p class="rz-remediation-block-subtitle">
+                            Liens de preuve et informations complémentaires.
+                        </p>
+                    </div>
+
+                    <div class="rz-remediation-form-grid">
+                        {% if form.proofUrl is defined %}
+                            <div class="rz-field rz-field-full">
+                                <label class="form-label rz-form-label" for="{{ form.proofUrl.vars.id }}">
+                                    {{ form.proofUrl.vars.label }}
+                                </label>
+                                {{ form_widget(form.proofUrl, {
+                                    attr: {
+                                        class: 'form-control rz-form-control',
+                                        placeholder: 'https://…'
+                                    }
+                                }) }}
+                                {{ form_errors(form.proofUrl) }}
+                            </div>
+                        {% endif %}
+
+                        {% if form.comment is defined %}
+                            <div class="rz-field rz-field-full">
+                                <label class="form-label rz-form-label" for="{{ form.comment.vars.id }}">
+                                    {{ form.comment.vars.label }}
+                                </label>
+                                {{ form_widget(form.comment, {
+                                    attr: {
+                                        class: 'form-control rz-form-control rz-modal-textarea',
+                                        rows: 5,
+                                        placeholder: 'Commentaire complémentaire…'
+                                    }
+                                }) }}
+                                {{ form_errors(form.comment) }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </section>
+            {% endif %}
+
+            {{ form_rest(form) }}
+        </div>
+
+        <div class="rz-remediation-drawer-footer">
+            <button
+                type="button"
+                class="btn btn-outline-light rz-btn"
+                data-bs-dismiss="offcanvas"
+            >
+                Annuler
+            </button>
+            <button type="submit" class="btn btn-primary rz-btn rz-btn-primary">
+                {{ action is defined and action.id ? 'Enregistrer les modifications' : 'Créer l’action' }}
+            </button>
+        </div>
+    </div>
+
+{{ form_end(form, {'render_rest': false}) }}

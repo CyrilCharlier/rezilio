@@ -1,0 +1,132 @@
+<div
+    class="rz-remediation-board"
+    data-remediation-kanban
+    data-remediation-status-url="{{ path('app_remediation_dashboard_update_status', { id: '__ID__' }) }}"
+    data-remediation-csrf="{{ csrf_token('remediation_status_update') }}"
+>
+    <div class="row g-3">
+        {% set columns = {
+            'draft':       { label: 'Brouillons', icon: 'bi-file-earmark-text', badge: 'text-bg-secondary' },
+            'open':        { label: 'Ouvertes',   icon: 'bi-folder2-open',      badge: 'text-bg-primary'   },
+            'in_progress': { label: 'En cours',   icon: 'bi-arrow-repeat',      badge: 'text-bg-warning'   },
+            'done':        { label: 'Terminées',  icon: 'bi-check2-circle',     badge: 'text-bg-success'   },
+            'cancelled':   { label: 'Annulées',   icon: 'bi-x-circle',          badge: 'text-bg-dark'      }
+        } %}
+
+        {% for status, column in columns %}
+            <div class="col-12 col-xl">
+                <section class="card rz-card h-100 rz-kanban-column">
+
+                    <header class="card-header rz-card-header">
+                        <div class="d-flex justify-content-between align-items-center gap-2">
+                            <div class="rz-card-header-title">
+                                <i class="bi {{ column.icon }}" aria-hidden="true"></i>
+                                <span>{{ column.label }}</span>
+                            </div>
+                            <span class="badge {{ column.badge }}">
+                                {{ groupedActions[status]|length }}
+                            </span>
+                        </div>
+                    </header>
+
+                    <div
+                        class="card-body rz-card-body rz-kanban-list"
+                        data-remediation-column="{{ status }}"
+                        role="list"
+                        aria-label="Colonne {{ column.label }}"
+                    >
+                        {% if groupedActions[status] is empty %}
+                            <div class="rz-kanban-empty text-body-secondary small">
+                                Aucune action
+                            </div>
+                        {% else %}
+                            {% for action in groupedActions[status] %}
+                                {% set isOverdue = action.dueDate
+                                    and action.dueDate < date()
+                                    and action.status.value not in ['done', 'cancelled']
+                                %}
+                                <article
+                                    class="rz-remediation-card{{ action.status.value == 'done' ? ' is-done' : '' }}"
+                                    data-remediation-card-id="{{ action.id }}"
+                                    data-priority="{{ action.priority.value }}"
+                                    role="listitem"
+                                    aria-label="{{ action.title }}"
+                                >
+                                    <div class="rz-remediation-card-main">
+
+                                        <div class="rz-remediation-card-top">
+                                            <h6 class="rz-remediation-card-title">{{ action.title }}</h6>
+                                            <span class="badge rz-priority-badge {{ action.priority.badgeClass() }}">
+                                                {{ action.priority.label() }}
+                                            </span>
+                                        </div>
+
+                                        <div class="rz-remediation-card-meta">
+                                            <span
+                                                class="rz-remediation-meta-icon"
+                                                data-bs-toggle="tooltip"
+                                                data-bs-placement="top"
+                                                title="{{ action.measureReview and action.measureReview.campaign ? action.measureReview.campaign.name : 'Campagne non définie' }}"
+                                                aria-label="Campagne : {{ action.measureReview and action.measureReview.campaign ? action.measureReview.campaign.name : 'non définie' }}"
+                                            >
+                                                <i class="bi bi-building" aria-hidden="true"></i>
+                                            </span>
+
+                                            <span
+                                                class="rz-remediation-meta-icon"
+                                                data-bs-toggle="tooltip"
+                                                data-bs-placement="top"
+                                                title="Revue #{{ action.measureReview ? action.measureReview.id : '—' }}"
+                                                aria-label="Revue #{{ action.measureReview ? action.measureReview.id : 'non définie' }}"
+                                            >
+                                                <i class="bi bi-diagram-3" aria-hidden="true"></i>
+                                            </span>
+
+                                            <span
+                                                class="rz-remediation-meta-icon{{ isOverdue ? ' is-overdue' : '' }}"
+                                                data-bs-toggle="tooltip"
+                                                data-bs-placement="top"
+                                                title="{{ action.dueDate ? 'Échéance : ' ~ action.dueDate|date('d/m/Y') : 'Échéance non définie' }}"
+                                                aria-label="{{ action.dueDate ? 'Échéance : ' ~ action.dueDate|date('d/m/Y') : 'Échéance non définie' }}"
+                                            >
+                                                <i class="bi bi-calendar-event" aria-hidden="true"></i>
+                                            </span>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="rz-remediation-card-actions">
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-light"
+                                            data-remediation-drawer-open
+                                            data-remediation-drawer-url="{{ path('app_remediation_action_edit_drawer', { id: action.id }) }}"
+                                            data-remediation-drawer-title="{{ action.title }}"
+                                            data-remediation-drawer-context="Campagne {{ action.measureReview and action.measureReview.campaign ? action.measureReview.campaign.name : 'non définie' }}"
+                                        >
+                                            <i class="bi bi-pencil" aria-hidden="true"></i>
+                                            Modifier
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-danger"
+                                            data-remediation-delete-url="{{ path('app_remediation_action_delete', { id: action.id }) }}"
+                                            data-remediation-delete-token="{{ csrf_token('delete_remediation_action_' ~ action.id) }}"
+                                            data-remediation-delete-label="{{ action.title }}"
+                                        >
+                                            <i class="bi bi-trash" aria-hidden="true"></i>
+                                            Supprimer
+                                        </button>
+                                    </div>
+
+                                </article>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                </section>
+            </div>
+        {% endfor %}
+    </div>
+</div>

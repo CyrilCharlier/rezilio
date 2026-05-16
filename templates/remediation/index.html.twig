@@ -1,0 +1,202 @@
+{% extends 'layout/admin.html.twig' %}
+
+{% block title %}Remédiations{% endblock %}
+
+{% block content %}
+<div class="rz-page">
+    <div class="app-content-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-sm-8">
+                    <h3 class="mb-0">Remédiations</h3>
+                    <p class="rz-page-intro">
+                        Pilotez l’ensemble des actions de remédiation issues des revues de conformité,
+                        filtrez par campagne, statut ou priorité, puis suivez les échéances.
+                    </p>
+                </div>
+                <div class="col-sm-4">
+                    <div class="rz-page-actions mt-3 mt-sm-0">
+                        <a href="{{ path('app_campaign_index') }}" class="btn btn-outline-light rz-btn">
+                            <i class="bi bi-arrow-left me-1"></i>
+                            Retour aux campagnes
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-content">
+        <div class="container-fluid">
+            {{ include('partial/_flash_messages.html.twig') }}
+
+            <div id="rz-remediation-toast" class="alert d-none mb-4" role="alert"></div>
+
+            {% if filters.view == 'table' %}
+                {% include 'remediation/_kpis.html.twig' %}
+            {% endif %}
+
+            <div class="card rz-card rz-filter-card mb-4">
+                <div class="card-header rz-card-header">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 w-100">
+                        <button
+                            class="rz-card-header-title rz-filter-toggle btn btn-link p-0 text-decoration-none"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#rz-filter-body"
+                            aria-expanded="true"
+                            aria-controls="rz-filter-body"
+                        >
+                            <i class="bi bi-funnel"></i>
+                            <span>Filtres</span>
+                            <i class="bi bi-chevron-up rz-filter-toggle-icon ms-1"></i>
+                        </button>
+
+                        <div class="btn-group" role="group" aria-label="Choix de vue">
+                            <a
+                                href="{{ path('app_remediation_dashboard_index', filters|merge({ view: 'kanban' })) }}"
+                                class="btn btn-sm {{ filters.view == 'kanban' ? 'btn-primary' : 'btn-outline-light' }}"
+                            >
+                                <i class="bi bi-kanban me-1"></i>
+                                Kanban
+                            </a>
+                            <a
+                                href="{{ path('app_remediation_dashboard_index', filters|merge({ view: 'table' })) }}"
+                                class="btn btn-sm {{ filters.view == 'table' ? 'btn-primary' : 'btn-outline-light' }}"
+                            >
+                                <i class="bi bi-table me-1"></i>
+                                Tableau
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="collapse show" id="rz-filter-body">
+                    <div class="card-body rz-card-body">
+                        <form method="get" class="row g-3 align-items-end">
+                            <input type="hidden" name="view" value="{{ filters.view }}">
+
+                            <div class="col-12 col-md-4">
+                                <label for="search" class="form-label rz-form-label">Recherche</label>
+                                <input
+                                    type="text"
+                                    id="search"
+                                    name="search"
+                                    value="{{ filters.search|default('') }}"
+                                    class="form-control rz-form-control"
+                                    placeholder="Titre, description, campagne..."
+                                >
+                            </div>
+
+                            <div class="col-12 col-md-2">
+                                <label for="status" class="form-label rz-form-label">Statut</label>
+                                <select id="status" name="status" class="form-select rz-form-select">
+                                    <option value="">Tous</option>
+                                    <option value="draft" {{ filters.status == 'draft' ? 'selected' : '' }}>Brouillon</option>
+                                    <option value="open" {{ filters.status == 'open' ? 'selected' : '' }}>Ouverte</option>
+                                    <option value="in_progress" {{ filters.status == 'in_progress' ? 'selected' : '' }}>En cours</option>
+                                    <option value="done" {{ filters.status == 'done' ? 'selected' : '' }}>Terminée</option>
+                                    <option value="cancelled" {{ filters.status == 'cancelled' ? 'selected' : '' }}>Annulée</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 col-md-2">
+                                <label for="priority" class="form-label rz-form-label">Priorité</label>
+                                <select id="priority" name="priority" class="form-select rz-form-select">
+                                    <option value="">Toutes</option>
+                                    <option value="low" {{ filters.priority == 'low' ? 'selected' : '' }}>Basse</option>
+                                    <option value="medium" {{ filters.priority == 'medium' ? 'selected' : '' }}>Moyenne</option>
+                                    <option value="high" {{ filters.priority == 'high' ? 'selected' : '' }}>Haute</option>
+                                    <option value="critical" {{ filters.priority == 'critical' ? 'selected' : '' }}>Critique</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 col-md-2">
+                                <label for="campaign" class="form-label rz-form-label">Campagne</label>
+                                <select id="campaign" name="campaign" class="form-select rz-form-select">
+                                    <option value="">Toutes</option>
+                                    {% for campaign in campaigns %}
+                                        <option value="{{ campaign.id }}" {{ filters.campaign == (campaign.id ~ '') ? 'selected' : '' }}>
+                                            {{ campaign.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-12 col-md-2">
+                                <div class="rz-toolbar">
+                                    <button class="btn btn-outline-secondary rz-btn" type="submit">
+                                        <i class="bi bi-search me-1"></i>
+                                        Filtrer
+                                    </button>
+                                    <a href="{{ path('app_remediation_dashboard_index') }}" class="btn btn-outline-light rz-btn">
+                                        Réinitialiser
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                id="rz-remediation-list-region"
+                data-remediation-list-region
+                data-remediation-current-url="{{ app.request.uri }}"
+            >
+                {% if filters.view == 'kanban' %}
+                    {{ include('remediation/_kanban.html.twig', {
+                        groupedActions: groupedActions,
+                        statusUpdateUrlTemplate: path('app_remediation_dashboard_update_status', {id: '__ID__'}),
+                        statusUpdateCsrfToken: statusUpdateCsrfToken
+                    }) }}
+                {% else %}
+                    {{ include('remediation/_table.html.twig', { actions: actions }) }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div
+    class="offcanvas offcanvas-end rz-remediation-drawer rz-drawer-xl"
+    tabindex="-1"
+    id="remediationDrawer"
+    aria-labelledby="remediationDrawerLabel"
+>
+    <div class="offcanvas-header rz-remediation-drawer-header">
+        <div class="rz-remediation-drawer-header-main">
+            <div class="rz-remediation-drawer-eyebrow">Remédiation</div>
+            <h5 class="offcanvas-title" id="remediationDrawerLabel">Action de remédiation</h5>
+            <div class="rz-remediation-drawer-meta">
+                <span class="badge text-bg-dark" data-remediation-drawer-state>Chargement</span>
+                <span class="small text-body-secondary" data-remediation-drawer-context>
+                    Édition contextuelle depuis le tableau de suivi.
+                </span>
+            </div>
+        </div>
+
+        <button
+            type="button"
+            class="btn-close text-reset"
+            data-bs-dismiss="offcanvas"
+            aria-label="Fermer"
+        ></button>
+    </div>
+
+    <div class="rz-remediation-drawer-body" data-remediation-drawer-body>
+        <div class="rz-remediation-drawer-loading">
+            <div class="text-center">
+                <div class="spinner-border text-primary mb-3" role="status" aria-hidden="true"></div>
+                <div class="small text-body-secondary">Chargement de l’action…</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="{{ asset('js/remediation-page.js') }}"></script>
+{% endblock %}

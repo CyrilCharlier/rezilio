@@ -1,81 +1,69 @@
 # Rezilio
 
-Rezilio est une application de suivi de mise en conformité pensées pour les DSI et les RSSI.
+Rezilio est une application web de pilotage de la mise en conformité cybersécurité, pensée pour les RSSI, les DSI et les responsables conformité des organisations assujetties à des référentiels réglementaires tels que la directive NIS2.
 
-L'objectif du projet est de centraliser le pilotage de la conformité, de suivre les écarts, de structurer les plans d'action et de donner une vision claire de la progression vers les exigences d'un référentiel (directive NIS2 par exemple), notamment autour de la gouvernance, de la gestion des risques, de la continuité d'activité, de la sécurité de la chaîne d'approvisionnement et de la gestion des incidents.
+L'objectif est de centraliser le pilotage de la conformité, de suivre les écarts, de structurer les plans de remédiation et de donner une vision claire et mesurable de la progression vers les exigences d'un référentiel — autour de la gouvernance, de la gestion des risques, de la continuité d'activité, de la sécurité de la chaîne d'approvisionnement et de la gestion des incidents.
+
+---
 
 ## Pourquoi Rezilio
 
-La France et l'Europe renforce fortement les attentes en matière de cybersécurité pour les organisations, avec un accent clair sur la supervision par la direction, la formation, la gestion des risques cyber et les mesures organisationnelles, techniques et humaines.
+La France transpose actuellement la directive NIS2 (UE 2022/2555) via le projet de loi « Résilience ». Adopté au Sénat en mars 2025 et en commission spéciale à l'Assemblée en septembre 2025, le texte est attendu en séance publique lors de la session extraordinaire de juillet 2026. À terme, près de **15 000 organisations** dans 18 secteurs d'activité seront assujetties — dont les collectivités territoriales de plus de 30 000 habitants et les éditeurs de logiciels —, contre 500 entités sous NIS1.
 
-Pour les organisations, la trajectoire de mise en conformité reste structurante et progressive, dans un contexte où leur exposition à la menace est reconnue comme élevée et où les modalités exactes d'intégration en droit français se précisent au fil de la transposition.
+En parallèle, l'ANSSI a publié en mars 2026 le **Référentiel Cyber France (ReCyF)**, document de travail listant les mesures recommandées pour atteindre les objectifs NIS2 et s'en prévaloir en cas de contrôle.
 
-Rezilio a été imaginé pour répondre à ce besoin opérationnel avec une approche simple : transformer une obligation réglementaire complexe en un pilotage concret, mesurable et collaboratif.
+Rezilio a été conçu pour répondre à ce besoin opérationnel : transformer une obligation réglementaire complexe en un pilotage concret, mesurable et collaboratif.
+
+---
 
 ## Ce que permet l'application
 
-- Cartographier les exigences et les relier à des mesures concrètes.
+- Cartographier les exigences réglementaires et les relier à des mesures concrètes.
 - Évaluer le niveau de maturité ou de conformité par domaine.
 - Identifier les écarts et prioriser les actions de remédiation.
-- Suivre l'avancement des plans d'action dans le temps.
-- Affecter des responsables, des échéances et des statuts aux mesures.
+- Piloter les remédiations en vue Kanban ou liste, avec gestion des statuts, priorités et échéances.
+- Affecter des responsables et suivre l'avancement dans le temps.
 - Préparer les audits, revues internes et travaux de gouvernance.
 - Produire une vision consolidée pour la direction, la DSI et le RSSI.
+
+---
 
 ## Cas d'usage
 
 ### Pour une collectivité territoriale
 
-Rezilio peut servir à structurer la feuille de route NIS2, suivre les obligations applicables, documenter les preuves de conformité et coordonner les équipes métiers, techniques et de direction autour d'un référentiel commun.
+Structurer la feuille de route NIS2, suivre les obligations applicables, documenter les preuves de conformité et coordonner les équipes métiers, techniques et de direction autour d'un référentiel commun.
 
 ### Pour un éditeur de logiciels
 
-L'application peut aussi être utilisée pour piloter ses propres mesures de cybersécurité ou accompagner ses clients dans leur démarche de conformité, avec une logique de suivi par exigences, plans d'actions et indicateurs.
+Piloter ses propres mesures de cybersécurité ou accompagner ses clients dans leur démarche de conformité, avec une logique de suivi par exigences, plans d'actions et indicateurs.
+
+---
 
 ## Positionnement produit
 
-Rezilio n'est pas seulement un outil documentaire. C'est un outil de pilotage qui aide à passer :
+Rezilio n'est pas un outil documentaire. C'est un outil de pilotage qui aide à passer :
 
 - d'une lecture réglementaire à une exécution opérationnelle ;
 - d'exigences générales à des mesures concrètes ;
 - d'un état des lieux ponctuel à un suivi continu.
 
-## Fonctionnalités envisagées
+---
 
-- Tableau de bord de conformité.
-- Bibliothèque d'exigences et de mesures.
-- Gestion des écarts et des risques.
-- Plans d'actions et workflows de validation.
-- Gestion des preuves et pièces associées.
-- Reporting de maturité et export des suivis.
-- Multi-entités, multi-sites ou multi-clients.
-- Historisation des décisions et traçabilité.
+## Stack technique
 
-## Public visé
+| Couche | Technologie |
+|---|---|
+| Backend | PHP 8.3 · Symfony 7 |
+| Templating | Twig 3 |
+| Frontend | Bootstrap 5.3 · Bootstrap Icons · AdminLTE 4 |
+| JavaScript | Vanilla JS (ES2022) · SortableJS |
+| Base de données | PostgreSQL |
+| Authentification | Symfony Security |
+| ORM | Doctrine ORM |
+| Formulaires | Symfony Forms · thème Bootstrap 5 |
 
-- RSSI
-- DSI
-- Responsables conformité
-- Directions générales
-- Collectivités territoriales
-
-## Vision
-
-Rezilio vise à devenir un socle de pilotage de la conformité cyber pour les organisations qui doivent transformer les exigences NIS2 en actions concrètes, suivies et démontrables.
-
-## Statut du projet
-
-Projet en cours de conception et de développement.
-
-## Idée de stack
-
-À adapter selon ton implémentation réelle :
-
-- Frontend : JavaScript
-- Backend : Symfony
-- Base de données : PostgreSQL
-- Authentification : Symfony Auth
-- Hébergement : cloud souverain, on-premise ou environnement maîtrisé
+---
 
 ## Installation
 
@@ -83,18 +71,52 @@ Projet en cours de conception et de développement.
 git clone <repo-url>
 cd rezilio
 composer install
+cp .env .env.local   # configurer DATABASE_URL
+php bin/console doctrine:database:create
+php bin/console doctrine:migrations:migrate
+symfony serve
 ```
+
+---
+
+## Fonctionnalités implémentées
+
+- [x] Authentification et gestion de session
+- [x] Bibliothèque d'exigences NIS2 par article
+- [x] Revues de conformité par mesure (statut, score, commentaire)
+- [x] Dashboard de conformité par domaine
+- [x] **Gestion des remédiations**
+  - Vue Kanban avec drag-and-drop (SortableJS)
+  - Vue liste / tableau
+  - Drawer de création / édition (offcanvas Bootstrap)
+  - Gestion des statuts, priorités, responsables et échéances
+  - Filtres persistants (état sauvegardé en session)
+  - Mise à jour de statut par PATCH AJAX
+
+---
 
 ## Roadmap
 
-- Authentification et gestion des organisations
-- Référentiels d'exigences (NIS2, RGPD, Guide d'hygiène ANSSI, ...)
-- Évaluation de conformité
-- Plans d'actions et remédiation
-- Dashboard et indicateurs
-- Exports et reporting
-- Gestion des preuves
-- Administration multi-tenant
+- [ ] Gestion des preuves et pièces jointes
+- [ ] Exports PDF / CSV des suivis
+- [ ] Reporting de maturité et indicateurs graphiques
+- [ ] Multi-entités / multi-référentiels
+- [ ] Historisation des décisions et traçabilité
+- [ ] Intégration du ReCyF (Référentiel Cyber France — ANSSI, mars 2026)
+- [ ] Administration multi-tenant
+
+---
+
+## Public visé
+
+- RSSI
+- DSI
+- Responsables conformité
+- Directions générales
+- Collectivités territoriales (>30 000 hab.)
+- Éditeurs de logiciels assujettis NIS2
+
+---
 
 ## Licence
 

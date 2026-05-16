@@ -71,6 +71,51 @@ final class RemediationActionModalController extends AbstractController
         ]);
     }
 
+    #[Route('/remediation-actions/{id}/modal-edit', name: 'app_remediation_action_edit_drawer', methods: ['GET', 'POST'])]
+    public function editDrawer(Request $request, RemediationAction $action, EntityManagerInterface $em): Response
+    {
+        $measureReview = $action->getMeasureReview();
+
+        $form = $this->createForm(RemediationActionType::class, $action, [
+            'action' => $this->generateUrl('app_remediation_action_edit_drawer', [
+                'id' => $action->getId(),
+            ]),
+            'method' => 'POST',
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            if (!$form->isValid()) {
+                return $this->json([
+                    'ok' => false,
+                    'html' => $this->renderView('campaign/remediation_action/_modal_form_drawer.html.twig', [
+                        'form' => $form->createView(),
+                        'measureReview' => $measureReview,
+                        'action' => $action,
+                    ]),
+                    'message' => 'Merci de corriger les erreurs du formulaire.',
+                ], 422);
+            }
+
+            $em->flush();
+
+            return $this->json([
+                'ok' => true,
+                'html' => $this->renderView('campaign/remediation_action/_modal_list.html.twig', [
+                    'measureReview' => $measureReview,
+                    'remediationActions' => $measureReview->getRemediationActions(),
+                ]),
+                'message' => 'Action de remédiation mise à jour.',
+            ]);
+        }
+
+        return $this->render('campaign/remediation_action/_modal_form_drawer.html.twig', [
+            'form' => $form->createView(),
+            'measureReview' => $measureReview,
+            'action' => $action,
+        ]);
+    }
+
     #[Route('/remediation-actions/{id}/modal-edit', name: 'app_remediation_action_edit_modal', methods: ['GET', 'POST'])]
     public function editModal(Request $request, RemediationAction $action, EntityManagerInterface $em): Response
     {

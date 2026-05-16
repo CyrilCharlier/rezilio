@@ -621,3 +621,486 @@
     border-color: rgba(220, 53, 69, 0.45);
     box-shadow: none;
 }
+
+/* =========================
+   Remediation — Drawer
+   ========================= */
+
+.rz-remediation-drawer {
+    --bs-offcanvas-width: min(980px, 95vw);
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--bs-body-bg);
+    box-shadow: -1.5rem 0 3rem rgba(0, 0, 0, 0.24);
+}
+
+.rz-drawer-lg  { --bs-offcanvas-width: min(820px,  94vw); }
+.rz-drawer-xl  { --bs-offcanvas-width: min(980px,  95vw); }
+.rz-drawer-xxl { --bs-offcanvas-width: min(1100px, 96vw); }
+
+.rz-remediation-drawer-header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--bs-body-bg);
+}
+
+.rz-remediation-drawer-header-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 0;
+}
+
+.rz-remediation-drawer-eyebrow {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--bs-secondary-color);
+}
+
+.rz-remediation-drawer-header .offcanvas-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.rz-remediation-drawer-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+}
+
+.rz-remediation-drawer-body {
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 76px);
+    min-height: 0;
+}
+
+.rz-remediation-drawer-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+}
+
+.rz-remediation-drawer-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.rz-remediation-drawer-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 220px;
+    padding: 2rem;
+}
+
+.rz-remediation-drawer-empty {
+    padding: 2rem;
+    color: var(--bs-secondary-color);
+    text-align: center;
+}
+
+.rz-remediation-drawer-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--bs-body-bg);
+    backdrop-filter: blur(10px);
+}
+
+/* =========================
+   Drawer — Blocs de contenu
+   ========================= */
+
+.rz-remediation-block {
+    padding: 1.25rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.rz-remediation-block-head {
+    margin-bottom: 1rem;
+}
+
+.rz-remediation-block-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.rz-remediation-block-subtitle {
+    margin: 0.35rem 0 0;
+    color: var(--bs-secondary-color);
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+/* =========================
+   Drawer — Formulaire
+   ========================= */
+
+.rz-remediation-form {
+    height: 100%;
+}
+
+.rz-remediation-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.rz-field {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.rz-field-full {
+    grid-column: 1 / -1;
+}
+
+.rz-form-label {
+    margin-bottom: 0.45rem;
+    font-weight: 500;
+}
+
+.rz-form-control,
+.rz-form-select {
+    min-height: 44px;
+}
+
+.rz-modal-textarea {
+    min-height: 8rem;
+    resize: vertical;
+}
+
+/* =========================
+   Kanban — Colonnes
+   ========================= */
+
+.rz-kanban-column {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 1rem;
+}
+
+.rz-kanban-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    min-height: 220px;
+    padding: 0.25rem;
+}
+
+.rz-kanban-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 96px;
+    padding: 1rem;
+    text-align: center;
+    border: 1px dashed rgba(255, 255, 255, 0.12);
+    border-radius: 0.9rem;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* =========================
+   Kanban — Cartes
+   ========================= */
+
+.rz-remediation-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    padding: 1rem;
+    border-radius: 0.95rem;
+    background: rgba(255, 255, 255, 0.075);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.22),
+        0 10px 24px rgba(0, 0, 0, 0.18);
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        border-color 0.18s ease,
+        background-color 0.18s ease;
+    backdrop-filter: blur(6px);
+}
+
+.rz-remediation-card:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.095);
+    border-color: rgba(79, 152, 163, 0.45);
+    box-shadow:
+        0 4px 10px rgba(0, 0, 0, 0.24),
+        0 18px 36px rgba(0, 0, 0, 0.22);
+}
+
+.rz-remediation-card:focus-within {
+    border-color: rgba(79, 152, 163, 0.55);
+    box-shadow:
+        0 0 0 3px rgba(79, 152, 163, 0.16),
+        0 12px 30px rgba(0, 0, 0, 0.24);
+}
+
+/* Barre de priorité */
+.rz-remediation-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    border-radius: 0.95rem 0 0 0.95rem;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.rz-remediation-card[data-priority="low"]::before      { background: rgba(109, 170, 69,  0.9);  }
+.rz-remediation-card[data-priority="medium"]::before   { background: rgba(232, 175, 52,  0.9);  }
+.rz-remediation-card[data-priority="high"]::before     { background: rgba(253, 171, 67,  0.95); }
+.rz-remediation-card[data-priority="critical"]::before { background: rgba(209, 99,  167, 0.95); }
+
+/* Contenu */
+.rz-remediation-card-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.rz-remediation-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.rz-remediation-card-title {
+    margin: 0;
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 0.98rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--bs-body-color);
+}
+
+.rz-priority-badge {
+    flex: 0 0 auto;
+    align-self: flex-start;
+    white-space: nowrap;
+}
+
+/* Métadonnées icônes */
+.rz-remediation-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.rz-remediation-meta-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    border-radius: 999px;
+    color: var(--bs-secondary-color);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition:
+        color 0.18s ease,
+        border-color 0.18s ease,
+        background-color 0.18s ease,
+        transform 0.18s ease;
+}
+
+.rz-remediation-meta-icon i {
+    font-size: 0.9rem;
+    line-height: 1;
+}
+
+.rz-remediation-meta-icon:hover {
+    color: var(--bs-body-color);
+    background: rgba(255, 255, 255, 0.09);
+    border-color: rgba(255, 255, 255, 0.14);
+    transform: translateY(-1px);
+}
+
+.rz-remediation-meta-icon.is-overdue {
+    color: var(--bs-danger);
+    background: rgba(220, 53, 69, 0.12);
+    border-color: rgba(220, 53, 69, 0.28);
+}
+
+/* Actions de la carte */
+.rz-remediation-card-actions {
+    display: flex;
+    gap: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.rz-remediation-card-actions .btn {
+    flex: 1 1 auto;
+}
+
+/* États Sortable */
+.rz-remediation-card.is-updating {
+    opacity: 0.72;
+    pointer-events: none;
+}
+
+.rz-remediation-card.is-done {
+    opacity: 0.82;
+}
+
+/* =========================
+   Kanban — Drag & drop
+   ========================= */
+
+.rz-remediation-card.sortable-ghost {
+    opacity: 0.45;
+    background: rgba(79, 152, 163, 0.12);
+    border-color: rgba(79, 152, 163, 0.3);
+    box-shadow: none;
+}
+
+.rz-remediation-card.sortable-chosen {
+    transform: rotate(1deg) scale(1.01);
+    border-color: rgba(79, 152, 163, 0.5);
+    box-shadow:
+        0 10px 24px rgba(0, 0, 0, 0.28),
+        0 22px 42px rgba(0, 0, 0, 0.24);
+}
+
+.rz-kanban-list.sortable-drag-over {
+    border-radius: 0.9rem;
+    background: rgba(79, 152, 163, 0.06);
+}
+
+/* =========================
+   Filtres — Toggle collapse
+   ========================= */
+
+.rz-filter-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--bs-body-color);
+}
+
+.rz-filter-toggle-icon {
+    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rz-filter-toggle[aria-expanded="false"] .rz-filter-toggle-icon {
+    transform: rotate(180deg);
+}
+
+/* =========================
+   Responsive
+   ========================= */
+
+@media (max-width: 991.98px) {
+    .rz-remediation-drawer {
+        --bs-offcanvas-width: min(92vw, 900px);
+    }
+
+    .rz-remediation-drawer-header {
+        padding: 1rem 1.25rem 0.9rem;
+    }
+
+    .rz-remediation-drawer-scroll {
+        padding: 1.25rem;
+    }
+
+    .rz-remediation-drawer-footer {
+        padding: 0.9rem 1.25rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .rz-remediation-drawer,
+    .rz-drawer-lg,
+    .rz-drawer-xl,
+    .rz-drawer-xxl {
+        --bs-offcanvas-width: 100vw;
+    }
+
+    .rz-remediation-drawer-body {
+        height: calc(100vh - 72px);
+    }
+
+    .rz-remediation-drawer-header {
+        padding: 1rem;
+    }
+
+    .rz-remediation-drawer-meta {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.45rem;
+    }
+
+    .rz-remediation-drawer-scroll {
+        padding: 1rem;
+        gap: 0.85rem;
+    }
+
+    .rz-remediation-block {
+        padding: 1rem;
+        border-radius: 0.85rem;
+    }
+
+    .rz-remediation-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .rz-remediation-drawer-footer {
+        flex-direction: column-reverse;
+        padding: 1rem;
+    }
+
+    .rz-remediation-drawer-footer .btn,
+    .rz-remediation-card-actions .btn {
+        width: 100%;
+    }
+
+    .rz-remediation-card-top {
+        flex-wrap: wrap;
+    }
+
+    .rz-remediation-card-meta {
+        gap: 0.55rem;
+    }
+
+    .rz-remediation-meta-icon {
+        width: 1.8rem;
+        height: 1.8rem;
+    }
+}

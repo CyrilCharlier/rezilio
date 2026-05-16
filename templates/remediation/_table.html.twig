@@ -1,0 +1,127 @@
+<div class="card rz-card">
+    <div class="card-header rz-card-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="rz-card-header-title">
+                <i class="bi bi-kanban"></i>
+                <span>Liste des remédiations</span>
+            </div>
+
+            {% if actions is not empty %}
+                <span class="rz-card-header-meta">
+                    {{ actions|length }} action{{ actions|length > 1 ? 's' : '' }}
+                </span>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if actions is not empty %}
+        <div class="card-body rz-card-body p-0">
+            <div class="rz-table-wrap">
+                <table class="table align-middle rz-table">
+                    <thead>
+                        <tr>
+                            <th>Action</th>
+                            <th>Campagne</th>
+                            <th>Statut</th>
+                            <th>Priorité</th>
+                            <th>Échéance</th>
+                            <th>Mise à jour</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for action in actions %}
+                            {% set isOverdue = action.dueDate and action.dueDate < date() and action.status.value not in ['done', 'cancelled'] %}
+                            <tr>
+                                <td>
+                                    <div class="rz-table-title">{{ action.title }}</div>
+
+                                    {% if action.description %}
+                                        <div class="text-body-secondary small mt-1">
+                                            {{ action.description|u.truncate(110, '…') }}
+                                        </div>
+                                    {% endif %}
+
+                                    <div class="small mt-2 text-body-secondary">
+                                        <i class="bi bi-diagram-3 me-1"></i>
+                                        Revue #{{ action.measureReview ? action.measureReview.id : '—' }}
+                                    </div>
+                                </td>
+
+                                <td>
+                                    {{ action.measureReview and action.measureReview.campaign
+                                        ? action.measureReview.campaign.name
+                                        : '—'
+                                    }}
+                                </td>
+
+                                <td>
+                                    <span class="badge {{ action.status.badgeClass() }}">
+                                        {{ action.status.label() }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="badge {{ action.priority.badgeClass() }}">
+                                        {{ action.priority.label() }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    {% if action.dueDate %}
+                                        <span class="{{ isOverdue ? 'text-danger fw-semibold' : '' }}">
+                                            {{ action.dueDate|date('d/m/Y') }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-body-secondary">Non définie</span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {{ action.updatedAt ? action.updatedAt|date('d/m/Y H:i') : '—' }}
+                                </td>
+
+                                <td class="text-end">
+                                    <div class="btn-group">
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-primary"
+                                            data-remediation-drawer-open
+                                            data-remediation-drawer-url="{{ path('app_remediation_action_edit_drawer', {id: action.id}) }}"
+                                            data-remediation-drawer-title="{{ action.title }}"
+                                            data-remediation-drawer-context="Campagne {{ action.measureReview and action.measureReview.campaign ? action.measureReview.campaign.name : 'non définie' }}"
+                                        >
+                                            Modifier
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-danger"
+                                            data-remediation-delete-url="{{ path('app_remediation_action_delete', {id: action.id}) }}"
+                                            data-remediation-delete-token="{{ csrf_token('delete_remediation_action_' ~ action.id) }}"
+                                            data-remediation-delete-label="{{ action.title }}"
+                                        >
+                                            Supprimer
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="card-body rz-card-body rz-empty">
+            <div>
+                <div class="rz-empty-icon">
+                    <i class="bi bi-kanban"></i>
+                </div>
+                <h4 class="rz-empty-title">Aucune remédiation</h4>
+                <p class="rz-empty-text">
+                    Aucune action de remédiation ne correspond aux filtres appliqués.
+                </p>
+            </div>
+        </div>
+    {% endif %}
+</div>
