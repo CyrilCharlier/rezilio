@@ -67,46 +67,33 @@ Rezilio n'est pas un outil documentaire. C'est un outil de pilotage qui aide à 
 
 ## Installation
 
-### 1. Cloner le dépôt
-
 ```bash
 git clone https://github.com/CyrilCharlier/rezilio.git
 cd rezilio
-```
-
-### 2. Configurer l'environnement
-
-Copiez le fichier d'exemple et adaptez les valeurs à votre environnement local :
-
-```bash
-cp .env.example .env.local
-```
-
-Éditez `.env.local` et renseignez au minimum :
-
-```dotenv
-# Générez un secret avec : php -r "echo bin2hex(random_bytes(16));"
-APP_SECRET=votre_secret_local
-
-# Adaptez les identifiants PostgreSQL si nécessaire
-DATABASE_URL="postgresql://app:!ChangeMe!@127.0.0.1:5432/rezilio?serverVersion=16&charset=utf8"
-```
-
-> **Note :** `.env.local` est ignoré par Git (voir `.gitignore`). Ne commitez jamais vos secrets.
-
-### 3. Démarrer les services Docker
-
-```bash
-docker compose up -d
-```
-
-Cela démarre un conteneur PostgreSQL accessible sur le port `5432` par défaut.
-
-### 4. Installer les dépendances PHP
-
-```bash
 composer install
+cp .env .env.local   # configurer DATABASE_URL
+php bin/console doctrine:database:create
+php bin/console doctrine:migrations:migrate
+symfony serve
 ```
+
+---
+
+## Fonctionnalités implémentées
+
+- [x] Authentification et gestion de session
+- [x] Bibliothèque d'exigences NIS2 par article
+- [x] Revues de conformité par mesure (statut, score, commentaire)
+- [x] Dashboard de conformité par domaine
+- [x] **Gestion des remédiations**
+  - Vue Kanban avec drag-and-drop (SortableJS)
+  - Vue liste / tableau
+  - Drawer de création / édition (offcanvas Bootstrap)
+  - Gestion des statuts, priorités, responsables et échéances
+  - Filtres persistants (état sauvegardé en session)
+  - Mise à jour de statut par PATCH AJAX
+
+---
 
 ## Roadmap
 
