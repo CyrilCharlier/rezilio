@@ -23,6 +23,14 @@ security:
                 login_path: app_login
                 check_path: app_login
                 enable_csrf: true
+
+            remember_me:
+                secret: '%kernel.secret%'      # obligatoire
+                lifetime: 604800               # 7 jours en secondes (à adapter)
+                path: '/'                      # chemin pour lequel le cookie est valable
+                remember_me_parameter: _remember_me
+                # always_remember_me: true     # si tu veux ignorer la case à cocher
+
             logout:
                 path: app_logout
                 # where to redirect after logout
@@ -37,6 +45,9 @@ security:
     # Note: Only the *first* matching rule is applied
     access_control:
         - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/assets, roles: PUBLIC_ACCESS }
+        - { path: ^/js, roles: PUBLIC_ACCESS }
+        - { path: ^/css, roles: PUBLIC_ACCESS }
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/, roles: ROLE_USER }
 

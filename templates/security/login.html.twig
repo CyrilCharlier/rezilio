@@ -1,53 +1,130 @@
 {% extends 'layout/security.html.twig' %}
 
 {% block content %}
-    <div class="card">
+
+    <div class="card card-outline card-primary">
         <div class="card-body login-card-body">
-          <p class="login-box-msg">Sign in to start your session</p>
+            <p class="login-box-msg mb-4">
+                Connectez-vous à votre espace sécurisé.
+            </p>
 
-          <form method="post">
+            {# Erreur générique #}
             {% if error %}
-            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                <div class="alert alert-danger alert-dismissible py-2 px-3 small mb-3">
+                    <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert" aria-label="Close"></button>
+                    Identifiant ou mot de passe incorrect. Veuillez réessayer.
+                </div>
             {% endif %}
-            <div class="input-group mb-3">
-              <input type="email" class="form-control" placeholder="Email" value="{{ last_username }}" name="_username" id="username" autofocus required />
-              <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
-              <div class="input-group-text">
-                <span class="bi bi-envelope"></span>
-              </div>
-            </div>
-            <div class="input-group mb-3">
-              <input type="password" class="form-control" placeholder="Password" name="_password" id="password" required />
-              <div class="input-group-text">
-                <span class="bi bi-lock-fill"></span>
-              </div>
-            </div>
-            <!--begin::Row-->
-            <div class="row">
-              <div class="col-8">
-                <div class="form-check">
-                  {#<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
-                  <label class="form-check-label" for="flexCheckDefault"> Remember Me </label>#}
-                </div>
-              </div>
-              <!-- /.col -->
-              <div class="col-4">
-                <div class="d-grid gap-2">
-                  <button type="submit" class="btn btn-primary">Sign In</button>
-                </div>
-              </div>
-              <!-- /.col -->
-            </div>
-            <!--end::Row-->
-          </form>
 
-          {#<p class="mb-1">
-            <a href="forgot-password.html">I forgot my password</a>
-          </p>
-          <p class="mb-0">
-            <a href="register.html" class="text-center"> Register a new membership </a>
-          </p>#}
+            {# Info utilisateur déjà connecté #}
+            {% if app.user %}
+                <div class="alert alert-info py-2 px-3 small mb-3">
+                    Connecté en tant que <strong>{{ app.user.userIdentifier }}</strong>.
+                    <a href="{{ path('app_logout') }}" class="alert-link">Se déconnecter</a>
+                </div>
+            {% endif %}
+
+            <form method="post" novalidate>
+                <input type="hidden"
+                        name="_csrf_token"
+                        value="{{ csrf_token('authenticate') }}">
+
+                <div class="mb-3">
+                    <label for="username" class="form-label">Adresse e-mail</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <span class="bi bi-envelope"></span>
+                        </span>
+                        <input
+                            type="email"
+                            class="form-control"
+                            id="username"
+                            name="_username"
+                            value="{{ last_username }}"
+                            placeholder="vous@domaine.fr"
+                            autofocus
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="mb-2">
+                    <label for="password" class="form-label d-flex justify-content-between">
+                        <span>Mot de passe</span>
+                        {# à activer quand tu auras la route #}
+                        {# <a href="{{ path('app_forgot_password_request') }}" class="small">
+                            Mot de passe oublié ?
+                        </a> #}
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <span class="bi bi-lock-fill"></span>
+                        </span>
+                        <input
+                            type="password"
+                            class="form-control"
+                            id="password"
+                            name="_password"
+                            placeholder="Votre mot de passe"
+                            required
+                        >
+                        <button
+                            class="btn btn-outline-secondary"
+                            type="button"
+                            id="toggle-password-visibility"
+                            aria-label="Afficher/masquer le mot de passe"
+                        >
+                            <span class="bi bi-eye" id="icon-show"></span>
+                            <span class="bi bi-eye-slash d-none" id="icon-hide"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input"
+                                type="checkbox"
+                                value="on"
+                                id="remember_me"
+                                name="_remember_me">
+                        <label class="form-check-label small" for="remember_me">
+                            Se souvenir de moi sur cet appareil
+                        </label>
+                    </div>
+                    <span class="badge bg-dark text-muted border small">
+                        <span class="bi bi-shield-lock me-1"></span>Connexion sécurisée
+                    </span>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">
+                        <span class="bi bi-box-arrow-in-right me-1"></span>
+                        Se connecter
+                    </button>
+                </div>
+            </form>
         </div>
-      </div>
     </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var toggleButton = document.getElementById('toggle-password-visibility');
+            var passwordInput = document.getElementById('password');
+            var iconShow = document.getElementById('icon-show');
+            var iconHide = document.getElementById('icon-hide');
+
+            if (!toggleButton || !passwordInput || !iconShow || !iconHide) {
+                return;
+            }
+
+            toggleButton.addEventListener('click', function () {
+                var isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+
+                iconShow.classList.toggle('d-none', !isPassword);
+                iconHide.classList.toggle('d-none', isPassword);
+            });
+        });
+    </script>
 {% endblock %}

@@ -1,0 +1,442 @@
+{# templates/admin/user/index.html.twig #}
+{% extends 'layout/admin.html.twig' %}
+
+{% block title %}Administration des utilisateurs{% endblock %}
+
+{% block content %}
+<div class="rz-page">
+    <div class="app-content-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-sm-6">
+                    <h3 class="mb-0">Utilisateurs</h3>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-end mb-0">
+                        <li class="breadcrumb-item">
+                            <a href="{{ path('app_default') }}">Tableau de bord</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            Utilisateurs
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-content">
+        <div class="container-fluid">
+
+            {{ include('partial/_flash_messages.html.twig') }}
+
+            <div class="card rz-card">
+                <div class="card-header rz-card-header">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div class="rz-card-header-title">
+                            <i class="bi bi-people"></i>
+                            <span>Liste des utilisateurs</span>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="btn btn-primary rz-btn rz-btn-primary"
+                            id="rz-user-new-btn"
+                            data-url="{{ path('admin_user_new') }}"
+                        >
+                            <i class="bi bi-plus-lg me-1"></i>
+                            Nouvel utilisateur
+                        </button>
+                    </div>
+                </div>
+
+                {% if users is not empty %}
+                    <div class="card-body rz-card-body p-0">
+                        <div class="rz-table-wrap">
+                            <table class="table align-middle rz-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 70px;">ID</th>
+                                        <th>E-mail</th>
+                                        <th>Rôles</th>
+                                        <th>Dernière connexion</th>
+                                        <th>Désactivé le</th>
+                                        <th>Actif</th>
+                                        <th class="text-end" style="width: 170px;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in users %}
+                                        {% set rowClass = '' %}
+
+                                        {% if user.deactivatedAt is not null %}
+                                            {% set nowTs = "now"|date('U') %}
+                                            {% set deactivatedTs = user.deactivatedAt|date('U') %}
+                                            {% set daysSinceDeactivation = ((nowTs - deactivatedTs) / 86400)|round(0, 'floor') %}
+
+                                            {% if daysSinceDeactivation >= 15 and daysSinceDeactivation < 30 %}
+                                                {% set rowClass = 'rz-user-row-warn' %}
+                                            {% elseif daysSinceDeactivation >= 30 and daysSinceDeactivation < 45 %}
+                                                {% set rowClass = 'rz-user-row-danger' %}
+                                            {% endif %}
+                                        {% endif %}
+
+                                        <tr class="{{ rowClass }}">
+                                            <td class="text-body-secondary">
+                                                {# Optionnel : petite icône d’état #}
+                                                {% if user.deactivatedAt is not null and daysSinceDeactivation >= 30 and daysSinceDeactivation < 45 %}
+                                                    <i class="bi bi-exclamation-circle text-warning me-1"></i>
+                                                {% elseif user.deactivatedAt is not null and daysSinceDeactivation >= 15 and daysSinceDeactivation < 30 %}
+                                                    <i class="bi bi-clock-history text-muted me-1"></i>
+                                                {% endif %}
+                                                {{ user.id }}
+                                            </td>
+                                            <td>
+                                                <div class="rz-table-title">
+                                                    {{ user.userIdentifier }}
+                                                </div>
+                                            </td>
+                                            <td class="text-body-secondary">
+                                                {% if user.roles is defined and user.roles is not empty %}
+                                                    {% for role in user.roles %}
+                                                        <span class="badge text-bg-secondary me-1">
+                                                            {{ role }}
+                                                        </span>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <span class="text-body-secondary">—</span>
+                                                {% endif %}
+                                            </td>
+
+                                            {# Dernière connexion #}
+                                            <td class="text-body-secondary">
+                                                {% if user.lastLoginAt is not null %}
+                                                    <span title="{{ user.lastLoginAt|date('d/m/Y H:i:s') }}">
+                                                        {{ user.lastLoginAt|date('d/m/Y') }}
+                                                    </span>
+                                                {% else %}
+                                                    <span class="text-muted fst-italic">
+                                                        Jamais connecté
+                                                    </span>
+                                                {% endif %}
+                                            </td>
+
+                                            {# Date de désactivation #}
+                                            <td class="text-body-secondary">
+                                                {% if user.deactivatedAt is not null %}
+                                                    <span title="{{ user.deactivatedAt|date('d/m/Y H:i:s') }}">
+                                                        {{ user.deactivatedAt|date('d/m/Y') }}
+                                                    </span>
+                                                {% else %}
+                                                    <span class="text-muted">—</span>
+                                                {% endif %}
+                                            </td>
+
+                                            {# Statut actif #}
+                                            <td data-user-status-cell="{{ user.id }}">
+                                                {% if user.isActive() %}
+                                                    <span class="badge text-bg-success">Oui</span>
+                                                {% else %}
+                                                    <span class="badge text-bg-secondary">Non</span>
+                                                {% endif %}
+                                            </td>
+
+                                            <td class="text-end">
+                                                <div class="d-inline-flex align-items-center gap-1">
+                                                    {# Bouton modifier (modale) #}
+                                                    <button type="button"
+                                                            class="btn btn-outline-secondary btn-sm rz-user-edit-btn"
+                                                            data-url="{{ path('admin_user_edit', {'id': user.id}) }}"
+                                                            title="Modifier">
+                                                        <i class="bi bi-pencil-square"></i>
+                                                    </button>
+
+                                                    {# Bouton toggle actif/inactif en AJAX #}
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-sm rz-user-toggle-status-btn
+                                                               {{ user.isActive() ? 'btn-outline-warning' : 'btn-outline-success' }}"
+                                                        data-user-id="{{ user.id }}"
+                                                        data-url="{{ path('admin_user_toggle_status', {'id': user.id}) }}"
+                                                        data-token="{{ csrf_token('toggle_user_status_' ~ user.id) }}"
+                                                        title="{{ user.isActive() ? 'Désactiver l’utilisateur' : 'Activer l’utilisateur' }}"
+                                                    >
+                                                        {% if user.isActive() %}
+                                                            <i class="bi bi-person-x"></i>
+                                                        {% else %}
+                                                            <i class="bi bi-person-check"></i>
+                                                        {% endif %}
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="card-body rz-card-body rz-empty">
+                        <div>
+                            <div class="rz-empty-icon">
+                                <i class="bi bi-people"></i>
+                            </div>
+                            <h4 class="rz-empty-title">Aucun utilisateur</h4>
+                            <p class="rz-empty-text">
+                                Créez votre premier utilisateur pour donner accès à Rezilio
+                                et gérer les responsabilités de conformité.
+                            </p>
+                            <button
+                                type="button"
+                                class="btn btn-primary rz-btn rz-btn-primary"
+                                id="rz-user-new-btn-empty"
+                                data-url="{{ path('admin_user_new') }}"
+                            >
+                                <i class="bi bi-plus-lg me-1"></i>
+                                Créer un utilisateur
+                            </button>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="rz-user-modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content" id="rz-user-modal-content"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block stylesheet %}
+<style>
+/* Ligne « fraîchement désactivée » 15–30 j */
+.rz-user-row-warn {
+    --bs-table-bg-state: rgba(255, 193, 7, 0.06);      /* jaune très léger */
+    box-shadow: inset 3px 0 0 rgba(255, 193, 7, 0.6);  /* bord gauche jaune */
+}
+
+/* Ligne « proche purge » 30–45 j */
+.rz-user-row-danger {
+    --bs-table-bg-state: rgba(220, 53, 69, 0.06);       /* rouge très léger */
+    box-shadow: inset 3px 0 0 rgba(220, 53, 69, 0.7);   /* bord gauche rouge */
+}
+
+/* Optionnel : transition douce au survol */
+.rz-user-row-warn:hover,
+.rz-user-row-danger:hover {
+    --bs-table-bg-state: rgba(255, 255, 255, 0.03);
+}
+</style>
+{% endblock %}
+
+{% block javascript %}
+    {{ parent() }}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const userModalEl = document.getElementById('rz-user-modal');
+            const userModalContent = document.getElementById('rz-user-modal-content');
+            const newBtnMain = document.getElementById('rz-user-new-btn');
+            const newBtnEmpty = document.getElementById('rz-user-new-btn-empty');
+
+            const bsModal = userModalEl ? new bootstrap.Modal(userModalEl) : null;
+
+            // --- Fonction utilitaire pour initialiser les formulaires AJAX dans la modale ---
+            function initUserFormAjax() {
+                const newForm = document.getElementById('rz-user-new-form');
+                if (newForm) {
+                    wireUserForm(newForm, 'rz-user-new-submit', 'Utilisateur créé avec succès.');
+                }
+
+                const editForm = document.getElementById('rz-user-edit-form');
+                if (editForm) {
+                    wireUserForm(editForm, 'rz-user-edit-submit', 'Utilisateur mis à jour avec succès.');
+                }
+            }
+
+            function wireUserForm(form, submitId, defaultSuccessMessage) {
+                const submitBtn = document.getElementById(submitId);
+
+                form.addEventListener('submit', async function (e) {
+                    e.preventDefault();
+
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                    }
+
+                    // Nettoyer erreurs précédentes
+                    form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                    form.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
+
+                    try {
+                        const response = await fetch(form.action, {
+                            method: form.method || 'POST',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                            },
+                            body: new FormData(form),
+                        });
+
+                        const data = await response.json();
+
+                        if (!response.ok || data.status !== 'ok') {
+                            if (data.errors) {
+                                Object.entries(data.errors).forEach(([fieldName, messages]) => {
+                                    const field = form.querySelector('[name$="[' + fieldName + ']"]');
+                                    if (!field) {
+                                        return;
+                                    }
+                                    field.classList.add('is-invalid');
+
+                                    const feedback = document.createElement('div');
+                                    feedback.classList.add('invalid-feedback');
+                                    feedback.innerText = messages.join('\n');
+
+                                    if (field.parentNode) {
+                                        field.parentNode.appendChild(feedback);
+                                    }
+                                });
+                            }
+
+                            rzShowToast('error', data.message || 'Des erreurs de validation sont présentes.');
+                            return;
+                        }
+
+                        rzShowToast('success', data.message || defaultSuccessMessage);
+
+                        // Fermer la modale après succès
+                        if (userModalEl && bsModal) {
+                            bsModal.hide();
+                        }
+
+                        // Pour refléter les changements dans la liste sans te casser la tête
+                        // on peut recharger la page :
+                        location.reload();
+
+                    } catch (e) {
+                        console.error(e);
+                        rzShowToast('error', 'Erreur réseau lors de la sauvegarde de l’utilisateur.');
+                    } finally {
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                        }
+                    }
+                });
+            }
+
+            // --- Toggle actif/inactif ---
+            const statusButtons = document.querySelectorAll('.rz-user-toggle-status-btn');
+
+            statusButtons.forEach((btn) => {
+                btn.addEventListener('click', async function () {
+                    const userId = this.dataset.userId;
+                    const url = this.dataset.url;
+                    const token = this.dataset.token;
+
+                    this.disabled = true;
+
+                    try {
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: new URLSearchParams({
+                                _token: token,
+                            }),
+                        });
+
+                        const data = await response.json();
+
+                        if (!response.ok || data.status !== 'ok') {
+                            rzShowToast('error', data.message || 'Une erreur est survenue lors de la mise à jour.');
+                            return;
+                        }
+
+                        const isActive = data.isActive === true;
+                        const statusCell = document.querySelector(
+                            '[data-user-status-cell="' + userId + '"]'
+                        );
+
+                        if (statusCell) {
+                            statusCell.innerHTML = isActive
+                                ? '<span class="badge text-bg-success">Oui</span>'
+                                : '<span class="badge text-bg-secondary">Non</span>';
+                        }
+
+                        this.classList.toggle('btn-outline-warning', isActive);
+                        this.classList.toggle('btn-outline-success', !isActive);
+                        this.setAttribute(
+                            'title',
+                            isActive ? 'Désactiver l’utilisateur' : 'Activer l’utilisateur'
+                        );
+                        this.innerHTML = isActive
+                            ? '<i class="bi bi-person-x"></i>'
+                            : '<i class="bi bi-person-check"></i>';
+
+                        rzShowToast('success', data.message || 'Statut mis à jour avec succès.');
+                    } catch (e) {
+                        console.error(e);
+                        rzShowToast('error', 'Erreur réseau lors de la mise à jour du statut utilisateur.');
+                    } finally {
+                        this.disabled = false;
+                    }
+                });
+            });
+
+            // --- Ouverture modale pour NEW ---
+            function wireNewButton(btn) {
+                if (!btn) return;
+                btn.addEventListener('click', async function () {
+                    const url = this.dataset.url;
+                    if (!userModalEl || !userModalContent || !bsModal) return;
+
+                    try {
+                        const response = await fetch(url, {
+                            method: 'GET',
+                            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                        });
+
+                        const html = await response.text();
+                        userModalContent.innerHTML = html;
+                        bsModal.show();
+                        initUserFormAjax();
+                    } catch (e) {
+                        console.error(e);
+                        rzShowToast('error', 'Impossible de charger le formulaire de création.');
+                    }
+                });
+            }
+
+            wireNewButton(newBtnMain);
+            wireNewButton(newBtnEmpty);
+
+            // --- Ouverture modale pour EDIT ---
+            document.querySelectorAll('.rz-user-edit-btn').forEach((btn) => {
+                btn.addEventListener('click', async function () {
+                    const url = this.dataset.url;
+                    if (!userModalEl || !userModalContent || !bsModal) return;
+
+                    try {
+                        const response = await fetch(url, {
+                            method: 'GET',
+                            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                        });
+
+                        const html = await response.text();
+                        userModalContent.innerHTML = html;
+                        bsModal.show();
+                        initUserFormAjax();
+                    } catch (e) {
+                        console.error(e);
+                        rzShowToast('error', 'Impossible de charger le formulaire de modification.');
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

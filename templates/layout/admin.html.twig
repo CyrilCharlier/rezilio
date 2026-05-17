@@ -9,5 +9,51 @@
         {% block content %}{% endblock %}
     </main>
 
+    <div class="toast-container position-fixed top-0 end-0 p-3" id="rz-toast-container" style="z-index: 1080;"></div>
     {# include 'partial/admin/_footer.html.twig' #}
+{% endblock %}
+
+{% block javascript %}
+    {{ parent() }}
+
+    <script>
+        function rzShowToast(type, message) {
+            const container = document.getElementById('rz-toast-container');
+            if (!container) {
+                console.warn('Toast container not found');
+                return;
+            }
+
+            const id = 'rz-toast-' + Date.now();
+
+            const isSuccess = type === 'success';
+            const headerBg = isSuccess ? 'bg-success text-white' : 'bg-danger text-white';
+            const icon = isSuccess ? 'bi bi-check-circle' : 'bi bi-exclamation-triangle';
+
+            const toastHtml = `
+                <div id="${id}" class="toast align-items-center border-0 mb-2" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header ${headerBg}">
+                        <i class="${icon} me-2"></i>
+                        <strong class="me-auto">${isSuccess ? 'Succès' : 'Erreur'}</strong>
+                        <small class="text-white-50">Maintenant</small>
+                        <button type="button" class="btn-close btn-close-white ms-2 mb-1" data-bs-dismiss="toast" aria-label="Fermer"></button>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', toastHtml);
+
+            const toastEl = document.getElementById(id);
+            const toast = new bootstrap.Toast(toastEl, {
+                delay: 4000,
+                autohide: true
+            });
+            toast.show();
+
+            toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove());
+        }
+    </script>
 {% endblock %}

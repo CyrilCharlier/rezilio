@@ -49,10 +49,16 @@
                                 </td>
 
                                 <td>
-                                    {{ action.measureReview and action.measureReview.campaign
-                                        ? action.measureReview.campaign.name
-                                        : '—'
-                                    }}
+                                    <div>
+                                        {{ action.measureReview and action.measureReview.campaign
+                                            ? action.measureReview.campaign.name
+                                            : '—'
+                                        }}
+                                    </div>
+                                    <div class="small mt-2 text-body-secondary">
+                                        <i class="bi bi-bookmark me-1"></i>
+                                        {{ action.measureReview.campaign.referential.label }}
+                                    </div>
                                 </td>
 
                                 <td>

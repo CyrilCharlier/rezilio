@@ -1,12 +1,14 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Admin;
 
 use App\Entity\Society;
 use App\Form\SocietyType;
 use App\Repository\SocietyRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire as AttributeAutowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -14,6 +16,11 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/admin/society')]
 final class SocietyController extends AbstractController
 {
+    public function __construct(
+        #[AttributeAutowire('@monolog.logger.security')]
+        private LoggerInterface $securityLogger,
+    ) {}
+
     #[Route(name: 'app_society_index', methods: ['GET'])]
     public function index(SocietyRepository $societyRepository): Response
     {
