@@ -1,0 +1,54 @@
+{% extends 'layout/security.html.twig' %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 520px;">
+    <h1 class="h4 mb-3">Activation de la double authentification</h1>
+
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ type == 'error' ? 'danger' : type }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <p>1. Scanne ce QR code avec ton application d’authentification.</p>
+
+    <div class="mb-3 text-center">
+        <img
+            src="{{ qr_code_data_uri(otpAuthUri) }}"
+            alt="QR code 2FA"
+            style="max-width: 220px; height: auto;"
+        >
+    </div>
+
+    <p class="text-muted">
+        Si tu ne peux pas scanner le QR code, tu peux ajouter le compte manuellement avec ce secret :
+    </p>
+    <div class="mb-4">
+        <input type="text" class="form-control" value="{{ user.totpSecret }}" readonly>
+    </div>
+
+    <hr>
+
+    <p>2. Saisis un code généré par ton application pour confirmer l’activation :</p>
+
+    <form method="post">
+        <div class="mb-3">
+            <label for="activation_code" class="form-label">Code 2FA</label>
+            <input
+                type="text"
+                id="activation_code"
+                name="activation_code"
+                required
+                autocomplete="one-time-code"
+                class="form-control"
+            >
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">
+            Valider et activer la 2FA
+        </button>
+    </form>
+</div>
+{% endblock %}

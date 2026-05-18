@@ -52,16 +52,18 @@ Rezilio n'est pas un outil documentaire. C'est un outil de pilotage qui aide à 
 
 ## Stack technique
 
-| Couche | Technologie |
-|---|---|
-| Backend | PHP 8.3 · Symfony 7 |
-| Templating | Twig 3 |
-| Frontend | Bootstrap 5.3 · Bootstrap Icons · AdminLTE 4 |
-| JavaScript | Vanilla JS (ES2022) · SortableJS |
-| Base de données | PostgreSQL |
-| Authentification | Symfony Security |
-| ORM | Doctrine ORM |
-| Formulaires | Symfony Forms · thème Bootstrap 5 |
+| Couche              | Technologie                                         |
+|---------------------|-----------------------------------------------------|
+| Backend             | PHP 8.3 · Symfony 7                                 |
+| Templating          | Twig 3                                              |
+| Frontend            | Bootstrap 5.3 · Bootstrap Icons · AdminLTE 4        |
+| JavaScript          | Vanilla JS (ES2022) · SortableJS                    |
+| Base de données     | PostgreSQL                                          |
+| Authentification    | Symfony Security · 2FA TOTP (SchebTwoFactorBundle)  |
+| ORM                 | Doctrine ORM                                        |
+| Formulaires         | Symfony Forms · thème Bootstrap 5                   |
+| QR Code             | endroid/qr-code-bundle                              |
+| Logging sécurité    | Monolog (channel `security_rezilio`)                |
 
 ---
 
@@ -71,9 +73,11 @@ Rezilio n'est pas un outil documentaire. C'est un outil de pilotage qui aide à 
 git clone https://github.com/CyrilCharlier/rezilio.git
 cd rezilio
 composer install
+
 cp .env .env.local   # configurer DATABASE_URL
 php bin/console doctrine:database:create
 php bin/console doctrine:migrations:migrate
+
 symfony serve
 ```
 
@@ -82,10 +86,22 @@ symfony serve
 ## Fonctionnalités implémentées
 
 - [x] Authentification et gestion de session
+- [x] Authentification forte (2FA)
+  - Activation forcée de la 2FA à la connexion si non configurée
+  - Enrôlement TOTP (URI otpauth:// + QR code dans l’interface)
+  - Vérification du premier code pour activer la 2FA
+  - Challenge 2FA à chaque connexion pour les comptes activés
+  - Tolérance configurable sur la dérive d’horloge (leeway)
+- [x] Journalisation des événements de sécurité
+  - Channel dédié `security_rezilio` (Monolog)
+  - Événements normalisés (`auth.login.*`, `auth.logout`, `auth.2fa.*`, `user.account.*`, etc.)
+  - ID de corrélation `auth_flow_id` pour relier login et challenges 2FA
+  - Logs structurés pour exploitation SIEM (ELK, Splunk, Sentinel…)
+   _Voir la [documentation détaillée des logs](docs/security-logging.md) pour l’exploitation dans un SIEM._
 - [x] Bibliothèque d'exigences NIS2 par article
 - [x] Revues de conformité par mesure (statut, score, commentaire)
 - [x] Dashboard de conformité par domaine
-- [x] **Gestion des remédiations**
+- [x] Gestion des remédiations
   - Vue Kanban avec drag-and-drop (SortableJS)
   - Vue liste / tableau
   - Drawer de création / édition (offcanvas Bootstrap)
@@ -104,6 +120,13 @@ symfony serve
 - [ ] Historisation des décisions et traçabilité
 - [ ] Intégration du ReCyF (Référentiel Cyber France — ANSSI, mars 2026)
 - [ ] Administration multi-tenant
+- [ ] Exemples de pipelines SIEM / dashboards pour les logs de sécurité
+
+---
+
+## Documentation technique
+
+- `docs/security-logging.md` : format des logs de sécurité et exemples d’événements (auth, 2FA, comptes).
 
 ---
 
@@ -113,7 +136,7 @@ symfony serve
 - DSI
 - Responsables conformité
 - Directions générales
-- Collectivités territoriales (>30 000 hab.)
+- Collectivités territoriales (> 30 000 hab.)
 - Éditeurs de logiciels assujettis NIS2
 
 ---

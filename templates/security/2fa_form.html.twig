@@ -1,0 +1,44 @@
+{# templates/security/2fa_form.html.twig #}
+{% extends 'layout/security.html.twig' %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 420px;">
+    <h1 class="h4 mb-3">Vérification en deux étapes</h1>
+
+    {% if app.flashes('two_factor') is not empty %}
+        {% for message in app.flashes('two_factor') %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <p class="text-muted">
+        Saisis le code à 6 chiffres généré par ton application d’authentification.
+    </p>
+
+    <form action="{{ path('2fa_login_check') }}" method="post">
+        <div class="mb-3">
+            <label for="_auth_code" class="form-label">Code 2FA</label>
+            <input
+                type="text"
+                id="_auth_code"
+                name="_auth_code"
+                required
+                autocomplete="one-time-code"
+                class="form-control"
+            >
+        </div>
+
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('two_factor_auth') }}">
+
+        <button type="submit" class="btn btn-primary w-100">
+            Valider
+        </button>
+    </form>
+
+    <p class="mt-3 small text-muted">
+        Si tu n’as plus accès à ton application 2FA, contacte ton administrateur.
+    </p>
+</div>
+{% endblock %}

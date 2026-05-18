@@ -15,6 +15,10 @@ use Symfony\Component\Security\Http\Event\LoginFailureEvent;
 use Symfony\Component\Security\Http\Event\LogoutEvent;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Uid\Uuid;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class SecurityEventsSubscriber implements EventSubscriberInterface
 {
@@ -26,6 +30,7 @@ class SecurityEventsSubscriber implements EventSubscriberInterface
         private RequestStack $requestStack,
         private Security $security,
         private readonly EntityManagerInterface $em,
+        private readonly RouterInterface $router,
     ) {
     }
 
@@ -45,6 +50,15 @@ class SecurityEventsSubscriber implements EventSubscriberInterface
         /** @var User $user */
         $user = $event->getUser();
 
+        // Génération d'un ID de corrélation pour ce flow auth
+        $session = $request?->getSession();
+        $authFlowId = null;
+        if ($session instanceof SessionInterface) {
+            $authFlowId = Uuid::v4()->toRfc4122();
+            $session->set('auth_flow_id', $authFlowId);
+        }
+
+        // 1) Logging + lastLoginAt comme tu le fais déjà
         $this->securityLogger->info(LogType::AUTH_EVENT->value, [
             'event_type' => AuthEventType::LOGIN_SUCCESS,
             'user' => [
@@ -54,17 +68,25 @@ class SecurityEventsSubscriber implements EventSubscriberInterface
             'context' => [
                 'ip'         => $request?->getClientIp(),
                 'user_agent' => $request?->headers->get('User-Agent'),
-                '2fa_used'   => false,   // à ajuster plus tard
+                '2fa_used'   => false,
                 '2fa_method' => null,
             ],
             'meta' => [
                 'initiator' => 'user',
                 'reason'    => null,
+                'auth_flow_id' => $authFlowId,
             ],
         ]);
 
         $user->setLastLoginAt(new \DateTimeImmutable('now'));
         $this->em->flush();
+
+        // 2) Si l'utilisateur n'a PAS de 2FA, on le force vers la page d'activation
+        if ($user->getTotpSecret() === null) {
+            $url = $this->router->generate('account_2fa_enable');
+            $event->setResponse(new RedirectResponse($url));
+        }
+        // sinon, on laisse le flow normal continuer (le bundle 2FA gère la suite)
     }
 
     public function onLoginFailure(LoginFailureEvent $event): void
@@ -98,6 +120,9 @@ class SecurityEventsSubscriber implements EventSubscriberInterface
         $token = $event->getToken();
         $user = $token?->getUser();
 
+        $session = $this->requestStack->getSession();
+        $authFlowId = $session?->get('auth_flow_id');
+
         $this->securityLogger->info(LogType::AUTH_EVENT->value, [
             'event_type' => AuthEventType::LOGOUT,
             'user' => [
@@ -113,6 +138,7 @@ class SecurityEventsSubscriber implements EventSubscriberInterface
             'meta' => [
                 'initiator' => 'user',
                 'reason'    => null,
+                'auth_flow_id' => $authFlowId,
             ],
         ]);
     }
