@@ -24,6 +24,7 @@ services:
     depends_on:
       database:
         condition: service_healthy
+    restart: unless-stopped
     environment:
       APP_ENV: prod
       APP_DEBUG: 0
@@ -32,6 +33,12 @@ services:
     volumes:
       - ./:/var/www/html
       - rezilio_vendor:/var/www/html/vendor
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost/healthz || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     networks:
       - rezilio_net
       - caddy_net

@@ -12,6 +12,9 @@ security:
         dev:
             pattern: ^/(_profiler|_wdt|assets|build)/
             security: false
+        healthz:
+            pattern: ^/healthz
+            security: false
         main:
             lazy: true
             provider: app_user_provider
