@@ -1,0 +1,46 @@
+services:
+  database:
+    image: postgres:${POSTGRES_VERSION:-16}-alpine
+    container_name: rezilio-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-RezilioDbPassword123!}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB:-app}", "-U", "${POSTGRES_USER:-app}"]
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    volumes:
+      - rezilio_database_data:/var/lib/postgresql/data:rw
+    networks:
+      - rezilio_net
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rezilio-app
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      APP_ENV: prod
+      APP_DEBUG: 0
+      APP_SECRET: change_this_with_a_long_random_secret
+      DATABASE_URL: postgresql://app:RezilioDbPassword123!@database:5432/app?serverVersion=16&charset=utf8
+    volumes:
+      - ./:/var/www/html
+      - rezilio_vendor:/var/www/html/vendor
+    networks:
+      - rezilio_net
+      - caddy_net
+
+volumes:
+  rezilio_database_data:
+  rezilio_vendor:
+
+networks:
+  rezilio_net:
+  caddy_net:
+    external: true
