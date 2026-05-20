@@ -8,7 +8,7 @@ L'objectif est de centraliser le pilotage de la conformité, de suivre les écar
 
 ## Pourquoi Rezilio
 
-La transposition française de la directive NIS2 suit le projet de loi « Résilience », déposé en octobre 2024, adopté par le Sénat en mars 2025 et poursuivi ensuite dans le processus parlementaire en 2025, avec une entrée en vigueur conditionnée à la promulgation de l’ensemble des textes de transposition.[1][2]
+La transposition française de la directive NIS2 suit le projet de loi « Résilience », déposé en octobre 2024, adopté par le Sénat en mars 2025 et poursuivi ensuite dans le processus parlementaire en 2025, avec une entrée en vigueur conditionnée à la promulgation des textes de transposition.[1][2]
 
 En parallèle, l’ANSSI met à disposition depuis mars 2026 le Référentiel Cyber France (ReCyF), en version de travail, pour aider les futures entités assujetties à atteindre les objectifs de sécurité fixés par NIS2 et à s’en prévaloir lors d’un contrôle.[4][3]
 
@@ -70,7 +70,7 @@ Rezilio n'est pas un outil documentaire. C'est un outil de pilotage qui aide à 
 
 ## Installation
 
-### Mode local
+### Développement local
 
 ```bash
 git clone https://github.com/CyrilCharlier/rezilio.git
@@ -83,12 +83,121 @@ php bin/console doctrine:migrations:migrate
 symfony serve
 ```
 
-### Pré-requis applicatifs
+### Pré-requis
 
 - PHP 8.3
 - PostgreSQL
 - Composer
-- Extension PHP `gd` si la génération d’image pour le QR code 2FA est utilisée dans l’environnement cible
+- Extension PHP `gd` si la génération du QR code 2FA est activée dans l’environnement cible
+- Accès à une base PostgreSQL configurée via `DATABASE_URL`
+
+### Première initialisation
+
+Après installation, il est recommandé de :
+
+- créer la base de données ;
+- exécuter les migrations ;
+- vérifier le login ;
+- vérifier le workflow 2FA si celui-ci est activé ;
+- contrôler la génération du QR code si l’enrôlement TOTP est exposé dans l’interface.[5]
+
+***
+
+## Développement sur serveur
+
+Rezilio peut aussi être développé directement sur le serveur, notamment dans un contexte auto-hébergé avec `code-server`, Docker Compose et Caddy, ce qui correspond au mode d’exploitation actuellement retenu.
+
+### Répertoire de travail
+
+```bash
+cd ~/workspace/rezilio
+```
+
+### Changement de code PHP / Symfony
+
+Pour un changement de code applicatif classique, il n’est généralement pas nécessaire de rebuild l’image Docker si le code est déjà monté dans le conteneur applicatif.
+
+Le workflow recommandé est alors :
+
+```bash
+cd ~/workspace/rezilio
+docker compose -f compose.prod.yaml exec app php bin/console cache:clear --env=prod
+docker compose -f compose.prod.yaml restart app
+```
+
+Le `cache:clear` Symfony vide et réchauffe le cache applicatif, ce qui est la méthode standard pour prendre en compte un changement de code en production ou préproduction.[6][7]
+
+### Changement nécessitant un rebuild
+
+Un rebuild de l’image `app` devient nécessaire en cas de modification du `Dockerfile`, d’ajout d’une extension PHP ou de dépendances système, par exemple pour activer `ext-gd` utilisée dans la génération de QR code 2FA.
+
+```bash
+cd ~/workspace/rezilio
+docker compose -f compose.prod.yaml build app
+docker compose -f compose.prod.yaml up -d app
+docker compose -f compose.prod.yaml exec app php bin/console cache:clear --env=prod
+```
+
+***
+
+## Configuration serveur actuelle
+
+L’environnement serveur actuellement documenté repose sur une exposition publique via Caddy et une segmentation des services par sous-domaines dédiés.[8]
+
+### Exposition des services
+
+- `rezilio.domaine.com` : application principale
+- `ide.domaine.com` : accès `code-server`
+- `pgadmin.domaine.com` : administration PostgreSQL
+
+### Reverse proxy Caddy
+
+Caddy est utilisé comme reverse proxy frontal pour exposer les services Docker en HTTPS et pour gérer les protections d’accès sur les surfaces d’administration.[8]
+
+Les services sensibles `ide.domaine.com` et `pgadmin.domaine.com` sont protégés par :
+
+- une restriction IP via matcher `remote_ip` ;
+- une authentification HTTP `basic_auth` ;
+- puis l’authentification native du service exposé derrière le proxy.[9][8]
+
+### Pare-feu et SSH
+
+Le serveur est protégé par UFW avec :
+
+- politique par défaut `deny incoming` ;
+- HTTP/HTTPS autorisés ;
+- SSH déplacé sur le port `2223` ;
+- accès SSH limité à des IP autorisées.[10][11][12]
+
+Ce modèle réduit fortement l’exposition des interfaces d’administration et l’accès distant au serveur.[13][12]
+
+### pgAdmin
+
+`pgadmin` est exposé uniquement via Caddy et n’est plus censé être exposé via un port local dédié si le passage par le reverse proxy est retenu à 100%.[8]
+
+### code-server
+
+`code-server` est exposé via `ide.domaine.com` et bénéficie du même principe de défense en profondeur : allowlist IP, `basic_auth` Caddy, puis authentification du service lui-même.[9]
+
+***
+
+## Supervision et healthcheck
+
+Rezilio dispose d’un endpoint `/healthz` destiné à la supervision légère et aux `healthcheck` Docker.[14]
+
+Cet endpoint peut être utilisé pour :
+
+- vérifier que Symfony répond ;
+- vérifier la connectivité PostgreSQL ;
+- confirmer qu’un déploiement s’est bien déroulé ;
+- alimenter un `healthcheck` Compose.
+
+Exemples :
+
+```bash
+curl -i http://localhost/healthz
+curl -i https://rezilio.domaine.com/healthz
+```
 
 ***
 
@@ -144,13 +253,14 @@ symfony serve
 
 ## Déploiement production
 
-Le déploiement actuel repose sur Docker Compose avec exposition via Caddy et protections renforcées sur les surfaces d’administration, notamment par restriction IP et authentification HTTP en frontal pour `pgadmin` et `code-server`.[6][7]
+Le déploiement actuel repose sur Docker Compose avec exposition via Caddy et protections renforcées sur les surfaces d’administration, notamment par restriction IP et authentification HTTP en frontal pour `pgadmin` et `code-server`.[9][8]
 
 Dans ce modèle :
 
 - un changement de code PHP/Symfony nécessite généralement un `cache:clear` applicatif ;
 - un changement de `Dockerfile` ou d’extensions PHP nécessite un rebuild de l’image ;
-- les changements Caddy doivent être validés et rechargés proprement.
+- les changements Caddy doivent être validés et rechargés proprement ;
+- les vérifications post-déploiement passent par `docker compose ps`, les logs et l’endpoint `/healthz`.[15][8]
 
 La procédure détaillée est documentée dans [docs/deployment-process.md](docs/deployment-process.md).
 
