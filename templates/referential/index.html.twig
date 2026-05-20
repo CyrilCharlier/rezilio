@@ -36,6 +36,30 @@
                             <span>Liste des référentiels</span>
                         </div>
 
+                        <form
+                            action="{{ path('admin_referential_import') }}"
+                            method="post"
+                            enctype="multipart/form-data"
+                            class="d-inline-flex align-items-center mb-0"
+                        >
+                            <input type="hidden" name="_token" value="{{ csrf_token('referential_import') }}">
+
+                            <input
+                                type="file"
+                                id="referential_json"
+                                name="referential_json"
+                                accept=".json,application/json"
+                                class="visually-hidden"
+                                required
+                                onchange="this.form.submit()"
+                            >
+
+                            <label for="referential_json" class="btn btn-outline-secondary rz-btn mb-0">
+                                <i class="bi bi-upload me-1"></i>
+                                Importer un référentiel
+                            </label>
+                        </form>
+
                         <a href="{{ path('app_referential_new') }}" class="btn btn-primary rz-btn rz-btn-primary">
                             <i class="bi bi-plus-lg me-1"></i>
                             Nouveau référentiel

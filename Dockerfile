@@ -32,7 +32,10 @@ WORKDIR /var/www/html
 COPY . /var/www/html
 
 RUN mkdir -p /var/www/html/vendor \
-    && chown -R www-data:www-data /var/www/html
+    /var/www/html/var/cache \
+    /var/www/html/var/log \
+    /var/www/html/var/sessions \
+    && chown -R www-data:www-data /var/www/html \
+    && chmod -R ug+rwX /var/www/html/var
 
 COPY .docker/apache-vhost.conf /etc/apache2/sites-available/000-default.conf
-
