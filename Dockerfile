@@ -6,7 +6,18 @@ RUN apt-get update && apt-get install -y \
     libicu-dev \
     libpq-dev \
     libzip-dev \
-    && docker-php-ext-install intl pdo pdo_pgsql opcache \
+    libonig-dev \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) \
+       pdo \
+       pdo_pgsql \
+       intl \
+       zip \
+       opcache \
+       gd \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
 

@@ -36,9 +36,26 @@ services:
       - rezilio_net
       - caddy_net
 
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: rezilio-pgadmin
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      PGADMIN_DEFAULT_EMAIL: cyril@charlier.cloud
+      PGADMIN_DEFAULT_PASSWORD: 4MqedbM84MqedbM8
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - rezilio_net
+      - caddy_net
+
 volumes:
   rezilio_database_data:
   rezilio_vendor:
+  pgadmin_data:
 
 networks:
   rezilio_net:
