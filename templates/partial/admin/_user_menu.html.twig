@@ -1,0 +1,37 @@
+<li class="nav-item dropdown user-menu">
+    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+        {% set initial = app.user.useridentifier|first|upper %}
+        <span class="user-image rounded-circle shadow d-inline-flex align-items-center justify-content-center bg-primary text-white"
+              style="width: 32px; height: 32px; font-size: 0.9rem;">
+            {{ initial }}
+        </span>
+
+        <span class="d-none d-md-inline ms-1">{{ app.user.useridentifier }}</span>
+    </a>
+
+    <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+        <li class="user-header text-bg-primary">
+            <span class="rounded-circle d-inline-flex align-items-center justify-content-center bg-white text-primary shadow"
+                  style="width: 64px; height: 64px; font-size: 1.7rem;">
+                {{ initial }}
+            </span>
+            <p class="mt-2 mb-0">
+                {{ app.user.useridentifier }}
+            </p>
+            {% if app.user.lastLoginAt is not null %}
+                <small>
+                    Dernière connexion {{ app.user.lastLoginAt|date('d/m/Y H:i') }}
+                </small>
+            {% endif %}
+        </li>
+
+        <li class="user-footer">
+            <a href="{{ path('account_profile') }}" class="btn btn-outline-secondary">
+                Mon profil
+            </a>
+            <a href="{{ path('app_logout') }}" class="btn btn-outline-danger float-end">
+                Déconnexion
+            </a>
+        </li>
+    </ul>
+</li>

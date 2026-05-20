@@ -1,0 +1,83 @@
+{# templates/account/profile.html.twig #}
+{% extends 'layout/admin.html.twig' %}
+
+{% block title %}Mon profil · Rezilio{% endblock %}
+
+{% block content %}
+<div class="app-content">
+    <div class="container-fluid">
+
+        <div class="row mb-3">
+            <div class="col">
+                <h1 class="h3 mb-0">Mon profil</h1>
+                <p class="text-muted mb-0">
+                    Gérez vos informations et la sécurité de votre compte.
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+            {# Colonne principale #}
+            <div class="col-lg-8">
+                {# Informations de base #}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        Informations de base
+                    </div>
+                    <div class="card-body">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-3">Identifiant</dt>
+                            <dd class="col-sm-9">
+                                {{ user.getUserIdentifier() }}
+                            </dd>
+
+                            {# À compléter plus tard : nom, prénom, etc. #}
+                        </dl>
+                    </div>
+                </div>
+
+                {# Sécurité du compte #}
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>Sécurité du compte</span>
+                        {% if user.isTotpEnabled() %}
+                            <span class="badge bg-success">2FA activée</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark">2FA non activée</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="card-body">
+                        <p class="mb-2">
+                            La double authentification (2FA) ajoute une couche de sécurité en demandant un code à usage unique
+                            en plus de votre mot de passe.
+                        </p>
+
+                        {% if user.isTotpEnabled() %}
+                            <p class="text-muted mb-3">
+                                À chaque nouvelle connexion, un code généré par votre application d’authentification est requis.
+                            </p>
+                            <a href="{{ path('account_2fa_enable') }}" class="btn btn-outline-primary btn-sm">
+                                Gérer ma 2FA
+                            </a>
+                        {% else %}
+                            <p class="text-muted mb-3">
+                                Vous n’avez pas encore activé la 2FA. Elle peut être rendue obligatoire par votre organisation.
+                            </p>
+                            <a href="{{ path('account_2fa_enable') }}" class="btn btn-primary btn-sm">
+                                Activer la 2FA maintenant
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {# Colonne latérale (réservée pour plus tard) #}
+            <div class="col-lg-4">
+                {# Exemple futur : dernières connexions, appareils de confiance, etc. #}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
