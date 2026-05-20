@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Campaign;
+namespace App\Controller;
 
 use App\Entity\MeasureReview;
 use App\Entity\RemediationAction;
