@@ -9,7 +9,7 @@
         "ext-iconv": "*",
         "doctrine/doctrine-bundle": "^2.18.2",
         "doctrine/doctrine-migrations-bundle": "^3.7",
-        "doctrine/orm": "^3.6.5",
+        "doctrine/orm": "^3.6.6",
         "endroid/qr-code-bundle": "^6.0",
         "scheb/2fa-bundle": "^7.13.1",
         "scheb/2fa-totp": "^7.13.1",
@@ -29,7 +29,7 @@
         "symfony/yaml": "7.4.*",
         "twig/extra-bundle": "^2.12|^3.24",
         "twig/string-extra": "^3.24",
-        "twig/twig": "^2.12|^3.25"
+        "twig/twig": "^2.12|^3.26"
     },
     "require-dev": {
         "symfony/maker-bundle": "^1.67",

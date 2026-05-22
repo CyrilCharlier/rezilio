@@ -3,7 +3,7 @@
 namespace App\Command;
 
 use App\Entity\User;
-use App\Enum\AuthEventType;
+use App\Enum\EventType;
 use App\Service\UserSecurityLogger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -81,7 +81,7 @@ class DisableInactiveUsersCommand extends Command
             $user->setDeactivatedAt($now);
 
             $this->userSecurityLogger->logAccountEvent(
-                AuthEventType::ACCOUNT_DISABLED,
+                EventType::ACCOUNT_DISABLED,
                 $user->getId(),
                 $user->getUserIdentifier(),
                 [

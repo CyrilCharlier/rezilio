@@ -2,7 +2,7 @@
 
 namespace App\EventSubscriber;
 
-use App\Enum\AuthEventType;
+use App\Enum\EventType;
 use App\Enum\LogType;
 use Psr\Log\LoggerInterface;
 use Scheb\TwoFactorBundle\Security\TwoFactor\Event\TwoFactorAuthenticationEvent;
@@ -32,12 +32,12 @@ class TwoFactorEventsSubscriber implements EventSubscriberInterface
 
     public function onTwoFactorSuccess(TwoFactorAuthenticationEvent $event): void
     {
-        $this->logTwoFactorEvent(AuthEventType::TWOFA_CHALLENGE_SUCCESS, $event);
+        $this->logTwoFactorEvent(EventType::TWOFA_CHALLENGE_SUCCESS, $event);
     }
 
     public function onTwoFactorFailure(TwoFactorAuthenticationEvent $event): void
     {
-        $this->logTwoFactorEvent(AuthEventType::TWOFA_CHALLENGE_FAILURE, $event, [
+        $this->logTwoFactorEvent(EventType::TWOFA_CHALLENGE_FAILURE, $event, [
             'reason' => 'invalid_code',
         ]);
     }
@@ -45,12 +45,12 @@ class TwoFactorEventsSubscriber implements EventSubscriberInterface
     public function onTwoFactorComplete(TwoFactorAuthenticationEvent $event): void
     {
         // Optionnel : log spécifique quand TOUTE la 2FA est complétée
-        $this->logTwoFactorEvent(AuthEventType::TWOFA_CHALLENGE_SUCCESS, $event, [
+        $this->logTwoFactorEvent(EventType::TWOFA_CHALLENGE_SUCCESS, $event, [
             'reason' => 'two_factor_flow_complete',
         ]);
     }
 
-    private function logTwoFactorEvent(AuthEventType $eventType, TwoFactorAuthenticationEvent $event, array $extraMeta = []): void
+    private function logTwoFactorEvent(EventType $eventType, TwoFactorAuthenticationEvent $event, array $extraMeta = []): void
     {
         $request = $event->getRequest();
         $token   = $event->getToken();

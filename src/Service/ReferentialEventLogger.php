@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Referential;
 use App\Entity\User;
 use App\Enum\EventType;
 use App\Enum\LogType;
@@ -10,21 +11,21 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class UserSecurityLogger
+class ReferentialEventLogger
 {
     public function __construct(
-        #[Autowire(service: 'monolog.logger.security_rezilio')]
+        #[Autowire(service: 'monolog.logger.business_rezilio')]
         private LoggerInterface $logger,
         private RequestStack $requestStack,
         private Security $security,
     ) {
     }
 
-    public function logAccountEvent(
+    public function logEvent(
         EventType $eventType,
-        ?int $userId,
-        ?string $username,
-        array $meta = []
+        ?Referential $referential = null,
+        array $meta = [],
+        string $level = 'info',
     ): void {
         $request = $this->requestStack->getCurrentRequest();
         $initiator = $this->security->getUser();
@@ -32,28 +33,31 @@ class UserSecurityLogger
         $initiatorData = null;
         if ($initiator instanceof User) {
             $initiatorData = [
-                'id'       => $initiator->getId(),
+                'id' => $initiator->getId(),
                 'username' => $initiator->getUserIdentifier(),
             ];
         }
 
-        $this->logger->info(LogType::AUTH_EVENT->value, [
+        $payload = [
             'event_type' => $eventType->value,
-            'user' => [
-                'id'       => $userId,
-                'username' => $username,
+            'referential' => [
+                'id' => $referential?->getId(),
+                'code' => $referential?->getCode(),
+                'label' => $referential?->getLabel(),
             ],
             'context' => [
-                'ip'         => $request?->getClientIp(),
+                'ip' => $request?->getClientIp(),
                 'user_agent' => $request?->headers->get('User-Agent'),
-                '2fa_used'   => false,
-                '2fa_method' => null,
+                'route' => $request?->attributes->get('_route'),
+                'method' => $request?->getMethod(),
             ],
             'meta' => array_merge([
                 'initiator' => $initiatorData,
                 'initiator_type' => $initiatorData ? 'user' : 'system',
-                'reason'    => null,
+                'reason' => null,
             ], $meta),
-        ]);
+        ];
+
+        $this->logger->log($level, LogType::REFERENTIAL_EVENT->value, $payload);
     }
 }

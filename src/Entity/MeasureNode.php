@@ -38,9 +38,11 @@ class MeasureNode
     private ?bool $appliesToEI = true;
 
     #[ORM\ManyToOne(inversedBy: 'nodes')]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Category $category = null;
 
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'CASCADE')]
     private ?self $parent = null;
 
     /**

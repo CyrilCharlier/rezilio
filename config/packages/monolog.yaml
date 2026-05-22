@@ -3,6 +3,7 @@ monolog:
         - deprecation
         - security
         - security_rezilio
+        - business_rezilio
 
 when@dev:
     monolog:
@@ -27,6 +28,12 @@ when@dev:
                 path: "%kernel.logs_dir%/security_rezilio.log"
                 level: info
                 channels: ['security_rezilio']
+                formatter: monolog.formatter.json
+            business_rezilio:
+                type: stream
+                path: "%kernel.logs_dir%/business_rezilio.log"
+                level: info
+                channels: ['business_rezilio']
                 formatter: monolog.formatter.json
 
 when@test:
@@ -76,4 +83,10 @@ when@prod:
                 path: "%kernel.logs_dir%/security_rezilio.log"
                 level: info
                 channels: ['security_rezilio']
+                formatter: monolog.formatter.json
+            business_rezilio:
+                type: stream
+                path: "%kernel.logs_dir%/business_rezilio.log"
+                level: info
+                channels: ['business_rezilio']
                 formatter: monolog.formatter.json

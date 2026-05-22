@@ -29,6 +29,7 @@ class Category
     private ?int $ordre = null;
 
     #[ORM\ManyToOne(inversedBy: 'categories')]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Referential $referential = null;
 
     /**

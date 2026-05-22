@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Category;
 use App\Entity\MeasureNode;
 use App\Entity\Referential;
+use App\Repository\ReferentialRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ReferentialImportService
@@ -12,11 +13,25 @@ class ReferentialImportService
     public function __construct(
         private EntityManagerInterface $entityManager,
         private ReferentialImportValidator $validator,
+        private ReferentialRepository $referentialRepository,
     ) {}
 
     public function importFromArray(array $data): Referential
     {
         $this->validator->validateImportPayload($data);
+
+        $referentialData = $data['referential'];
+
+        $existing = $this->referentialRepository->findOneBy([
+            'code' => $referentialData['code'],
+        ]);
+
+        if ($existing) {
+            throw new \InvalidArgumentException(sprintf(
+                'Un référentiel avec le code "%s" existe déjà.',
+                $referentialData['code']
+            ));
+        }
 
         return $this->entityManager->wrapInTransaction(function () use ($data) {
             $referentialData = $data['referential'];

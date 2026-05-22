@@ -2,7 +2,7 @@
 
 namespace App\Enum;
 
-enum AuthEventType: string
+enum EventType: string
 {
     case LOGIN_SUCCESS           = 'auth.login.success';
     case LOGIN_FAILURE           = 'auth.login.failure';
@@ -23,4 +23,9 @@ enum AuthEventType: string
     case TWOFA_DISABLED          = 'auth.2fa.disabled';
     case TWOFA_CHALLENGE_SUCCESS = 'auth.2fa.challenge.success';
     case TWOFA_CHALLENGE_FAILURE = 'auth.2fa.challenge.failure';
+
+    CASE REFERENTIAL_IMPORT_FAILURE = 'referential.import.failure';
+    CASE REFERENTIAL_IMPORT_SUCCESS = 'referential.import.success';
+    CASE REFERENTIAL_EXPORT_FAILURE = 'referential.export.failure';
+    CASE REFERENTIAL_EXPORT_SUCCESS = 'referential.export.success';
 }

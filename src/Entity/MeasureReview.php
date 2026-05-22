@@ -47,6 +47,7 @@ class MeasureReview
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?MeasureNode $measure = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]

@@ -3,7 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\User;
-use App\Enum\AuthEventType;
+use App\Enum\EventType;
 use App\Form\UserType;
 use App\Service\UserSecurityLogger;
 use Doctrine\ORM\EntityManagerInterface;
@@ -55,7 +55,7 @@ class UserController extends AbstractController
             $em->flush();
 
             $userSecurityLogger->logAccountEvent(
-                AuthEventType::ACCOUNT_CREATED,
+                EventType::ACCOUNT_CREATED,
                 $user->getId(),
                 $user->getUserIdentifier(),
                 [
@@ -118,7 +118,7 @@ class UserController extends AbstractController
             }
 
             $userSecurityLogger->logAccountEvent(
-                AuthEventType::ACCOUNT_UPDATED,
+                EventType::ACCOUNT_UPDATED,
                 $user->getId(),
                 $newEmail,
                 $meta
@@ -191,8 +191,8 @@ class UserController extends AbstractController
         $em->flush();
 
         $eventType = $newStatus
-            ? AuthEventType::ACCOUNT_ENABLED
-            : AuthEventType::ACCOUNT_DISABLED;
+            ? EventType::ACCOUNT_ENABLED
+            : EventType::ACCOUNT_DISABLED;
 
         $userSecurityLogger->logAccountEvent(
             $eventType,

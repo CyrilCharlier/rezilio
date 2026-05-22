@@ -107,6 +107,12 @@
                                             </td>
                                             <td class="text-end">
                                                 <div class="d-inline-flex align-items-center gap-1">
+                                                    <a href="{{ path('admin_referential_export', {'id': referential.id}) }}"
+                                                        class="btn btn-outline-success btn-sm"
+                                                        title="Exporter">
+                                                        <i class="bi bi-download"></i>
+                                                    </a>
+
                                                     <a href="{{ path('app_referential_show', {'id': referential.id}) }}"
                                                        class="btn btn-outline-primary btn-sm">
                                                         <i class="bi bi-eye"></i>

@@ -3,7 +3,7 @@
 namespace App\EventSubscriber;
 
 use App\Entity\User;
-use App\Enum\AuthEventType;
+use App\Enum\EventType;
 use App\Enum\LogType;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -60,7 +60,7 @@ class SecurityEventsSubscriber implements EventSubscriberInterface
 
         // 1) Logging + lastLoginAt comme tu le fais déjà
         $this->securityLogger->info(LogType::AUTH_EVENT->value, [
-            'event_type' => AuthEventType::LOGIN_SUCCESS,
+            'event_type' => EventType::LOGIN_SUCCESS,
             'user' => [
                 'id'       => method_exists($user, 'getId') ? $user->getId() : null,
                 'username' => method_exists($user, 'getUserIdentifier') ? $user->getUserIdentifier() : null,
@@ -96,7 +96,7 @@ class SecurityEventsSubscriber implements EventSubscriberInterface
         $exception = $event->getException();
 
         $this->securityLogger->info(LogType::AUTH_EVENT->value, [
-            'event_type' => AuthEventType::LOGIN_FAILURE,
+            'event_type' => EventType::LOGIN_FAILURE,
             'user' => [
                 'id'       => null,
                 'username' => $userIdentifier,
@@ -124,7 +124,7 @@ class SecurityEventsSubscriber implements EventSubscriberInterface
         $authFlowId = $session?->get('auth_flow_id');
 
         $this->securityLogger->info(LogType::AUTH_EVENT->value, [
-            'event_type' => AuthEventType::LOGOUT,
+            'event_type' => EventType::LOGOUT,
             'user' => [
                 'id'       => (is_object($user) && method_exists($user, 'getId')) ? $user->getId() : null,
                 'username' => (is_object($user) && method_exists($user, 'getUserIdentifier')) ? $user->getUserIdentifier() : null,
@@ -155,7 +155,7 @@ class SecurityEventsSubscriber implements EventSubscriberInterface
         $user    = $token->getUser();
 
         $this->securityLogger->info(LogType::AUTH_EVENT->value, [
-            'event_type' => AuthEventType::LOGIN_REMEMBERED,
+            'event_type' => EventType::LOGIN_REMEMBERED,
             'user' => [
                 'id'       => (is_object($user) && method_exists($user, 'getId')) ? $user->getId() : null,
                 'username' => (is_object($user) && method_exists($user, 'getUserIdentifier')) ? $user->getUserIdentifier() : null,

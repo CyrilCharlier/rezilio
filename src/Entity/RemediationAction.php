@@ -39,7 +39,7 @@ class RemediationAction
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'remediationActions')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?MeasureReview $measureReview = null;
 
     public function getId(): ?int

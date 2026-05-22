@@ -3,13 +3,11 @@
 namespace App\Service;
 
 use App\Repository\ReferentialRepository;
-use Symfony\Component\Serializer\SerializerInterface;
 
 class ReferentialExportService
 {
     public function __construct(
         private ReferentialRepository $referentialRepository,
-        private SerializerInterface $serializer,
     ) {}
 
     public function exportToArray(int $referentialId): array
@@ -43,7 +41,7 @@ class ReferentialExportService
                 'nodes'         => [],
             ];
 
-            foreach ($category->getMeasureNodes() as $node) {
+            foreach ($category->getNodes() as $node) {
                 $catData['nodes'][] = [
                     'id'            => $node->getId(),
                     'code'          => $node->getCode(),

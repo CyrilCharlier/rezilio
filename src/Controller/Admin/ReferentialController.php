@@ -45,7 +45,7 @@ final class ReferentialController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_referential_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'app_referential_show', methods: ['GET'], requirements: ['id' => '\d+'])]
     public function show(
         Referential $referential,
         CategoryRepository $categoryRepository,
@@ -94,7 +94,7 @@ final class ReferentialController extends AbstractController
         return $branch;
     }
 
-    #[Route('/{id}/edit', name: 'app_referential_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'app_referential_edit', methods: ['GET', 'POST'], requirements: ['id' => '\d+'])]
     public function edit(Request $request, Referential $referential, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(ReferentialType::class, $referential);
@@ -112,7 +112,7 @@ final class ReferentialController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_referential_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'app_referential_delete', methods: ['POST'], requirements: ['id' => '\d+'])]
     public function delete(Request $request, Referential $referential, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$referential->getId(), $request->getPayload()->getString('_token'))) {

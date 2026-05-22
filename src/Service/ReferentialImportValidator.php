@@ -52,6 +52,8 @@ class ReferentialImportValidator
             throw new \InvalidArgumentException('Champ "referential.categories" invalide.');
         }
 
+        $categoryNames = [];
+
         foreach ($referential['categories'] as $categoryIndex => $category) {
             if (!is_array($category)) {
                 throw new \InvalidArgumentException(sprintf(
@@ -77,6 +79,15 @@ class ReferentialImportValidator
                 ));
             }
 
+            $normalizedCategoryName = $this->normalizeKey($category['name']);
+            if (isset($categoryNames[$normalizedCategoryName])) {
+                throw new \InvalidArgumentException(sprintf(
+                    'Le nom de catégorie "%s" existe déjà dans le référentiel importé.',
+                    $category['name']
+                ));
+            }
+            $categoryNames[$normalizedCategoryName] = true;
+
             if (!is_int($category['ordre'])) {
                 throw new \InvalidArgumentException(sprintf(
                     'Champ "referential.categories[%d].ordre" invalide.',
@@ -99,6 +110,7 @@ class ReferentialImportValidator
             }
 
             $nodeIds = [];
+            $nodeCodes = [];
 
             foreach ($category['nodes'] as $nodeIndex => $node) {
                 if (!is_array($node)) {
@@ -130,9 +142,9 @@ class ReferentialImportValidator
 
                 if (isset($nodeIds[$node['id']])) {
                     throw new \InvalidArgumentException(sprintf(
-                        'ID node dupliqué dans la catégorie #%d : %d.',
-                        $categoryIndex,
-                        $node['id']
+                        'L\'ID node %d existe déjà dans la catégorie #%d.',
+                        $node['id'],
+                        $categoryIndex
                     ));
                 }
 
@@ -145,6 +157,17 @@ class ReferentialImportValidator
                         $nodeIndex
                     ));
                 }
+
+                $normalizedNodeCode = $this->normalizeKey($node['code']);
+                if (isset($nodeCodes[$normalizedNodeCode])) {
+                    throw new \InvalidArgumentException(sprintf(
+                        'Le code node "%s" existe déjà dans la catégorie "%s".',
+                        $node['code'],
+                        $category['name']
+                    ));
+                }
+
+                $nodeCodes[$normalizedNodeCode] = true;
 
                 if (!is_string($node['label']) || '' === trim($node['label'])) {
                     throw new \InvalidArgumentException(sprintf(
@@ -202,7 +225,6 @@ class ReferentialImportValidator
                         $categoryIndex
                     ));
                 }
-
             }
 
             $this->validateNoCyclesInCategory($category['nodes'], $categoryIndex);
@@ -234,5 +256,10 @@ class ReferentialImportValidator
                 $currentId = $parentMap[$currentId] ?? null;
             }
         }
+    }
+
+    private function normalizeKey(string $value): string
+    {
+        return mb_strtolower(trim($value));
     }
 }
