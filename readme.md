@@ -1,5 +1,9 @@
 # Rezilio
 
+[![CI](https://github.com/CyrilCharlier/rezilio/actions/workflows/ci.yml/badge.svg)](https://github.com/CyrilCharlier/rezilio/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/CyrilCharlier/rezilio/actions/workflows/codeql.yml/badge.svg)](https://github.com/CyrilCharlier/rezilio/actions/workflows/codeql.yml)
+[![Dependabot Updates](https://github.com/CyrilCharlier/rezilio/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/CyrilCharlier/rezilio/actions/workflows/dependabot/dependabot-updates)
+
 Rezilio est une application web de pilotage de la mise en conformité cybersécurité, pensée pour les RSSI, les DSI et les responsables conformité des organisations assujetties à des référentiels réglementaires tels que la directive NIS2.[1][2]
 
 L'objectif est de centraliser le pilotage de la conformité, de suivre les écarts, de structurer les plans de remédiation et de donner une vision claire et mesurable de la progression vers les exigences d'un référentiel, autour de la gouvernance, de la gestion des risques, de la continuité d'activité, de la sécurité de la chaîne d'approvisionnement et de la gestion des incidents.[3]
