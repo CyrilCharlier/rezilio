@@ -11,6 +11,10 @@ jobs:
   symfony:
     name: Symfony / PHP
     runs-on: ubuntu-latest
+    env:
+      APP_ENV: test
+      APP_SECRET: test-secret
+      DATABASE_URL: "sqlite:///%kernel.project_dir%/var/data.db"
 
     steps:
       - name: Checkout repository
