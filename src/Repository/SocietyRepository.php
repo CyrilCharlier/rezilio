@@ -3,8 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Society;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * @extends ServiceEntityRepository<Society>
@@ -16,28 +18,22 @@ class SocietyRepository extends ServiceEntityRepository
         parent::__construct($registry, Society::class);
     }
 
-    //    /**
-    //     * @return Society[] Returns an array of Society objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('s.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function createAccessibleForUserQueryBuilder(?User $user): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('s')
+            ->orderBy('s.name', 'ASC');
 
-    //    public function findOneBySomeField($value): ?Society
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        if (!$user instanceof User) {
+            return $qb->andWhere('1 = 0');
+        }
+
+        if (in_array('ROLE_ADMIN', $user->getRoles(), true)) {
+            return $qb;
+        }
+
+        return $qb
+            ->innerJoin('s.userSocieties', 'us')
+            ->andWhere('us.user = :user')
+            ->setParameter('user', $user);
+    }
 }

@@ -10,6 +10,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Scheb\TwoFactorBundle\Model\Totp\TwoFactorInterface;
 use Scheb\TwoFactorBundle\Model\Totp\TotpConfiguration;
 use Scheb\TwoFactorBundle\Model\Totp\TotpConfigurationInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
@@ -59,6 +61,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
     #[ORM\Column(type: 'boolean', nullable: true)]
     private bool $totpEnabled = false;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserSociety::class, orphanRemoval: true, cascade: ['persist'])]
+    private Collection $userSocieties;
+
+    public function __construct()
+    {
+        $this->userSocieties = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -210,6 +220,47 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
         $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
 
         return $data;
+    }
+
+    /**
+     * @return Collection<int, UserSociety>
+     */
+    public function getUserSocieties(): Collection
+    {
+        return $this->userSocieties;
+    }
+
+    public function addUserSociety(UserSociety $userSociety): self
+    {
+        if (!$this->userSocieties->contains($userSociety)) {
+            $this->userSocieties->add($userSociety);
+            $userSociety->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserSociety(UserSociety $userSociety): self
+    {
+        if ($this->userSocieties->removeElement($userSociety)) {
+            // set the owning side to null (unless already changed)
+            if ($userSociety->getUser() === $this) {
+                $userSociety->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function hasSociety(Society $society): bool
+    {
+        foreach ($this->userSocieties as $userSociety) {
+            if ($userSociety->getSociety() === $society) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     #[\Deprecated]

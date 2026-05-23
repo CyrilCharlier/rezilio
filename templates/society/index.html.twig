@@ -36,11 +36,12 @@
                             <i class="bi bi-buildings"></i>
                             <span>Liste des sociétés</span>
                         </div>
-
+                        {% if is_granted('ROLE_ADMIN') %}
                         <a href="{{ path('app_society_new') }}" class="btn btn-primary rz-btn rz-btn-primary">
                             <i class="bi bi-plus-lg me-1"></i>
                             Nouvelle société
                         </a>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -60,6 +61,7 @@
                                 </thead>
                                 <tbody>
                                     {% for society in societies %}
+                                    {% if is_granted('SOCIETY_VIEW', society) %}
                                         <tr>
                                             <td class="text-body-secondary">{{ society.id }}</td>
                                             <td>
@@ -84,15 +86,18 @@
                                             </td>
                                             <td class="text-end">
                                                 <div class="d-inline-flex align-items-center gap-1">
+                                                    {% if is_granted('SOCIETY_MANAGE', society) %}
                                                     <a href="{{ path('app_society_edit', {'id': society.id}) }}"
                                                        class="btn btn-outline-secondary btn-sm">
                                                         <i class="bi bi-pencil-square"></i>
                                                     </a>
+                                                    {% endif %}
 
                                                     {# {{ include('society/_delete_form.html.twig') }} #}
                                                 </div>
                                             </td>
                                         </tr>
+                                    {% endif %}
                                     {% endfor %}
                                 </tbody>
                             </table>

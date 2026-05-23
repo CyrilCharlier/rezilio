@@ -1,5 +1,3 @@
-{# templates/admin/user/new.html.twig #}
-
 <div class="modal-header">
     <h5 class="modal-title">
         <i class="bi bi-person-plus me-1"></i>
@@ -36,9 +34,133 @@
 
         <div class="mb-3">
             {{ form_label(form.roles, null, {'label_attr': {'class': 'form-label'}}) }}
-            {{ form_widget(form.roles) }}
+
+            <div class="rz-role-grid">
+                {% for child in form.roles %}
+                    <div class="rz-role-option">
+                        {{ form_widget(child, {
+                            attr: {
+                                class: 'rz-role-option__input'
+                            }
+                        }) }}
+                        {{ form_label(child, null, {
+                            label_attr: {
+                                class: 'rz-role-option__label'
+                            }
+                        }) }}
+                    </div>
+                {% endfor %}
+            </div>
+
             {{ form_errors(form.roles) }}
         </div>
+
+        {% if form.userSocieties is defined %}
+            {% set userSocietyPrototype %}
+                <div class="rz-user-society-table__row-grid">
+                    <div>
+                        {{ form_widget(form.userSocieties.vars.prototype.society, {
+                            attr: {
+                                class: 'form-select',
+                                'aria-label': 'Société'
+                            }
+                        }) }}
+                        {{ form_errors(form.userSocieties.vars.prototype.society) }}
+                    </div>
+                    <div>
+                        {{ form_widget(form.userSocieties.vars.prototype.role, {
+                            attr: {
+                                class: 'form-select',
+                                'aria-label': 'Rôle dans la société'
+                            }
+                        }) }}
+                        {{ form_errors(form.userSocieties.vars.prototype.role) }}
+                    </div>
+                    <div class="rz-user-society-table__actions">
+                        <button type="button" class="btn rz-user-society-table__remove" data-remove-item>
+                            <i class="bi bi-trash"></i>
+                            <span class="visually-hidden">Supprimer cette affectation</span>
+                        </button>
+                    </div>
+                </div>
+            {% endset %}
+
+            <div class="mb-3 rz-user-societies-section">
+                {{ form_label(form.userSocieties, null, {'label_attr': {'class': 'form-label'}}) }}
+
+                <div class="rz-card">
+                    <div class="rz-card-body">
+                        <p class="rz-form-text mb-0">
+                            Définissez les sociétés auxquelles cet utilisateur pourra accéder et le niveau d’accès associé.
+                        </p>
+
+                        <div class="rz-user-society-table">
+                            <div class="rz-user-society-table__head">
+                                <div>Société</div>
+                                <div>Rôle</div>
+                                <div></div>
+                            </div>
+
+                            <div
+                                class="rz-user-society-table__body"
+                                data-collection-holder
+                                data-index="{{ form.userSocieties|length }}"
+                                data-prototype="{{ userSocietyPrototype|e('html_attr') }}"
+                            >
+                                {% for userSocietyForm in form.userSocieties %}
+                                    <div class="rz-user-society-table__row" data-collection-item>
+                                        <div class="rz-user-society-table__row-grid">
+                                            <div>
+                                                {{ form_widget(userSocietyForm.society, {
+                                                    attr: {
+                                                        class: 'form-select',
+                                                        'aria-label': 'Société'
+                                                    }
+                                                }) }}
+                                                {{ form_errors(userSocietyForm.society) }}
+                                            </div>
+                                            <div>
+                                                {{ form_widget(userSocietyForm.role, {
+                                                    attr: {
+                                                        class: 'form-select',
+                                                        'aria-label': 'Rôle dans la société'
+                                                    }
+                                                }) }}
+                                                {{ form_errors(userSocietyForm.role) }}
+                                            </div>
+                                            <div class="rz-user-society-table__actions">
+                                                <button type="button" class="btn rz-user-society-table__remove" data-remove-item>
+                                                    <i class="bi bi-trash"></i>
+                                                    <span class="visually-hidden">Supprimer cette affectation</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="rz-user-societies-empty">
+                                        <div>
+                                            <div class="rz-user-societies-empty__title">Aucune société affectée</div>
+                                            <div class="rz-user-societies-empty__text">
+                                                Ajoutez une première société pour définir le périmètre visible par cet utilisateur.
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div>
+                            <button type="button" class="btn btn-link rz-user-societies-add" data-add-item>
+                                <i class="bi bi-plus-circle"></i>
+                                <span>Ajouter une société</span>
+                            </button>
+                        </div>
+
+                        {{ form_errors(form.userSocieties) }}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
 
         <div class="d-flex justify-content-end mt-3">
             <button class="btn btn-primary" type="submit" id="rz-user-new-submit">

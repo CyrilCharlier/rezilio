@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Campaign;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,24 +17,26 @@ class CampaignRepository extends ServiceEntityRepository
         parent::__construct($registry, Campaign::class);
     }
 
-    public function findByFilters(?string $search, ?int $societyId): array
+    public function findAccessibleForUser(User $user, ?string $search): array
     {
         $qb = $this->createQueryBuilder('c')
-            ->leftJoin('c.society', 's')->addSelect('s')
-            ->leftJoin('c.referential', 'r')->addSelect('r')
+            ->leftJoin('c.society', 's')
+            ->addSelect('s')
             ->orderBy('c.startDate', 'DESC');
 
-        if ($search) {
-            $qb
-                ->andWhere('c.name LIKE :search OR s.name LIKE :search OR r.name LIKE :search')
-                ->setParameter('search', '%' . $search . '%');
+        if (in_array('ROLE_ADMIN', $user->getRoles(), true)) {
+            return $qb->getQuery()->getResult();
         }
 
-        if ($societyId) {
-            $qb
-                ->andWhere('s.id = :societyId')
-                ->setParameter('societyId', $societyId);
-        }
+        $qb
+            ->innerJoin('s.userSocieties', 'us')
+            ->andWhere('us.user = :user')
+            ->setParameter('user', $user);
+            if ($search) {
+                $qb
+                ->andWhere('c.name LIKE :search OR s.name LIKE :search OR r.name LIKE :search')
+                ->setParameter('search', '%' . $search . '%');
+            }
 
         return $qb->getQuery()->getResult();
     }

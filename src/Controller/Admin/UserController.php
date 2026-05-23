@@ -8,6 +8,7 @@ use App\Form\UserType;
 use App\Service\UserSecurityLogger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -39,7 +40,9 @@ class UserController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
         $user = new User();
-        $form = $this->createForm(UserType::class, $user);
+        $form = $this->createForm(UserType::class, $user, [
+            'password_required' => true,
+        ]);
         $form->handleRequest($request);
 
         $isAjax = $request->isXmlHttpRequest();
@@ -97,7 +100,9 @@ class UserController extends AbstractController
 
         $originalEmail = $user->getUserIdentifier();
 
-        $form = $this->createForm(UserType::class, $user);
+        $form = $this->createForm(UserType::class, $user, [
+            'password_required' => false,
+        ]);
         $form->handleRequest($request);
 
         $isAjax = $request->isXmlHttpRequest();
@@ -146,7 +151,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    private function jsonFormErrors($form): JsonResponse
+    private function jsonFormErrors(FormInterface $form): JsonResponse
     {
         $errors = [];
         foreach ($form->getErrors(true) as $error) {

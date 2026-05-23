@@ -36,10 +36,14 @@ class Society
     #[ORM\OneToMany(targetEntity: Campaign::class, mappedBy: 'society')]
     private Collection $campaigns;
 
+    #[ORM\OneToMany(mappedBy: 'society', targetEntity: UserSociety::class, orphanRemoval: true)]
+    private Collection $userSocieties;
+
     public function __construct()
     {
         $this->children = new ArrayCollection();
         $this->campaigns = new ArrayCollection();
+        $this->userSocieties = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -137,6 +141,35 @@ class Society
             // set the owning side to null (unless already changed)
             if ($campaign->getSociety() === $this) {
                 $campaign->setSociety(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserSociety>
+     */
+    public function getUserSocieties(): Collection
+    {
+        return $this->userSocieties;
+    }
+
+    public function addUserSociety(UserSociety $userSociety): self
+    {
+        if (!$this->userSocieties->contains($userSociety)) {
+            $this->userSocieties->add($userSociety);
+            $userSociety->setSociety($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserSociety(UserSociety $userSociety): self
+    {
+        if ($this->userSocieties->removeElement($userSociety)) {
+            if ($userSociety->getSociety() === $this) {
+                $userSociety->setSociety(null);
             }
         }
 

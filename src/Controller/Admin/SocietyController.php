@@ -7,20 +7,14 @@ use App\Form\SocietyType;
 use App\Repository\SocietyRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\DependencyInjection\Attribute\Autowire as AttributeAutowire;
+use App\Security\Voter\SocietyVoter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/admin/society')]
+#[Route('/society')]
 final class SocietyController extends AbstractController
 {
-    public function __construct(
-        #[AttributeAutowire('@monolog.logger.security')]
-        private LoggerInterface $securityLogger,
-    ) {}
-
     #[Route(name: 'app_society_index', methods: ['GET'])]
     public function index(SocietyRepository $societyRepository): Response
     {
@@ -32,6 +26,8 @@ final class SocietyController extends AbstractController
     #[Route('/new', name: 'app_society_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
         $society = new Society();
         $form = $this->createForm(SocietyType::class, $society);
         $form->handleRequest($request);
@@ -54,6 +50,8 @@ final class SocietyController extends AbstractController
     #[Route('/{id}/edit', name: 'app_society_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Society $society, EntityManagerInterface $entityManager): Response
     {
+        $this->denyAccessUnlessGranted(SocietyVoter::MANAGE, $society);
+
         $form = $this->createForm(SocietyType::class, $society);
         $form->handleRequest($request);
 

@@ -27,7 +27,6 @@
 
     <div class="app-content">
         <div class="container-fluid">
-
             {{ include('partial/_flash_messages.html.twig') }}
 
             <div class="card rz-card">
@@ -83,7 +82,6 @@
 
                                         <tr class="{{ rowClass }}">
                                             <td class="text-body-secondary">
-                                                {# Optionnel : petite icône d’état #}
                                                 {% if user.deactivatedAt is not null and daysSinceDeactivation >= 30 and daysSinceDeactivation < 45 %}
                                                     <i class="bi bi-exclamation-circle text-warning me-1"></i>
                                                 {% elseif user.deactivatedAt is not null and daysSinceDeactivation >= 15 and daysSinceDeactivation < 30 %}
@@ -108,7 +106,6 @@
                                                 {% endif %}
                                             </td>
 
-                                            {# Dernière connexion #}
                                             <td class="text-body-secondary">
                                                 {% if user.lastLoginAt is not null %}
                                                     <span title="{{ user.lastLoginAt|date('d/m/Y H:i:s') }}">
@@ -121,7 +118,6 @@
                                                 {% endif %}
                                             </td>
 
-                                            {# Date de désactivation #}
                                             <td class="text-body-secondary">
                                                 {% if user.deactivatedAt is not null %}
                                                     <span title="{{ user.deactivatedAt|date('d/m/Y H:i:s') }}">
@@ -132,7 +128,6 @@
                                                 {% endif %}
                                             </td>
 
-                                            {# Statut actif #}
                                             <td data-user-status-cell="{{ user.id }}">
                                                 {% if user.isActive() %}
                                                     <span class="badge text-bg-success">Oui</span>
@@ -143,7 +138,6 @@
 
                                             <td class="text-end">
                                                 <div class="d-inline-flex align-items-center gap-1">
-                                                    {# Bouton modifier (modale) #}
                                                     <button type="button"
                                                             class="btn btn-outline-secondary btn-sm rz-user-edit-btn"
                                                             data-url="{{ path('admin_user_edit', {'id': user.id}) }}"
@@ -151,11 +145,9 @@
                                                         <i class="bi bi-pencil-square"></i>
                                                     </button>
 
-                                                    {# Bouton toggle actif/inactif en AJAX #}
                                                     <button
                                                         type="button"
-                                                        class="btn btn-sm rz-user-toggle-status-btn
-                                                               {{ user.isActive() ? 'btn-outline-warning' : 'btn-outline-success' }}"
+                                                        class="btn btn-sm rz-user-toggle-status-btn {{ user.isActive() ? 'btn-outline-warning' : 'btn-outline-success' }}"
                                                         data-user-id="{{ user.id }}"
                                                         data-url="{{ path('admin_user_toggle_status', {'id': user.id}) }}"
                                                         data-token="{{ csrf_token('toggle_user_status_' ~ user.id) }}"
@@ -212,22 +204,233 @@
 
 {% block stylesheet %}
 <style>
-/* Ligne « fraîchement désactivée » 15–30 j */
 .rz-user-row-warn {
-    --bs-table-bg-state: rgba(255, 193, 7, 0.06);      /* jaune très léger */
-    box-shadow: inset 3px 0 0 rgba(255, 193, 7, 0.6);  /* bord gauche jaune */
+    --bs-table-bg-state: rgba(255, 193, 7, 0.06);
+    box-shadow: inset 3px 0 0 rgba(255, 193, 7, 0.6);
 }
 
-/* Ligne « proche purge » 30–45 j */
 .rz-user-row-danger {
-    --bs-table-bg-state: rgba(220, 53, 69, 0.06);       /* rouge très léger */
-    box-shadow: inset 3px 0 0 rgba(220, 53, 69, 0.7);   /* bord gauche rouge */
+    --bs-table-bg-state: rgba(220, 53, 69, 0.06);
+    box-shadow: inset 3px 0 0 rgba(220, 53, 69, 0.7);
 }
 
-/* Optionnel : transition douce au survol */
 .rz-user-row-warn:hover,
 .rz-user-row-danger:hover {
     --bs-table-bg-state: rgba(255, 255, 255, 0.03);
+}
+
+.rz-user-societies-section .rz-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.rz-user-society-table {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.rz-user-society-table__head {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr) 46px;
+    gap: 0.75rem;
+    padding: 0 0.2rem;
+    color: rgba(255, 255, 255, 0.58);
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.rz-user-society-table__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 320px;
+    overflow-y: auto;
+    padding-right: 0.2rem;
+}
+
+.rz-user-society-table__row {
+    padding: 0.6rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.8rem;
+    background: rgba(255, 255, 255, 0.02);
+    transition: border-color 0.18s ease, background-color 0.18s ease;
+}
+
+.rz-user-society-table__row:hover {
+    border-color: rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.rz-user-society-table__row-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr) 46px;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.rz-user-society-table__row-grid > div {
+    min-width: 0;
+}
+
+.rz-user-society-table__row .form-select,
+.rz-user-society-table__row .form-control,
+.rz-user-society-table__row .rz-form-select,
+.rz-user-society-table__row .rz-form-control,
+.rz-user-society-table__body .form-select,
+.rz-user-society-table__body .form-control,
+.rz-user-society-table__body .rz-form-select,
+.rz-user-society-table__body .rz-form-control {
+    min-height: 2.45rem;
+    height: 2.45rem;
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
+    border-radius: 0.65rem;
+    margin: 0;
+    font-size: 0.98rem;
+}
+
+.rz-user-society-table__row .invalid-feedback,
+.rz-user-society-table__body .invalid-feedback {
+    margin-top: 0.25rem;
+    font-size: 0.78rem;
+}
+
+.rz-user-society-table__actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rz-user-society-table__remove {
+    width: 2.45rem;
+    min-width: 2.45rem;
+    height: 2.45rem;
+    border-radius: 0.65rem;
+    border: 1px solid rgba(220, 53, 69, 0.16);
+    background: rgba(220, 53, 69, 0.05);
+    color: rgba(255, 201, 207, 0.92);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.rz-user-society-table__remove:hover {
+    background: rgba(220, 53, 69, 0.11);
+    border-color: rgba(220, 53, 69, 0.26);
+    color: #fff;
+}
+
+.rz-user-societies-add {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0;
+    margin-top: 0.1rem;
+    color: #6ea8fe;
+    font-weight: 500;
+    text-decoration: none;
+    font-size: 0.98rem;
+}
+
+.rz-user-societies-add:hover {
+    color: #9ec5fe;
+    text-decoration: none;
+}
+
+.rz-user-societies-empty {
+    padding: 0.8rem 0.9rem;
+    border: 1px dashed rgba(255, 255, 255, 0.12);
+    border-radius: 0.8rem;
+    background: rgba(255, 255, 255, 0.015);
+}
+
+.rz-user-societies-empty__title {
+    color: rgba(255, 255, 255, 0.92);
+    font-weight: 600;
+    margin-bottom: 0.15rem;
+    font-size: 0.95rem;
+}
+
+.rz-user-societies-empty__text {
+    color: rgba(255, 255, 255, 0.62);
+    font-size: 0.84rem;
+    line-height: 1.35;
+}
+
+@media (max-width: 767.98px) {
+    .rz-user-society-table__head {
+        display: none;
+    }
+
+    .rz-user-society-table__row-grid {
+        grid-template-columns: 1fr;
+        gap: 0.6rem;
+    }
+
+    .rz-user-society-table__actions {
+        justify-content: flex-start;
+    }
+
+    .rz-user-society-table__remove {
+        width: 2.35rem;
+        min-width: 2.35rem;
+        height: 2.35rem;
+    }
+}
+
+.rz-role-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.4rem;
+}
+
+.rz-role-option {
+    position: relative;
+}
+
+.rz-role-option__input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.rz-role-option__label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.6rem;
+    padding: 0.65rem 1rem;
+    border-radius: 0.8rem;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    background: rgba(255, 255, 255, 0.02);
+    color: rgba(255, 255, 255, 0.82);
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.18s ease, background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+    user-select: none;
+}
+
+.rz-role-option__label:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.035);
+}
+
+.rz-role-option__input:checked + .rz-role-option__label {
+    border-color: rgba(13, 110, 253, 0.35);
+    background: rgba(13, 110, 253, 0.14);
+    color: #dbeafe;
+    box-shadow: inset 0 0 0 1px rgba(13, 110, 253, 0.18);
+}
+
+.rz-role-option__input:focus-visible + .rz-role-option__label {
+    outline: 2px solid rgba(110, 168, 254, 0.55);
+    outline-offset: 2px;
 }
 </style>
 {% endblock %}
@@ -244,7 +447,6 @@
 
             const bsModal = userModalEl ? new bootstrap.Modal(userModalEl) : null;
 
-            // --- Fonction utilitaire pour initialiser les formulaires AJAX dans la modale ---
             function initUserFormAjax() {
                 const newForm = document.getElementById('rz-user-new-form');
                 if (newForm) {
@@ -267,7 +469,6 @@
                         submitBtn.disabled = true;
                     }
 
-                    // Nettoyer erreurs précédentes
                     form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
                     form.querySelectorAll('.invalid-feedback').forEach(el => el.remove());
 
@@ -307,15 +508,11 @@
 
                         rzShowToast('success', data.message || defaultSuccessMessage);
 
-                        // Fermer la modale après succès
                         if (userModalEl && bsModal) {
                             bsModal.hide();
                         }
 
-                        // Pour refléter les changements dans la liste sans te casser la tête
-                        // on peut recharger la page :
                         location.reload();
-
                     } catch (e) {
                         console.error(e);
                         rzShowToast('error', 'Erreur réseau lors de la sauvegarde de l’utilisateur.');
@@ -327,7 +524,6 @@
                 });
             }
 
-            // --- Toggle actif/inactif ---
             const statusButtons = document.querySelectorAll('.rz-user-toggle-status-btn');
 
             statusButtons.forEach((btn) => {
@@ -358,9 +554,7 @@
                         }
 
                         const isActive = data.isActive === true;
-                        const statusCell = document.querySelector(
-                            '[data-user-status-cell="' + userId + '"]'
-                        );
+                        const statusCell = document.querySelector('[data-user-status-cell="' + userId + '"]');
 
                         if (statusCell) {
                             statusCell.innerHTML = isActive
@@ -370,10 +564,7 @@
 
                         this.classList.toggle('btn-outline-warning', isActive);
                         this.classList.toggle('btn-outline-success', !isActive);
-                        this.setAttribute(
-                            'title',
-                            isActive ? 'Désactiver l’utilisateur' : 'Activer l’utilisateur'
-                        );
+                        this.setAttribute('title', isActive ? 'Désactiver l’utilisateur' : 'Activer l’utilisateur');
                         this.innerHTML = isActive
                             ? '<i class="bi bi-person-x"></i>'
                             : '<i class="bi bi-person-check"></i>';
@@ -388,7 +579,6 @@
                 });
             });
 
-            // --- Ouverture modale pour NEW ---
             function wireNewButton(btn) {
                 if (!btn) return;
                 btn.addEventListener('click', async function () {
@@ -415,7 +605,6 @@
             wireNewButton(newBtnMain);
             wireNewButton(newBtnEmpty);
 
-            // --- Ouverture modale pour EDIT ---
             document.querySelectorAll('.rz-user-edit-btn').forEach((btn) => {
                 btn.addEventListener('click', async function () {
                     const url = this.dataset.url;
@@ -437,6 +626,55 @@
                     }
                 });
             });
+        });
+
+        document.addEventListener('click', function (event) {
+            const addButton = event.target.closest('[data-add-item]');
+            if (addButton) {
+                const holder = addButton.closest('.rz-card-body').querySelector('[data-collection-holder]');
+                let index = parseInt(holder.dataset.index, 10);
+
+                if (Number.isNaN(index)) {
+                    index = holder.querySelectorAll('[data-collection-item]').length;
+                }
+
+                const prototype = holder.dataset.prototype.replace(/__name__/g, index);
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'rz-user-society-table__row';
+                wrapper.setAttribute('data-collection-item', 'true');
+                wrapper.innerHTML = prototype;
+
+                const emptyState = holder.querySelector('.rz-user-societies-empty');
+                if (emptyState) {
+                    emptyState.remove();
+                }
+
+                holder.appendChild(wrapper);
+                holder.dataset.index = index + 1;
+            }
+
+            const removeButton = event.target.closest('[data-remove-item]');
+            if (removeButton) {
+                const item = removeButton.closest('[data-collection-item]');
+                if (item) {
+                    const holder = item.closest('[data-collection-holder]');
+                    item.remove();
+
+                    if (holder && holder.querySelectorAll('[data-collection-item]').length === 0) {
+                        holder.innerHTML = `
+                            <div class="rz-user-societies-empty">
+                                <div>
+                                    <div class="rz-user-societies-empty__title">Aucune société affectée</div>
+                                    <div class="rz-user-societies-empty__text">
+                                        Ajoutez une première société pour limiter le périmètre visible par cet utilisateur.
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+            }
         });
     </script>
 {% endblock %}

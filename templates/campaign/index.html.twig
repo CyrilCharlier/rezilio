@@ -51,18 +51,6 @@
                             >
                         </div>
 
-                        <div class="col-12 col-md-3">
-                            <label for="society" class="form-label rz-form-label">Société</label>
-                            <select id="society" name="society" class="form-select rz-form-select">
-                                <option value="">Toutes</option>
-                                {% for society in societies|default([]) %}
-                                    <option value="{{ society.id }}" {{ filters.society|default('') == society.id ? 'selected' : '' }}>
-                                        {{ society.name }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-
                         <div class="col-12 col-md-4">
                             <div class="rz-toolbar">
                                 <button class="btn btn-outline-secondary rz-btn" type="submit">
@@ -128,9 +116,6 @@
                                                 <div class="btn-group">
                                                     <a href="{{ path('app_campaign_show', {'id': campaign.id}) }}" class="btn btn-sm btn-outline-primary">
                                                         Ouvrir
-                                                    </a>
-                                                    <a href="{# path('app_campaign_edit', {'id': campaign.id}) #}" class="btn btn-sm btn-outline-secondary">
-                                                        <i class="bi bi-pencil"></i>
                                                     </a>
                                                 </div>
                                             </td>

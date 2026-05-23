@@ -12,6 +12,8 @@ use App\Repository\MeasureNodeRepository;
 use App\Repository\MeasureReviewRepository;
 use App\Repository\ReferentialRepository;
 use App\Repository\SocietyRepository;
+use App\Security\Voter\CampaignVoter;
+use App\Security\Voter\SocietyVoter;
 use App\Service\Campaign\CampaignCreator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
@@ -32,21 +34,13 @@ final class CampaignController extends AbstractController
         SocietyRepository $societyRepository
     ): Response {
         $search = trim((string) $request->query->get('search', ''));
-        $societyId = $request->query->get('society');
 
-        $societies = $societyRepository->findBy([], ['name' => 'ASC']);
-
-        $campaigns = $campaignRepository->findByFilters(
-            $search ?: null,
-            $societyId ? (int) $societyId : null
-        );
+        $campaigns = $campaignRepository->findAccessibleForUser($this->getUser(), $search ?: null);
 
         return $this->render('campaign/index.html.twig', [
             'campaigns' => $campaigns,
-            'societies' => $societies,
             'filters' => [
-                'search' => $search,
-                'society' => $societyId,
+                'search' => $search
             ],
         ]);
     }
@@ -113,6 +107,11 @@ final class CampaignController extends AbstractController
                 }
 
                 if ('confirm' === $step) {
+                    $this->denyAccessUnlessGranted(
+                        SocietyVoter::USE,
+                        $data->society,
+                        'Vous n’avez pas le droit d’utiliser cette société.'
+                    );
                     $campaign = $campaignCreator->createFromModel($data);
 
                     $session->remove(self::SESSION_KEY);
@@ -150,10 +149,14 @@ final class CampaignController extends AbstractController
     private function createStepForm(string $step, CampaignCreationModel $data)
     {
         return match ($step) {
-            'context' => $this->createForm(CampaignContextType::class, $data),
+            'context' => $this->createForm(CampaignContextType::class, $data, [
+                'user' => $this->getUser(),
+            ]),
             'schedule' => $this->createForm(CampaignScheduleType::class, $data),
             'confirm' => $this->createForm(FormType::class, $data),
-            default => $this->createForm(CampaignContextType::class, $data),
+            default => $this->createForm(CampaignContextType::class, $data, [
+                'user' => $this->getUser(),
+            ]),
         };
     }
 
@@ -163,6 +166,12 @@ final class CampaignController extends AbstractController
         Request $request,
         MeasureReviewRepository $measureReviewRepository
     ): Response {
+        $this->denyAccessUnlessGranted(
+            CampaignVoter::VIEW,
+            $campaign,
+            'Vous n’avez pas accès à la société rattachée à cette campagne.'
+        );
+
         $search = trim((string) $request->query->get('search', ''));
         $categoryId = $request->query->get('category');
         $status = trim((string) $request->query->get('status', ''));
