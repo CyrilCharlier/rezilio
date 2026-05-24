@@ -203,6 +203,20 @@ final class DashboardMetricsProvider
             $item['score'] = $item['total'] > 0
                 ? round(($item['compliant'] / $item['total']) * 100, 1)
                 : 0.0;
+
+            if ($item['score'] < 40) {
+                $item['tone'] = 'danger';
+                $item['toneLabel'] = 'Critique';
+                $item['color'] = '#dc3545';
+            } elseif ($item['score'] < 70) {
+                $item['tone'] = 'warning';
+                $item['toneLabel'] = 'À renforcer';
+                $item['color'] = '#f59f00';
+            } else {
+                $item['tone'] = 'success';
+                $item['toneLabel'] = 'Maîtrisé';
+                $item['color'] = '#198754';
+            }
         }
         unset($item);
 

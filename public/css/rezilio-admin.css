@@ -1023,6 +1023,30 @@
     transform: rotate(180deg);
 }
 
+.rz-dashboard-section {
+    margin-top: 1.5rem;
+}
+
+.rz-kpi-value {
+    line-height: 1;
+    letter-spacing: -0.02em;
+}
+
+.rz-progress-thin {
+    height: 0.625rem;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.rz-progress-thin .progress-bar {
+    border-radius: 999px;
+}
+
+.rz-dashboard-meta {
+    color: var(--rz-text-soft);
+    font-size: 0.875rem;
+}
+
 /* =========================
    Responsive
    ========================= */
@@ -1102,5 +1126,165 @@
     .rz-remediation-meta-icon {
         width: 1.8rem;
         height: 1.8rem;
+    }
+}
+
+
+/*  =========================================================
+    Dashboard
+    ========================================================= */
+
+/* =========================================================
+Dashboard
+========================================================= */
+
+.rz-dashboard-page {
+    padding: 1.5rem;
+}
+
+.rz-dashboard-page .rz-dashboard-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.rz-dashboard-page .rz-page-intro {
+    margin-bottom: 0;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.rz-dashboard-page .rz-dashboard-head-actions {
+    flex: 0 0 auto;
+    margin-left: auto;
+}
+
+.rz-dashboard-page .rz-dashboard-inline-filter {
+    display: flex;
+    align-items: flex-start;
+}
+
+.rz-dashboard-page .rz-dashboard-inline-filter .rz-form-select {
+    min-width: 320px;
+    max-width: 420px;
+}
+
+.rz-dashboard-page .rz-card-header-title i[class^="bi"],
+.rz-dashboard-page .rz-card-header-title i[class*=" bi"] {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    flex-shrink: 0;
+}
+
+.rz-dashboard-page .display-5,
+.rz-dashboard-page .fs-5 {
+    line-height: 1;
+}
+
+.rz-dashboard-page .progress {
+    background: rgba(255, 255, 255, 0.035);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.rz-dashboard-page .progress-bar {
+    border-radius: 999px;
+}
+
+.rz-dashboard-page .rz-table-wrap {
+    width: 100%;
+}
+
+.rz-dashboard-page .rz-table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.rz-dashboard-page .rz-table th,
+.rz-dashboard-page .rz-table td {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.rz-dashboard-page .rz-table th:nth-child(1),
+.rz-dashboard-page .rz-table td:nth-child(1) {
+    width: 48%;
+}
+
+.rz-dashboard-page .rz-table th:nth-child(2),
+.rz-dashboard-page .rz-table td:nth-child(2),
+.rz-dashboard-page .rz-table th:nth-child(3),
+.rz-dashboard-page .rz-table td:nth-child(3),
+.rz-dashboard-page .rz-table th:nth-child(4),
+.rz-dashboard-page .rz-table td:nth-child(4) {
+    white-space: nowrap;
+}
+
+.rz-dashboard-page .rz-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.75rem;
+    padding-inline: 0.6rem;
+    border-radius: 999px;
+}
+
+.rz-dashboard-page .rz-table-subtitle.text-danger {
+    color: #f36b7f !important;
+}
+
+@media (max-width: 1199.98px) {
+    .rz-dashboard-page {
+        padding: 1.25rem;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .rz-dashboard-page {
+        padding: 1rem;
+    }
+
+    .rz-dashboard-page .rz-dashboard-head {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .rz-dashboard-page .rz-dashboard-head-actions {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .rz-dashboard-page .rz-dashboard-inline-filter {
+        width: 100%;
+    }
+
+    .rz-dashboard-page .rz-dashboard-inline-filter .rz-form-select {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .rz-dashboard-page .rz-table {
+        table-layout: auto;
+    }
+
+    .rz-dashboard-page .rz-table th:nth-child(1),
+    .rz-dashboard-page .rz-table td:nth-child(1) {
+        width: auto;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .rz-dashboard-page .rz-card-header {
+        padding: 1rem;
+    }
+
+    .rz-dashboard-page .rz-card-body {
+        padding: 1rem;
+    }
+
+    .rz-dashboard-page .display-5 {
+        font-size: 2.1rem;
     }
 }

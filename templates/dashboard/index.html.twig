@@ -2,29 +2,38 @@
 
 {% block title %}Dashboard{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
 {% block content %}
-<div class="rz-page">
-    <div class="rz-page-intro mb-4">
-        <h1 class="h3 mb-1">Dashboard</h1>
+<div class="rz-page rz-dashboard-page">
+    <div class="rz-dashboard-head">
+        <div class="rz-page-intro">
+            <h1 class="h3 mb-1">Dashboard</h1>
 
-        {% if overview.campaign %}
-            <p class="mb-0">
-                {{ overview.campaign.name }}
-                {% if overview.referential %} · {{ overview.referential.label }}{% endif %}
-                {% if overview.society %} · {{ overview.society.name }}{% endif %}
-            </p>
-        {% else %}
-            <p class="mb-0">Aucune campagne accessible.</p>
-        {% endif %}
-    </div>
+            {% if overview.campaign %}
+                <p class="mb-0">
+                    {{ overview.campaign.name }}
+                    {% if overview.referential %} · {{ overview.referential.label }}{% endif %}
+                    {% if overview.society %} · {{ overview.society.name }}{% endif %}
+                </p>
+            {% else %}
+                <p class="mb-0">Aucune campagne accessible.</p>
+            {% endif %}
+        </div>
 
-    {% if campaigns is not empty %}
-    <div class="rz-card mb-4">
-        <div class="rz-card-body">
-            <form method="get" action="{{ path('app_dashboard') }}" class="row g-3 align-items-end">
-                <div class="col-12 col-md-6 col-xl-4">
-                    <label for="campaign" class="form-label">Campagne</label>
-                    <select id="campaign" name="campaign" class="form-select" onchange="this.form.submit()">
+        {% if campaigns is not empty %}
+            <div class="rz-page-actions rz-dashboard-head-actions">
+                <form method="get" action="{{ path('app_dashboard') }}" class="rz-dashboard-inline-filter">
+                    <label for="campaign" class="visually-hidden">Campagne</label>
+
+                    <select
+                        id="campaign"
+                        name="campaign"
+                        class="form-select rz-form-select"
+                        onchange="this.form.submit()"
+                    >
                         {% for campaign in campaigns %}
                             <option value="{{ campaign.id }}"
                                 {% if selectedCampaign and campaign.id == selectedCampaign.id %}selected{% endif %}>
@@ -34,27 +43,25 @@
                             </option>
                         {% endfor %}
                     </select>
-                </div>
-
-                <div class="col-12 col-md-auto">
-                    <button type="submit" class="btn btn-primary">Appliquer</button>
-                </div>
-            </form>
-        </div>
+                </form>
+            </div>
+        {% endif %}
     </div>
-    {% endif %}
 
-    <div class="row g-4">
+    <div class="row g-2">
         <div class="col-12 col-md-6 col-xl-3">
             <div class="rz-card h-100">
                 <div class="rz-card-header">
-                    <h2 class="rz-card-header-title mb-0">Score de maturité global</h2>
+                    <h3 class="rz-card-header-title mb-0">
+                        <i class="bi bi-shield-check"></i>
+                        Conformité globale
+                    </h3>
                 </div>
                 <div class="rz-card-body">
-                    <div class="display-6 fw-bold">{{ overview.globalScore }}%</div>
-                    <p class="text-muted mb-0">
-                        {{ overview.implementedCount }} conforme{{ overview.implementedCount > 1 ? 's' : '' }}
-                        sur {{ overview.totalCount }}
+                    <div class="display-5 fw-bold">{{ overview.globalScore|number_format(1, ',', ' ') }}%</div>
+                    <p class="mb-0 text-muted">
+                        {{ overview.implementedCount }} mesure{{ overview.implementedCount > 1 ? 's' : '' }}
+                        conforme{{ overview.implementedCount > 1 ? 's' : '' }} sur {{ overview.totalCount }}
                     </p>
                 </div>
             </div>
@@ -63,12 +70,15 @@
         <div class="col-12 col-md-6 col-xl-3">
             <div class="rz-card h-100">
                 <div class="rz-card-header">
-                    <h2 class="rz-card-header-title mb-0">Mesures conformes</h2>
+                    <h3 class="rz-card-header-title mb-0">
+                        <i class="bi bi-check2-circle"></i>
+                        Mesures conformes
+                    </h3>
                 </div>
                 <div class="rz-card-body">
-                    <div class="display-6 fw-bold">{{ overview.implementedCount }}</div>
-                    <p class="text-muted mb-0">
-                        Sur {{ overview.totalCount }} mesures évaluables
+                    <div class="display-5 fw-bold">{{ overview.implementedCount }}</div>
+                    <p class="mb-0 text-muted">
+                        Référentiel de {{ overview.totalCount }} mesures
                     </p>
                 </div>
             </div>
@@ -77,11 +87,14 @@
         <div class="col-12 col-md-6 col-xl-3">
             <div class="rz-card h-100">
                 <div class="rz-card-header">
-                    <h2 class="rz-card-header-title mb-0">Actions en retard</h2>
+                    <h3 class="rz-card-header-title mb-0">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        Actions en retard
+                    </h3>
                 </div>
                 <div class="rz-card-body">
-                    <div class="display-6 fw-bold">{{ overview.remediationMetrics.overdue }}</div>
-                    <p class="text-muted mb-0">
+                    <div class="display-5 fw-bold">{{ overview.remediationMetrics.overdue }}</div>
+                    <p class="mb-0 text-muted">
                         {{ overview.remediationMetrics.open + overview.remediationMetrics.in_progress }} action(s) ouverte(s) ou en cours
                     </p>
                 </div>
@@ -91,46 +104,55 @@
         <div class="col-12 col-md-6 col-xl-3">
             <div class="rz-card h-100">
                 <div class="rz-card-header">
-                    <h2 class="rz-card-header-title mb-0">Prochaine échéance</h2>
+                    <h3 class="rz-card-header-title mb-0">
+                        <i class="bi bi-calendar-event"></i>
+                        Prochaine échéance
+                    </h3>
                 </div>
                 <div class="rz-card-body">
                     {% if overview.nextDeadline %}
-                        <div class="fw-bold fs-5">{{ overview.nextDeadline.dueDate|date('d/m/Y') }}</div>
-                        <p class="text-muted mb-0">
-                            {{ overview.nextDeadline.title }}
-                        </p>
+                        <div class="fs-5 fw-bold">{{ overview.nextDeadline.dueDate|date('d/m/Y') }}</div>
+                        <p class="mb-0 text-muted">{{ overview.nextDeadline.title }}</p>
                     {% else %}
-                        <div class="fw-bold fs-5">Aucune</div>
-                        <p class="text-muted mb-0">
-                            Pas d’action planifiée
-                        </p>
+                        <div class="fs-5 fw-bold">Aucune</div>
+                        <p class="mb-0 text-muted">Pas d’action planifiée</p>
                     {% endif %}
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row g-4 mt-1">
+    {% set totalStatuses = 0 %}
+    {% for item in overview.statusChart %}
+        {% set totalStatuses = totalStatuses + item.value %}
+    {% endfor %}
+
+    <div class="row g-2 mt-2">
         <div class="col-12 col-xl-7">
             <div class="rz-card h-100">
                 <div class="rz-card-header">
-                    <h2 class="rz-card-header-title mb-0">Répartition des statuts</h2>
+                    <h3 class="rz-card-header-title mb-0">
+                        <i class="bi bi-pie-chart"></i>
+                        Répartition des statuts
+                    </h3>
                 </div>
                 <div class="rz-card-body">
-                    {% set totalStatuses = 0 %}
-                    {% for item in overview.statusChart %}
-                        {% set totalStatuses = totalStatuses + item.value %}
-                    {% endfor %}
+                    <p class="rz-table-subtitle mb-3">
+                        Répartition des mesures évaluées par statut de conformité.
+                    </p>
 
                     {% if totalStatuses > 0 %}
                         <div class="d-flex flex-column gap-3">
                             {% for item in overview.statusChart %}
-                                {% set percent = totalStatuses > 0 ? (item.value / totalStatuses * 100) : 0 %}
+                                {% set percent = item.value > 0 ? (item.value / totalStatuses * 100) : 0 %}
                                 <div>
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         <span class="fw-semibold">{{ item.label }}</span>
-                                        <span class="text-muted">{{ item.value }} · {{ percent|number_format(1, ',', ' ') }}%</span>
+                                        <span class="rz-table-subtitle">
+                                            {{ item.value }} · {{ percent|number_format(1, ',', ' ') }}%
+                                        </span>
                                     </div>
+
                                     <div class="progress" style="height: 12px;">
                                         <div
                                             class="progress-bar"
@@ -139,67 +161,90 @@
                                             aria-valuenow="{{ percent }}"
                                             aria-valuemin="0"
                                             aria-valuemax="100"
+                                            aria-label="{{ item.label }} : {{ percent|number_format(1, ',', ' ') }}%"
                                         ></div>
                                     </div>
                                 </div>
                             {% endfor %}
                         </div>
                     {% else %}
-                        <p class="text-muted mb-0">Aucune donnée de revue disponible pour cette campagne.</p>
+                        <p class="mb-0 text-muted">Aucune donnée de revue disponible pour cette campagne.</p>
                     {% endif %}
                 </div>
             </div>
         </div>
+
         <div class="col-12 col-xl-5">
             <div class="rz-card h-100">
                 <div class="rz-card-header">
-                    <h2 class="rz-card-header-title mb-0">Domaines les plus faibles</h2>
+                    <h3 class="rz-card-header-title mb-0">
+                        <i class="bi bi-bar-chart"></i>
+                        Domaines les plus faibles
+                    </h3>
                 </div>
                 <div class="rz-card-body">
+                    <p class="rz-table-subtitle mb-3">
+                        Classement des catégories ayant le plus faible taux de conformité sur la campagne sélectionnée.
+                    </p>
+
                     {% if overview.weakestCategories is not empty %}
                         <div class="d-flex flex-column gap-3">
                             {% for category in overview.weakestCategories %}
                                 <div>
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <span class="fw-semibold">{{ category.name }}</span>
-                                        <span class="text-muted">
-                                            {{ category.compliant }}/{{ category.total }} · {{ category.score|number_format(1, ',', ' ') }}%
-                                        </span>
+                                    <div class="d-flex justify-content-between align-items-start gap-3 mb-1">
+                                        <div class="min-w-0">
+                                            <div class="fw-semibold">{{ category.name }}</div>
+                                            <div class="rz-table-subtitle">
+                                                {{ category.compliant }}/{{ category.total }} mesures conformes · {{ category.toneLabel }}
+                                            </div>
+                                        </div>
+                                        <div class="fw-semibold text-nowrap">
+                                            {{ category.score|number_format(1, ',', ' ') }}%
+                                        </div>
                                     </div>
+
                                     <div class="progress" style="height: 10px;">
                                         <div
                                             class="progress-bar"
                                             role="progressbar"
-                                            style="width: {{ category.score }}%; background-color: #dc3545;"
+                                            style="width: {{ category.score }}%; background-color: {{ category.color }}; min-width: 20px;"
                                             aria-valuenow="{{ category.score }}"
                                             aria-valuemin="0"
                                             aria-valuemax="100"
+                                            aria-label="{{ category.name }} : {{ category.score|number_format(1, ',', ' ') }}%"
                                         ></div>
                                     </div>
                                 </div>
                             {% endfor %}
                         </div>
                     {% else %}
-                        <p class="text-muted mb-0">Aucune catégorie exploitable pour cette campagne.</p>
+                        <p class="mb-0 text-muted">Aucune catégorie exploitable pour cette campagne.</p>
                     {% endif %}
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row g-4 mt-1">
+    <div class="row g-2 mt-2">
         <div class="col-12">
             <div class="rz-card">
                 <div class="rz-card-header">
-                    <h2 class="rz-card-header-title mb-0">Actions prioritaires</h2>
+                    <h3 class="rz-card-header-title mb-0">
+                        <i class="bi bi-list-check"></i>
+                        Actions prioritaires
+                    </h3>
                 </div>
                 <div class="rz-card-body">
+                    <p class="rz-table-subtitle mb-3">
+                        Actions de remédiation les plus critiques à traiter sur la campagne sélectionnée.
+                    </p>
+
                     {% if overview.priorityActions is not empty %}
-                        <div class="table-responsive">
-                            <table class="table align-middle mb-0">
+                        <div class="rz-table-wrap">
+                            <table class="rz-table">
                                 <thead>
                                     <tr>
-                                        <th>Titre</th>
+                                        <th>Action</th>
                                         <th>Priorité</th>
                                         <th>Statut</th>
                                         <th>Échéance</th>
@@ -207,30 +252,39 @@
                                 </thead>
                                 <tbody>
                                     {% for action in overview.priorityActions %}
+                                        {% set isOverdue = action.dueDate and action.dueDate|date('U') < 'now'|date('U') %}
+
                                         <tr>
                                             <td>
-                                                <div class="fw-semibold">{{ action.title }}</div>
+                                                <div class="rz-table-title">{{ action.title }}</div>
+
                                                 {% if action.measureReview and action.measureReview.measure %}
-                                                    <div class="text-muted small">
+                                                    <div class="rz-table-subtitle">
                                                         {{ action.measureReview.measure.code }} · {{ action.measureReview.measure.label }}
                                                     </div>
                                                 {% endif %}
                                             </td>
+
                                             <td>
-                                                <span class="badge {{ action.priority.badgeClass }}">
+                                                <span class="badge rz-badge {{ action.priority.badgeClass }}">
                                                     {{ action.priority.label }}
                                                 </span>
                                             </td>
+
                                             <td>
-                                                <span class="badge {{ action.status.badgeClass }}">
+                                                <span class="badge rz-badge {{ action.status.badgeClass }}">
                                                     {{ action.status.label }}
                                                 </span>
                                             </td>
+
                                             <td>
                                                 {% if action.dueDate %}
-                                                    {{ action.dueDate|date('d/m/Y') }}
+                                                    <div class="rz-table-title">{{ action.dueDate|date('d/m/Y') }}</div>
+                                                    <div class="rz-table-subtitle {{ isOverdue ? 'text-danger' : '' }}">
+                                                        {{ isOverdue ? 'Échue' : 'À venir' }}
+                                                    </div>
                                                 {% else %}
-                                                    <span class="text-muted">Non définie</span>
+                                                    <span class="rz-table-subtitle">Non définie</span>
                                                 {% endif %}
                                             </td>
                                         </tr>
@@ -239,49 +293,8 @@
                             </table>
                         </div>
                     {% else %}
-                        <p class="text-muted mb-0">Aucune action prioritaire pour cette campagne.</p>
+                        <p class="mb-0 text-muted">Aucune action prioritaire pour cette campagne.</p>
                     {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row g-4 mt-1">
-        <div class="col-12">
-            <div class="rz-card">
-                <div class="rz-card-header">
-                    <h2 class="rz-card-header-title mb-0">Lecture métier des statuts</h2>
-                </div>
-                <div class="rz-card-body">
-                    <div class="row g-3">
-                        <div class="col-12 col-md-6 col-xl-3">
-                            <div class="border rounded p-3 h-100">
-                                <div class="text-muted small">Conformes</div>
-                                <div class="fs-4 fw-bold text-success">{{ overview.implementedCount }}</div>
-                            </div>
-                        </div>
-
-                        <div class="col-12 col-md-6 col-xl-3">
-                            <div class="border rounded p-3 h-100">
-                                <div class="text-muted small">Non conformes</div>
-                                <div class="fs-4 fw-bold text-danger">{{ overview.nonCompliantCount }}</div>
-                            </div>
-                        </div>
-
-                        <div class="col-12 col-md-6 col-xl-3">
-                            <div class="border rounded p-3 h-100">
-                                <div class="text-muted small">En cours</div>
-                                <div class="fs-4 fw-bold text-warning">{{ overview.inProgressCount }}</div>
-                            </div>
-                        </div>
-
-                        <div class="col-12 col-md-6 col-xl-3">
-                            <div class="border rounded p-3 h-100">
-                                <div class="text-muted small">Bloquées</div>
-                                <div class="fs-4 fw-bold text-secondary">{{ overview.blockedCount }}</div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
