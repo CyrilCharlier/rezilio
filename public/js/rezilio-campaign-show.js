@@ -128,6 +128,41 @@
         });
     }
 
+    function initModalDynamicContent(scope = modalBody) {
+        if (!scope) {
+            return;
+        }
+
+        syncConditionalFields(scope);
+        initTooltips(scope);
+    }
+
+    function getEvidenceFrame() {
+        return modalBody?.querySelector('#measure-review-evidence-frame') ?? null;
+    }
+
+    function reloadEvidenceFrame() {
+        const frame = getEvidenceFrame();
+        if (!frame) {
+            return;
+        }
+
+        const src = frame.getAttribute('src');
+        if (!src) {
+            return;
+        }
+
+        frame.setAttribute('src', src);
+    }
+
+    function isInsideEvidenceFrame(element) {
+        if (!element) {
+            return false;
+        }
+
+        return !!element.closest('#measure-review-evidence-frame');
+    }
+
     function ensureBusyOverlay(container) {
         let overlay = container.querySelector(':scope > .rz-busy-overlay');
 
@@ -255,12 +290,14 @@
     async function openReviewModal(card) {
         lastTriggerCard = card;
         modalBody.innerHTML = '<div class="rz-modal-loading">Chargement…</div>';
+        initModalDynamicContent(modalBody);
 
         if (pageRoot) {
             pageRoot.setAttribute('inert', '');
         }
 
         modal.show();
+        reloadEvidenceFrame();
 
         await withBusyState(modalBody, async () => {
             const response = await fetch(card.dataset.modalUrl, {
@@ -648,5 +685,35 @@
                 showToast('Impossible de supprimer l’action.', 'error', 4200);
             });
         }
+    });
+
+    document.addEventListener('turbo:submit-end', function (event) {
+        const form = event.target;
+
+        if (!isInsideEvidenceFrame(form)) {
+            return;
+        }
+
+        if (event.detail.success) {
+            showToast('Preuve enregistrée.', 'success', 2200);
+        } else {
+            showToast('Erreur lors de l’enregistrement de la preuve.', 'error', 3200);
+        }
+    });
+
+    document.addEventListener('turbo:before-fetch-request', function (event) {
+        if (event.target.id === 'measure-review-evidence-frame') {
+            const frame = event.target;
+            frame.classList.add('is-loading');
+        }
+    });
+
+    document.addEventListener('turbo:frame-load', function (event) {
+        if (event.target.id !== 'measure-review-evidence-frame') {
+            return;
+        }
+
+        event.target.classList.remove('is-loading');
+        initModalDynamicContent(event.target);
     });
 })();

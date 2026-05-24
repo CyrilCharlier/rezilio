@@ -56,6 +56,12 @@ class MeasureReview
     private ?\DateTimeImmutable $updatedAt = null;
 
     /**
+     * @var Collection<int, Evidence>
+     */
+    #[ORM\OneToMany(targetEntity: Evidence::class, mappedBy: 'measureReview', orphanRemoval: true)]
+    private Collection $evidences;
+
+    /**
      * @var Collection<int, RemediationAction>
      */
     #[ORM\OneToMany(targetEntity: RemediationAction::class, mappedBy: 'measureReview')]
@@ -64,6 +70,7 @@ class MeasureReview
     public function __construct()
     {
         $this->remediationActions = new ArrayCollection();
+        $this->evidences = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -180,6 +187,40 @@ class MeasureReview
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
+    }
+
+    /**
+     * @return Collection<int, Evidence>
+     */
+    public function getEvidences(): Collection
+    {
+        return $this->evidences;
+    }
+
+    public function addEvidence(Evidence $evidence): static
+    {
+        if (!$this->evidences->contains($evidence)) {
+            $this->evidences->add($evidence);
+            $evidence->setMeasureReview($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEvidence(Evidence $evidence): static
+    {
+        if ($this->evidences->removeElement($evidence)) {
+            if ($evidence->getMeasureReview() === $this) {
+                $evidence->setMeasureReview(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getEvidenceCount(): int
+    {
+        return $this->evidences->count();
     }
 
     #[ORM\PrePersist]

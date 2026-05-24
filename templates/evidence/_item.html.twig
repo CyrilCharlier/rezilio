@@ -1,0 +1,62 @@
+<li class="rz-evidence-item">
+    <div class="rz-evidence-item__main">
+        <span class="rz-evidence-item__icon" aria-hidden="true">
+            {% if evidence.fileCategory == 'pdf' %}
+                📄
+            {% elseif evidence.fileCategory == 'image' %}
+                🖼️
+            {% elseif evidence.fileCategory == 'document' %}
+                📝
+            {% else %}
+                📎
+            {% endif %}
+        </span>
+
+        <div class="rz-evidence-item__body">
+            <div class="rz-evidence-item__name">
+                {{ evidence.originalFilename }}
+            </div>
+
+            <div class="rz-evidence-item__meta">
+                <span>{{ evidence.formattedFileSize }}</span>
+
+                {% if evidence.createdAt %}
+                    <span>· {{ evidence.createdAt|date('d/m/Y H:i') }}</span>
+                {% endif %}
+
+                {% if evidence.uploadedBy and attribute(evidence.uploadedBy, 'email') is defined %}
+                    <span>· {{ evidence.uploadedBy.email }}</span>
+                {% endif %}
+            </div>
+
+            {% if evidence.description %}
+                <div class="rz-evidence-item__description">
+                    {{ evidence.description }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="rz-evidence-item__actions">
+        <a
+            href="{{ path('app_evidence_download', {id: evidence.id}) }}"
+            class="btn btn-sm btn-outline-light rz-btn"
+            data-turbo="false"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            Télécharger
+        </a>
+
+        <form
+            method="post"
+            action="{{ path('app_evidence_delete', {id: evidence.id}) }}"
+            onsubmit="return confirm('Supprimer cette preuve ?');"
+        >
+            <input type="hidden" name="_token" value="{{ csrf_token('delete_evidence_' ~ evidence.id) }}">
+            <button class="btn btn-sm btn-outline-danger rz-btn" type="submit">
+                Supprimer
+            </button>
+        </form>
+    </div>
+</li>

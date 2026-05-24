@@ -1,0 +1,66 @@
+<turbo-frame id="measure-review-evidence-frame">
+    <section class="rz-evidence-panel">
+        <div class="rz-evidence-panel__meta">
+            <span class="rz-evidence-panel__count">
+                {{ evidences|length }} fichier{{ evidences|length > 1 ? 's' : '' }}
+            </span>
+        </div>
+
+        <div class="rz-evidence-panel__form rz-card-ui">
+            {{ form_start(form, {
+                attr: {
+                    class: 'rz-evidence-form'
+                }
+            }) }}
+                <div class="rz-field rz-field-full">
+                    <label class="form-label rz-form-label" for="{{ form.file.vars.id }}">
+                        {{ form.file.vars.label }}
+                    </label>
+                    {{ form_widget(form.file, {
+                        attr: {
+                            class: 'form-control rz-form-control'
+                        }
+                    }) }}
+                    {{ form_errors(form.file) }}
+                </div>
+
+                <div class="rz-field rz-field-full">
+                    <label class="form-label rz-form-label" for="{{ form.description.vars.id }}">
+                        {{ form.description.vars.label }}
+                    </label>
+                    {{ form_widget(form.description, {
+                        attr: {
+                            class: 'form-control rz-form-control rz-modal-textarea',
+                            rows: 3,
+                            placeholder: 'Contexte de la preuve, commentaire, référence…'
+                        }
+                    }) }}
+                    {{ form_errors(form.description) }}
+                </div>
+
+                <div class="rz-evidence-panel__actions">
+                    <button class="btn btn-primary rz-btn rz-btn-primary" type="submit">
+                        Ajouter la preuve
+                    </button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+
+        <div class="rz-evidence-panel__list">
+            {% if evidences is empty %}
+                <div class="rz-empty-mini rz-evidence-empty">
+                    <span class="rz-empty-mini-icon">📎</span>
+                    <p class="rz-empty-mini-text mb-0">
+                        Aucune preuve jointe pour le moment.
+                    </p>
+                </div>
+            {% else %}
+                <ul class="list-unstyled mb-0 rz-evidence-list">
+                    {% for evidence in evidences %}
+                        {% include 'evidence/_item.html.twig' with { evidence: evidence } only %}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </section>
+</turbo-frame>

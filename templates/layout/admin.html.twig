@@ -15,7 +15,7 @@
 
 {% block javascript %}
     {{ parent() }}
-
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@8.0.18/dist/turbo.es2017-esm.min.js"></script>
     <script>
         function rzShowToast(type, message) {
             const container = document.getElementById('rz-toast-container');

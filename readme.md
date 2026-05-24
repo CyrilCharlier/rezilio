@@ -29,6 +29,7 @@ Rezilio a été conçu pour répondre à ce besoin opérationnel : transformer u
 - Affecter des responsables et suivre l'avancement dans le temps.
 - Préparer les audits, revues internes et travaux de gouvernance.
 - Produire une vision consolidée pour la direction, la DSI et le RSSI.
+- Associer des preuves de conformité à chaque revue de mesure (pièces jointes, justificatifs, comptes rendus).
 
 ***
 
@@ -68,6 +69,7 @@ Rezilio n'est pas un outil documentaire. C'est un outil de pilotage qui aide à 
 | Formulaires | Symfony Forms · thème Bootstrap 5 |
 | QR Code | endroid/qr-code-bundle |
 | Logging sécurité | Monolog (channel `security_rezilio`) |
+| Logging métier | Monolog (channel `business_rezilio`, événements structurés JSON) |
 | Déploiement | Docker Compose · Caddy |
 
 ***
@@ -109,7 +111,7 @@ Après installation, il est recommandé de :
 
 ## Développement sur serveur
 
-Rezilio peut aussi être développé directement sur le serveur, notamment dans un contexte auto-hébergé avec `code-server`, Docker Compose et Caddy, ce qui correspond au mode d’exploitation actuellement retenu.
+Rezilio peut aussi être développé directement sur le serveur, notamment dans un contexte auto-hébergé avec `code-server`, Docker Compose et Caddy, ce qui correspond au mode d’exploitation actuellement retenu.[8]
 
 ### Répertoire de travail
 
@@ -144,47 +146,6 @@ docker compose -f compose.prod.yaml exec app php bin/console cache:clear --env=p
 
 ***
 
-## Configuration serveur actuelle
-
-L’environnement serveur actuellement documenté repose sur une exposition publique via Caddy et une segmentation des services par sous-domaines dédiés.[8]
-
-### Exposition des services
-
-- `rezilio.domaine.com` : application principale
-- `ide.domaine.com` : accès `code-server`
-- `pgadmin.domaine.com` : administration PostgreSQL
-
-### Reverse proxy Caddy
-
-Caddy est utilisé comme reverse proxy frontal pour exposer les services Docker en HTTPS et pour gérer les protections d’accès sur les surfaces d’administration.[8]
-
-Les services sensibles `ide.domaine.com` et `pgadmin.domaine.com` sont protégés par :
-
-- une restriction IP via matcher `remote_ip` ;
-- une authentification HTTP `basic_auth` ;
-- puis l’authentification native du service exposé derrière le proxy.[9][8]
-
-### Pare-feu et SSH
-
-Le serveur est protégé par UFW avec :
-
-- politique par défaut `deny incoming` ;
-- HTTP/HTTPS autorisés ;
-- SSH déplacé sur le port `2223` ;
-- accès SSH limité à des IP autorisées.[10][11][12]
-
-Ce modèle réduit fortement l’exposition des interfaces d’administration et l’accès distant au serveur.[13][12]
-
-### pgAdmin
-
-`pgadmin` est exposé uniquement via Caddy et n’est plus censé être exposé via un port local dédié si le passage par le reverse proxy est retenu à 100%.[8]
-
-### code-server
-
-`code-server` est exposé via `ide.domaine.com` et bénéficie du même principe de défense en profondeur : allowlist IP, `basic_auth` Caddy, puis authentification du service lui-même.[9]
-
-***
-
 ## Supervision et healthcheck
 
 Rezilio dispose d’un endpoint `/healthz` destiné à la supervision légère et aux `healthcheck` Docker.[14]
@@ -202,6 +163,50 @@ Exemples :
 curl -i http://localhost/healthz
 curl -i https://rezilio.domaine.com/healthz
 ```
+
+***
+
+## Gestion des preuves et pièces jointes
+
+Rezilio permet d’associer des preuves de conformité à chaque revue de mesure, sous forme de pièces jointes structurées et journalisées.
+
+### UX et ergonomie
+
+- Panneau latéral de gestion des preuves accessible depuis une revue de mesure.
+- Formulaire compact d’ajout de preuve (fichier + description) dans un panneau dédié.
+- Liste des preuves associées à la revue, avec nom, taille, auteur et date d’upload.
+- Téléchargement direct des pièces jointes et suppression contrôlée (CSRF, droits).
+
+L’objectif est d’intégrer la preuve dans le contexte de la revue, sans surcharger l’interface principale.
+
+### Stockage et sécurité
+
+- Fichiers stockés hors de `public/` (par exemple dans `var/uploads/evidence/`).
+- Téléchargement uniquement via un contrôleur Symfony, après contrôle d’accès.
+- Vérification stricte du type MIME et de la taille côté serveur.
+- Rattachement des preuves à une revue de mesure (`MeasureReview`) et à l’utilisateur qui l’a déposée.
+
+Cette approche vise à limiter l’exposition directe des fichiers et à garder un contrôle fin sur qui peut consulter quoi.
+
+### Traçabilité et logs métier
+
+Les actions sur les preuves sont journalisées dans le canal métier `business_rezilio`, avec un format JSON structuré cohérent avec les autres événements métiers :
+
+- Ajout de preuve : `evidence.upload.success`
+- Suppression de preuve : `evidence.delete.success`
+- Téléchargement de preuve : `evidence.download.success`
+- Téléchargement avec fichier physique manquant : `evidence.download.file_missing`
+- Suppression avec CSRF invalide : `evidence.delete.csrf_invalid`
+- Refus d’accès à une revue contenant des preuves : `evidence.access.denied`
+
+Chaque événement inclut notamment :
+
+- l’identifiant de la preuve et le nom de fichier original ;
+- l’identifiant de la revue et de la mesure associée ;
+- l’initiateur (id, username) ;
+- le contexte HTTP (IP, route, méthode, user-agent).
+
+Ces logs sont pensés pour être exploitables dans un SIEM au même titre que les événements de sécurité.
 
 ***
 
@@ -229,20 +234,25 @@ curl -i https://rezilio.domaine.com/healthz
   - Gestion des statuts, priorités, responsables et échéances
   - Filtres persistants (état sauvegardé en session)
   - Mise à jour de statut par PATCH AJAX
+- [x] Gestion des preuves de conformité
+  - Panneau de gestion des preuves par revue de mesure
+  - Upload sécurisé de pièces jointes (vérification MIME, taille)
+  - Stockage des fichiers hors `public/`
+  - Téléchargement contrôlé via contrôleur Symfony
+  - Journalisation métier des actions (upload, suppression, téléchargement, accès refusé)
 - [x] Endpoint de health/readiness (`/healthz`) pour supervision et healthcheck Docker
 
 ***
 
 ## Roadmap
 
-- [ ] Gestion des preuves et pièces jointes
 - [ ] Exports PDF / CSV des suivis
 - [ ] Reporting de maturité et indicateurs graphiques
 - [ ] Multi-entités / multi-référentiels
-- [ ] Historisation des décisions et traçabilité
+- [ ] Historisation fine des décisions et traçabilité
 - [ ] Intégration avancée du ReCyF (Référentiel Cyber France — ANSSI) [4][3]
 - [ ] Administration multi-tenant
-- [ ] Exemples de pipelines SIEM / dashboards pour les logs de sécurité
+- [ ] Exemples de pipelines SIEM / dashboards pour les logs de sécurité et les logs métier (preuves, remédiations)
 - [ ] Backup codes / trusted devices pour la 2FA, selon les besoins futurs [5]
 
 ***
@@ -252,6 +262,7 @@ curl -i https://rezilio.domaine.com/healthz
 - [docs/security-logging.md](docs/security-logging.md) : format des logs de sécurité et exemples d’événements (auth, 2FA, comptes).
 - [docs/health-readiness.md](docs/health-readiness.md) : endpoint `/healthz`, supervision et intégration Docker.
 - [docs/deployment-process.md](docs/deployment-process.md) : procédure de déploiement, rebuild, vérifications post-déploiement et rollback.
+- (à venir) `docs/evidence-management.md` : modèle de données des preuves, flux d’upload/Téléchargement, format des logs métier `evidence.*`.
 
 ***
 
@@ -283,4 +294,4 @@ La procédure détaillée est documentée dans [docs/deployment-process.md](docs
 
 ## Licence
 
-À définir.
+[LICENCE](Apache 2.0)

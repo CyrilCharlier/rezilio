@@ -1,0 +1,12 @@
+<a
+    href="{{ path('app_measure_review_evidences', {id: measureReview.id}) }}"
+    data-turbo-frame="evidence-panel"
+    class="rz-evidence-badge"
+    title="Voir les preuves"
+>
+    📎
+    {% set count = measureReview.evidenceCount %}
+    {% if count > 0 %}
+        <span class="badge rounded-pill text-bg-secondary">{{ count }}</span>
+    {% endif %}
+</a>

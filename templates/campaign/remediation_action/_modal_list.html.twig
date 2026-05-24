@@ -15,7 +15,7 @@
 
             <button
                 type="button"
-                class="btn btn-primary rz-btn rz-btn-primary"
+                class="btn btn-primary rz-btn rz-btn-primary rz-btn"
                 data-remediation-create
                 data-remediation-create-url="{{ path('app_remediation_action_new_modal', {id: measureReview.id}) }}"
             >
@@ -81,7 +81,7 @@
                     <div class="rz-remediation-card-actions">
                         <button
                             type="button"
-                            class="btn btn-sm btn-outline-light"
+                            class="btn btn-sm btn-outline-light rz-btn"
                             data-remediation-edit
                             data-remediation-edit-url="{{ path('app_remediation_action_edit_modal', {id: action.id}) }}"
                         >
@@ -97,7 +97,7 @@
                             <input type="hidden" name="_token" value="{{ csrf_token('delete_remediation_action_' ~ action.id) }}">
                             <button
                                 type="submit"
-                                class="btn btn-sm btn-outline-danger"
+                                class="btn btn-sm btn-outline-danger rz-btn"
                             >
                                 Supprimer
                             </button>

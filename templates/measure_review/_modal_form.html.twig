@@ -164,6 +164,26 @@
                     } only %}
                 </div>
             </div>
+
+            <div class="rz-remediation-section rz-evidence-section mt-4">
+                <div class="rz-remediation-section-head">
+                    <div>
+                        <h5 class="rz-remediation-section-title">Preuves</h5>
+                        <p class="rz-remediation-section-subtitle">
+                            Documents et pièces jointes associées à cette mesure.
+                        </p>
+                    </div>
+                </div>
+
+                <turbo-frame
+                    id="measure-review-evidence-frame"
+                    src="{{ path('app_measure_review_evidences', {id: measureReview.id}) }}"
+                >
+                    <div class="rz-remediation-panel">
+                        <div class="text-muted small">Chargement des preuves…</div>
+                    </div>
+                </turbo-frame>
+            </div>
         </div>
     </aside>
 </div>
