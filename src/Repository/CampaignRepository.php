@@ -34,6 +34,7 @@ class CampaignRepository extends ServiceEntityRepository
             ->setParameter('user', $user);
             if ($search) {
                 $qb
+                ->innerJoin('c.referential', 'r')
                 ->andWhere('c.name LIKE :search OR s.name LIKE :search OR r.name LIKE :search')
                 ->setParameter('search', '%' . $search . '%');
             }

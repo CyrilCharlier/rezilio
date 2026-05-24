@@ -1,0 +1,87 @@
+{% extends 'layout/admin.html.twig' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="rz-page">
+    <div class="rz-page-intro mb-4">
+        <h1 class="h3 mb-1">Dashboard</h1>
+
+        {% if overview.campaign %}
+            <p class="mb-0">
+                {{ overview.campaign.name }}
+                {% if overview.referential %} · {{ overview.referential.label }}{% endif %}
+                {% if overview.society %} · {{ overview.society.name }}{% endif %}
+            </p>
+        {% else %}
+            <p class="mb-0">Aucune campagne accessible.</p>
+        {% endif %}
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="rz-card h-100">
+                <div class="rz-card-header">
+                    <h2 class="rz-card-header-title mb-0">Score de maturité global</h2>
+                </div>
+                <div class="rz-card-body">
+                    <div class="display-6 fw-bold">{{ overview.globalScore }}%</div>
+                    <p class="text-muted mb-0">
+                        {{ overview.implementedCount }} conforme{{ overview.implementedCount > 1 ? 's' : '' }}
+                        sur {{ overview.totalCount }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="rz-card h-100">
+                <div class="rz-card-header">
+                    <h2 class="rz-card-header-title mb-0">Mesures conformes</h2>
+                </div>
+                <div class="rz-card-body">
+                    <div class="display-6 fw-bold">{{ overview.implementedCount }}</div>
+                    <p class="text-muted mb-0">
+                        Sur {{ overview.totalCount }} mesures évaluables
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="rz-card h-100">
+                <div class="rz-card-header">
+                    <h2 class="rz-card-header-title mb-0">Actions en retard</h2>
+                </div>
+                <div class="rz-card-body">
+                    <div class="display-6 fw-bold">{{ overview.remediationMetrics.overdue }}</div>
+                    <p class="text-muted mb-0">
+                        {{ overview.remediationMetrics.open + overview.remediationMetrics.in_progress }} action(s) ouverte(s) ou en cours
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="rz-card h-100">
+                <div class="rz-card-header">
+                    <h2 class="rz-card-header-title mb-0">Prochaine échéance</h2>
+                </div>
+                <div class="rz-card-body">
+                    {% if overview.nextDeadline %}
+                        <div class="fw-bold fs-5">{{ overview.nextDeadline.dueDate|date('d/m/Y') }}</div>
+                        <p class="text-muted mb-0">
+                            {{ overview.nextDeadline.title }}
+                        </p>
+                    {% else %}
+                        <div class="fw-bold fs-5">Aucune</div>
+                        <p class="text-muted mb-0">
+                            Pas d’action planifiée
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

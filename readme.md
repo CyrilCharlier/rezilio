@@ -253,6 +253,7 @@ Ces logs sont pensés pour être exploitables dans un SIEM au même titre que le
 ## Roadmap
 
 - [ ] Exports PDF / CSV des suivis
+- [ ] Administration multi‑tenant
 - [ ] Reporting de maturité et indicateurs graphiques
 - [ ] Historisation fine des décisions et traçabilité
 - [ ] Intégration avancée du ReCyF (Référentiel Cyber France — ANSSI) [4][3]
@@ -298,4 +299,5 @@ La procédure détaillée est documentée dans [docs/deployment-process.md](docs
 
 ## Licence
 
+[LICENCE](Apache 2.0)
 Rezilio est distribué sous licence Apache 2.0. Voir le fichier `LICENSE` pour plus de détails.
