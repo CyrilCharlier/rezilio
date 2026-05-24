@@ -294,4 +294,4 @@ La procédure détaillée est documentée dans [docs/deployment-process.md](docs
 
 ## Licence
 
-[LICENCE](Apache 2.0)
+Rezilio est distribué sous licence Apache 2.0. Voir le fichier `LICENSE` pour plus de détails.
