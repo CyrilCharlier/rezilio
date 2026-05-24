@@ -18,6 +18,32 @@
         {% endif %}
     </div>
 
+    {% if campaigns is not empty %}
+    <div class="rz-card mb-4">
+        <div class="rz-card-body">
+            <form method="get" action="{{ path('app_dashboard') }}" class="row g-3 align-items-end">
+                <div class="col-12 col-md-6 col-xl-4">
+                    <label for="campaign" class="form-label">Campagne</label>
+                    <select id="campaign" name="campaign" class="form-select" onchange="this.form.submit()">
+                        {% for campaign in campaigns %}
+                            <option value="{{ campaign.id }}"
+                                {% if selectedCampaign and campaign.id == selectedCampaign.id %}selected{% endif %}>
+                                {{ campaign.name }}
+                                {% if campaign.society %} · {{ campaign.society.name }}{% endif %}
+                                {% if campaign.referential %} · {{ campaign.referential.label }}{% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-auto">
+                    <button type="submit" class="btn btn-primary">Appliquer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
     <div class="row g-4">
         <div class="col-12 col-md-6 col-xl-3">
             <div class="rz-card h-100">
