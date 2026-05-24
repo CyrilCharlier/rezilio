@@ -23,6 +23,8 @@ Rezilio a été conçu pour répondre à ce besoin opérationnel : transformer u
 ## Ce que permet l'application
 
 - Cartographier les exigences réglementaires et les relier à des mesures concrètes.
+- Gérer plusieurs référentiels de conformité (création et gestion par les rôles d’administration).
+- Gérer plusieurs sociétés et rattacher un utilisateur à une ou plusieurs sociétés selon son niveau de droit.
 - Évaluer le niveau de maturité ou de conformité par domaine.
 - Identifier les écarts et prioriser les actions de remédiation.
 - Piloter les remédiations en vue Kanban ou liste, avec gestion des statuts, priorités et échéances.
@@ -227,6 +229,10 @@ Ces logs sont pensés pour être exploitables dans un SIEM au même titre que le
 - [x] Bibliothèque d'exigences NIS2 par article
 - [x] Revues de conformité par mesure (statut, score, commentaire)
 - [x] Dashboard de conformité par domaine
+- [x] Multi‑référentiels et multi‑sociétés
+  - Création et gestion de plusieurs référentiels (rôle `ROLE_ADMIN`)
+  - Gestion de plusieurs sociétés / entités
+  - Rattachement d’un même utilisateur à plusieurs sociétés, avec niveaux de droits
 - [x] Gestion des remédiations
   - Vue Kanban avec drag-and-drop (SortableJS)
   - Vue liste / tableau
@@ -248,10 +254,8 @@ Ces logs sont pensés pour être exploitables dans un SIEM au même titre que le
 
 - [ ] Exports PDF / CSV des suivis
 - [ ] Reporting de maturité et indicateurs graphiques
-- [ ] Multi-entités / multi-référentiels
 - [ ] Historisation fine des décisions et traçabilité
 - [ ] Intégration avancée du ReCyF (Référentiel Cyber France — ANSSI) [4][3]
-- [ ] Administration multi-tenant
 - [ ] Exemples de pipelines SIEM / dashboards pour les logs de sécurité et les logs métier (preuves, remédiations)
 - [ ] Backup codes / trusted devices pour la 2FA, selon les besoins futurs [5]
 
