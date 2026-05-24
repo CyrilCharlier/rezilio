@@ -84,7 +84,82 @@ final class DashboardMetricsProvider
             'statusBreakdown' => $statusBreakdown,
             'remediationMetrics' => $remediationMetrics,
             'nextDeadline' => $nextDeadline,
+            'weakestCategories' => array_slice($this->buildCategoryScores($reviews), 0, 5),
+            'statusChart' => [
+                [
+                    'key' => MeasureReviewStatus::COMPLIANT->value,
+                    'label' => 'Conformes',
+                    'value' => $statusBreakdown[MeasureReviewStatus::COMPLIANT->value] ?? 0,
+                    'color' => '#198754',
+                ],
+                [
+                    'key' => MeasureReviewStatus::IN_PROGRESS->value,
+                    'label' => 'En cours',
+                    'value' => $statusBreakdown[MeasureReviewStatus::IN_PROGRESS->value] ?? 0,
+                    'color' => '#f59f00',
+                ],
+                [
+                    'key' => MeasureReviewStatus::NON_COMPLIANT->value,
+                    'label' => 'Non conformes',
+                    'value' => $statusBreakdown[MeasureReviewStatus::NON_COMPLIANT->value] ?? 0,
+                    'color' => '#dc3545',
+                ],
+                [
+                    'key' => MeasureReviewStatus::BLOCKED->value,
+                    'label' => 'Bloquées',
+                    'value' => $statusBreakdown[MeasureReviewStatus::BLOCKED->value] ?? 0,
+                    'color' => '#6c757d',
+                ],
+            ],
         ];
+    }
+
+    private function buildCategoryScores(array $reviews): array
+    {
+        $categories = [];
+
+        foreach ($reviews as $review) {
+            $measure = $review->getMeasure();
+            $category = $measure?->getCategory();
+
+            if (!$category) {
+                continue;
+            }
+
+            $categoryId = $category->getId();
+            if (!$categoryId) {
+                continue;
+            }
+
+            if (!isset($categories[$categoryId])) {
+                $categories[$categoryId] = [
+                    'id' => $categoryId,
+                    'name' => $category->getName(),
+                    'total' => 0,
+                    'compliant' => 0,
+                    'score' => 0.0,
+                ];
+            }
+
+            ++$categories[$categoryId]['total'];
+
+            if ($review->getStatus() === MeasureReviewStatus::COMPLIANT) {
+                ++$categories[$categoryId]['compliant'];
+            }
+        }
+
+        foreach ($categories as &$item) {
+            $item['score'] = $item['total'] > 0
+                ? round(($item['compliant'] / $item['total']) * 100, 1)
+                : 0.0;
+        }
+        unset($item);
+
+        usort($categories, static function (array $a, array $b): int {
+            return [$a['score'], -$a['total'], $a['name']] <=> [$b['score'], -$b['total'], $b['name']];
+        });
+
+        return $categories;
     }
 
     private function resolveDefaultCampaign(User $user): ?Campaign
@@ -119,6 +194,7 @@ final class DashboardMetricsProvider
                 'overdue' => 0,
             ],
             'nextDeadline' => null,
+            'weakestCategories' => [],
         ];
     }
 }

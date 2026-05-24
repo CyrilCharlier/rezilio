@@ -109,5 +109,82 @@
             </div>
         </div>
     </div>
+
+    <div class="row g-4 mt-1">
+        <div class="col-12 col-xl-7">
+            <div class="rz-card h-100">
+                <div class="rz-card-header">
+                    <h2 class="rz-card-header-title mb-0">Répartition des statuts</h2>
+                </div>
+                <div class="rz-card-body">
+                    {% set totalStatuses = 0 %}
+                    {% for item in overview.statusChart %}
+                        {% set totalStatuses = totalStatuses + item.value %}
+                    {% endfor %}
+
+                    {% if totalStatuses > 0 %}
+                        <div class="d-flex flex-column gap-3">
+                            {% for item in overview.statusChart %}
+                                {% set percent = totalStatuses > 0 ? (item.value / totalStatuses * 100) : 0 %}
+                                <div>
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="fw-semibold">{{ item.label }}</span>
+                                        <span class="text-muted">{{ item.value }} · {{ percent|number_format(1, ',', ' ') }}%</span>
+                                    </div>
+                                    <div class="progress" style="height: 12px;">
+                                        <div
+                                            class="progress-bar"
+                                            role="progressbar"
+                                            style="width: {{ percent }}%; background-color: {{ item.color }};"
+                                            aria-valuenow="{{ percent }}"
+                                            aria-valuemin="0"
+                                            aria-valuemax="100"
+                                        ></div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">Aucune donnée de revue disponible pour cette campagne.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-xl-5">
+            <div class="rz-card h-100">
+                <div class="rz-card-header">
+                    <h2 class="rz-card-header-title mb-0">Domaines les plus faibles</h2>
+                </div>
+                <div class="rz-card-body">
+                    {% if overview.weakestCategories is not empty %}
+                        <div class="d-flex flex-column gap-3">
+                            {% for category in overview.weakestCategories %}
+                                <div>
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="fw-semibold">{{ category.name }}</span>
+                                        <span class="text-muted">
+                                            {{ category.compliant }}/{{ category.total }} · {{ category.score|number_format(1, ',', ' ') }}%
+                                        </span>
+                                    </div>
+                                    <div class="progress" style="height: 10px;">
+                                        <div
+                                            class="progress-bar"
+                                            role="progressbar"
+                                            style="width: {{ category.score }}%; background-color: #dc3545;"
+                                            aria-valuenow="{{ category.score }}"
+                                            aria-valuemin="0"
+                                            aria-valuemax="100"
+                                        ></div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">Aucune catégorie exploitable pour cette campagne.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
