@@ -55,6 +55,15 @@ final class DashboardMetricsProvider
             }
         }
 
+        $reviewedCount = count($reviews);
+        $nonCompliantCount = $statusBreakdown[MeasureReviewStatus::NON_COMPLIANT->value] ?? 0;
+        $inProgressCount = $statusBreakdown[MeasureReviewStatus::IN_PROGRESS->value] ?? 0;
+        $blockedCount = $statusBreakdown[MeasureReviewStatus::BLOCKED->value] ?? 0;
+
+        $coverageRate = $totalCount > 0
+            ? round(($reviewedCount / $totalCount) * 100, 1)
+            : 0.0;
+
         $globalScore = $totalCount > 0
             ? round(($implementedCount / $totalCount) * 100, 1)
             : 0.0;
@@ -85,6 +94,12 @@ final class DashboardMetricsProvider
             'remediationMetrics' => $remediationMetrics,
             'nextDeadline' => $nextDeadline,
             'weakestCategories' => array_slice($this->buildCategoryScores($reviews), 0, 5),
+            'priorityActions' => $campaign ? $this->buildPriorityActions($campaign->getId()) : [],
+            'reviewedCount' => $reviewedCount,
+            'coverageRate' => $coverageRate,
+            'nonCompliantCount' => $nonCompliantCount,
+            'inProgressCount' => $inProgressCount,
+            'blockedCount' => $blockedCount,
             'statusChart' => [
                 [
                     'key' => MeasureReviewStatus::COMPLIANT->value,
@@ -112,6 +127,42 @@ final class DashboardMetricsProvider
                 ],
             ],
         ];
+    }
+
+    private function buildPriorityActions(int $campaignId): array
+    {
+        $actions = $this->remediationActionRepository->findForDashboard([
+            'campaign' => $campaignId,
+        ]);
+
+        $priorityRank = [
+            'critical' => 0,
+            'high' => 1,
+            'medium' => 2,
+            'low' => 3,
+        ];
+
+        $filtered = array_filter($actions, static function ($action) {
+            $status = $action->getStatus()?->value;
+
+            return !in_array($status, ['done', 'cancelled'], true);
+        });
+
+        usort($filtered, static function ($a, $b) use ($priorityRank): int {
+            $aPriority = $priorityRank[$a->getPriority()?->value ?? 'low'] ?? 99;
+            $bPriority = $priorityRank[$b->getPriority()?->value ?? 'low'] ?? 99;
+
+            if ($aPriority !== $bPriority) {
+                return $aPriority <=> $bPriority;
+            }
+
+            $aDue = $a->getDueDate()?->getTimestamp() ?? PHP_INT_MAX;
+            $bDue = $b->getDueDate()?->getTimestamp() ?? PHP_INT_MAX;
+
+            return $aDue <=> $bDue;
+        });
+
+        return array_slice($filtered, 0, 5);
     }
 
     private function buildCategoryScores(array $reviews): array
@@ -195,6 +246,12 @@ final class DashboardMetricsProvider
             ],
             'nextDeadline' => null,
             'weakestCategories' => [],
+            'priorityActions' => [],
+            'reviewedCount' => 0,
+            'coverageRate' => 0.0,
+            'nonCompliantCount' => 0,
+            'inProgressCount' => 0,
+            'blockedCount' => 0,
         ];
     }
 }

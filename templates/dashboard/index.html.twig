@@ -186,5 +186,105 @@
             </div>
         </div>
     </div>
+
+    <div class="row g-4 mt-1">
+        <div class="col-12">
+            <div class="rz-card">
+                <div class="rz-card-header">
+                    <h2 class="rz-card-header-title mb-0">Actions prioritaires</h2>
+                </div>
+                <div class="rz-card-body">
+                    {% if overview.priorityActions is not empty %}
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Titre</th>
+                                        <th>Priorité</th>
+                                        <th>Statut</th>
+                                        <th>Échéance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for action in overview.priorityActions %}
+                                        <tr>
+                                            <td>
+                                                <div class="fw-semibold">{{ action.title }}</div>
+                                                {% if action.measureReview and action.measureReview.measure %}
+                                                    <div class="text-muted small">
+                                                        {{ action.measureReview.measure.code }} · {{ action.measureReview.measure.label }}
+                                                    </div>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <span class="badge {{ action.priority.badgeClass }}">
+                                                    {{ action.priority.label }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge {{ action.status.badgeClass }}">
+                                                    {{ action.status.label }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {% if action.dueDate %}
+                                                    {{ action.dueDate|date('d/m/Y') }}
+                                                {% else %}
+                                                    <span class="text-muted">Non définie</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">Aucune action prioritaire pour cette campagne.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-1">
+        <div class="col-12">
+            <div class="rz-card">
+                <div class="rz-card-header">
+                    <h2 class="rz-card-header-title mb-0">Lecture métier des statuts</h2>
+                </div>
+                <div class="rz-card-body">
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6 col-xl-3">
+                            <div class="border rounded p-3 h-100">
+                                <div class="text-muted small">Conformes</div>
+                                <div class="fs-4 fw-bold text-success">{{ overview.implementedCount }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-xl-3">
+                            <div class="border rounded p-3 h-100">
+                                <div class="text-muted small">Non conformes</div>
+                                <div class="fs-4 fw-bold text-danger">{{ overview.nonCompliantCount }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-xl-3">
+                            <div class="border rounded p-3 h-100">
+                                <div class="text-muted small">En cours</div>
+                                <div class="fs-4 fw-bold text-warning">{{ overview.inProgressCount }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-xl-3">
+                            <div class="border rounded p-3 h-100">
+                                <div class="text-muted small">Bloquées</div>
+                                <div class="fs-4 fw-bold text-secondary">{{ overview.blockedCount }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
