@@ -12,12 +12,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: MeasureReviewRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-#[ORM\Table(
-    name: 'measure_review',
-    uniqueConstraints: [
-        new ORM\UniqueConstraint(name: 'uniq_campaign_measure_review', columns: ['campaign_id', 'measure_id'])
-    ]
-)]
+#[ORM\Table(name: 'measure_review')]
+#[ORM\UniqueConstraint(name: 'uniq_campaign_measure_review', columns: ['campaign_id', 'measure_id'])]
 #[UniqueEntity(
     fields: ['campaign', 'measure'],
     message: 'Une revue existe déjà pour cette mesure dans cette campagne.'
