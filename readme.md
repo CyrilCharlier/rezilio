@@ -229,6 +229,7 @@ Ces logs sont pensés pour être exploitables dans un SIEM au même titre que le
 - [x] Bibliothèque d'exigences NIS2 par article
 - [x] Revues de conformité par mesure (statut, score, commentaire)
 - [x] Dashboard de conformité par domaine
+- [x] Reporting de maturité et indicateurs graphiques
 - [x] Multi‑référentiels et multi‑sociétés
   - Création et gestion de plusieurs référentiels (rôle `ROLE_ADMIN`)
   - Gestion de plusieurs sociétés / entités
@@ -252,13 +253,11 @@ Ces logs sont pensés pour être exploitables dans un SIEM au même titre que le
 
 ## Roadmap
 
+- [ ] Historisation fine des décisions et traçabilité
+- [ ] Intégration avancée du ReCyF (Référentiel Cyber France — ANSSI)
 - [ ] Exports PDF / CSV des suivis
 - [ ] Administration multi‑tenant
-- [ ] Reporting de maturité et indicateurs graphiques
-- [ ] Historisation fine des décisions et traçabilité
-- [ ] Intégration avancée du ReCyF (Référentiel Cyber France — ANSSI) [4][3]
-- [ ] Exemples de pipelines SIEM / dashboards pour les logs de sécurité et les logs métier (preuves, remédiations)
-- [ ] Backup codes / trusted devices pour la 2FA, selon les besoins futurs [5]
+- [ ] Backup codes / trusted devices pour la 2FA, selon les besoins futurs
 
 ***
 
