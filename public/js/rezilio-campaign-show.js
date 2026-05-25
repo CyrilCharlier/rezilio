@@ -322,12 +322,13 @@
     async function submitModalForm(form) {
         const submitButton = form.querySelector('[type="submit"]');
         submitButton?.classList.add('is-loading');
+        const submitBody = new FormData(form);
 
         try {
             await withBusyState(form, async () => {
                 const response = await fetch(form.action, {
                     method: form.method || 'POST',
-                    body: new FormData(form),
+                    body: submitBody,
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
                     }

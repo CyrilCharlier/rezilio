@@ -95,7 +95,9 @@
 
             <li class="nav-item">
               <a href="{{ item.route ? path(item.route) : '#' }}"
-                 class="nav-link {{ is_active ? 'active' : '' }}">
+                 class="nav-link {{ is_active ? 'active' : '' }}"
+                 data-turbo="false"
+                 rel="noopener noreferrer">
                 <i class="nav-icon {{ item.icon }}"></i>
                 <p>{{ item.label }}</p>
               </a>
@@ -136,7 +138,9 @@
 
                 <li class="nav-item">
                   <a href="{{ admin_item.route ? path(admin_item.route) : '#' }}"
-                     class="nav-link {{ is_sub_active ? 'active' : '' }}">
+                     class="nav-link {{ is_sub_active ? 'active' : '' }}"
+                     data-turbo="false"
+                     rel="noopener noreferrer">
                     <i class="nav-icon {{ admin_item.icon }}"></i>
                     <p>{{ admin_item.label }}</p>
                   </a>

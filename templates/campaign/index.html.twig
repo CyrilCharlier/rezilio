@@ -15,7 +15,10 @@
                 </div>
                 <div class="col-sm-6">
                     <div class="rz-page-actions mt-3 mt-sm-0">
-                        <a href="{{ path('app_campaign_new') }}" class="btn btn-primary rz-btn rz-btn-primary">
+                        <a href="{{ path('app_campaign_new') }}"
+                            class="btn btn-primary rz-btn rz-btn-primary"
+                            data-turbo="false"
+                            rel="noopener noreferrer">
                             <i class="bi bi-plus-lg me-1"></i>
                             Nouvelle campagne
                         </a>
@@ -57,7 +60,7 @@
                                     <i class="bi bi-search me-1"></i>
                                     Rechercher
                                 </button>
-                                <a href="{{ path('app_campaign_index') }}" class="btn btn-outline-light rz-btn">
+                                <a href="{{ path('app_campaign_index') }}" class="btn btn-outline-light rz-btn" data-turbo="false" rel="noopener noreferrer">
                                     Réinitialiser
                                 </a>
                             </div>
@@ -114,7 +117,7 @@
                                             </td>
                                             <td class="text-end">
                                                 <div class="btn-group">
-                                                    <a href="{{ path('app_campaign_show', {'id': campaign.id}) }}" class="btn btn-sm btn-outline-primary">
+                                                    <a href="{{ path('app_campaign_show', {'id': campaign.id}) }}" class="btn btn-sm btn-outline-primary" data-turbo="false" rel="noopener noreferrer">
                                                         Ouvrir
                                                     </a>
                                                 </div>
@@ -135,7 +138,7 @@
                             <p class="rz-empty-text">
                                 Créez votre première campagne pour lancer une revue de conformité sur une société et un référentiel.
                             </p>
-                            <a href="{{ path('app_campaign_new') }}" class="btn btn-primary rz-btn rz-btn-primary">
+                            <a href="{{ path('app_campaign_new') }}" class="btn btn-primary rz-btn rz-btn-primary" data-turbo="false" rel="noopener noreferrer">
                                 <i class="bi bi-plus-lg me-1"></i>
                                 Créer une campagne
                             </a>

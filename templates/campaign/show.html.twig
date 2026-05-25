@@ -18,7 +18,7 @@
                 </div>
                 <div class="col-sm-4">
                     <div class="rz-page-actions mt-3 mt-sm-0">
-                        <a href="{{ path('app_campaign_index') }}" class="btn btn-outline-light rz-btn">
+                        <a href="{{ path('app_campaign_index') }}" class="btn btn-outline-light rz-btn" data-turbo="false" rel="noopener noreferrer">
                             Retour aux campagnes
                         </a>
                     </div>
@@ -83,7 +83,7 @@
                                 Filtres
                             </button>
 
-                            <a href="{{ path('app_campaign_show', {'id': campaign.id}) }}" class="btn btn-outline-light rz-btn">
+                            <a href="{{ path('app_campaign_show', {'id': campaign.id}) }}" class="btn btn-outline-light rz-btn" data-turbo="false" rel="noopener noreferrer">
                                 Réinitialiser
                             </a>
                         </div>
@@ -131,18 +131,24 @@
                                         <a
                                             href="{{ path('app_campaign_show', {'id': campaign.id}|merge(currentQuery)|merge({'applicability': null})) }}"
                                             class="rz-chip {{ filters.applicability is empty ? 'is-active' : '' }}"
+                                            data-turbo="false"
+                                            rel="noopener noreferrer"
                                         >
                                             Toutes
                                         </a>
                                         <a
                                             href="{{ path('app_campaign_show', {'id': campaign.id}|merge(currentQuery)|merge({'applicability': 'ee'})) }}"
                                             class="rz-chip {{ filters.applicability == 'ee' ? 'is-active' : '' }}"
+                                            data-turbo="false"
+                                            rel="noopener noreferrer"
                                         >
                                             EE
                                         </a>
                                         <a
                                             href="{{ path('app_campaign_show', {'id': campaign.id}|merge(currentQuery)|merge({'applicability': 'ei'})) }}"
                                             class="rz-chip {{ filters.applicability == 'ei' ? 'is-active' : '' }}"
+                                            data-turbo="false"
+                                            rel="noopener noreferrer"
                                         >
                                             EI
                                         </a>
@@ -155,6 +161,8 @@
                                         <a
                                             href="{{ path('app_campaign_show', {'id': campaign.id}|merge(currentQuery)|merge({'status': null})) }}"
                                             class="rz-chip {{ filters.status is empty ? 'is-active' : '' }}"
+                                            data-turbo="false"
+                                            rel="noopener noreferrer"
                                         >
                                             Tous
                                         </a>
@@ -162,6 +170,8 @@
                                             <a
                                                 href="{{ path('app_campaign_show', {'id': campaign.id}|merge(currentQuery)|merge({'status': column.value})) }}"
                                                 class="rz-chip {{ filters.status == column.value ? 'is-active' : '' }}"
+                                                data-turbo="false"
+                                                rel="noopener noreferrer"
                                             >
                                                 {{ column.label }}
                                             </a>

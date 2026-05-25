@@ -19,7 +19,7 @@ final class MeasureReviewType extends AbstractType
             ->add('status', EnumType::class, [
                 'class' => MeasureReviewStatus::class,
                 'choice_label' => static fn (MeasureReviewStatus $status) => match ($status) {
-                    MeasureReviewStatus::NON_COMPLIANT => 'Non conforme',
+                    MeasureReviewStatus::NON_COMPLIANT => 'À qualifier',
                     MeasureReviewStatus::IN_PROGRESS => 'En cours',
                     MeasureReviewStatus::BLOCKED => 'Bloquée',
                     MeasureReviewStatus::COMPLIANT => 'Conforme / validée',
