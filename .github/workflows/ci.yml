@@ -13,10 +13,25 @@ jobs:
     name: Symfony / PHP
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: nis2_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: Postgres123!
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d nis2_test"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
     env:
       APP_ENV: test
       APP_SECRET: test-secret
-      DATABASE_URL: "sqlite:///%kernel.project_dir%/var/data.db"
+      DATABASE_URL: "postgresql://postgres:Postgres123!@127.0.0.1:5432/nis2_test?serverVersion=17&charset=utf8"
       COMPOSER_PROCESS_TIMEOUT: 0
       COMPOSER_NO_INTERACTION: 1
 
@@ -30,7 +45,7 @@ jobs:
           php-version: "8.3"
           coverage: none
           tools: composer:v2
-          extensions: mbstring, intl, pdo_sqlite, sqlite3
+          extensions: mbstring, intl, pdo_pgsql, pgsql
 
       - name: Get Composer cache directory
         id: composer-cache
@@ -53,11 +68,17 @@ jobs:
       - name: Composer audit (prod only)
         run: composer audit --no-dev
 
-      - name: Prepare test database file
+      - name: Wait for PostgreSQL
         run: |
-          mkdir -p var
-          rm -f var/data.db
-          touch var/data.db
+          for i in {1..30}; do
+            pg_isready -h 127.0.0.1 -p 5432 -U postgres -d nis2_test && exit 0
+            sleep 2
+          done
+          echo "PostgreSQL is not ready"
+          exit 1
+
+      - name: Create test database
+        run: php bin/console doctrine:database:create --if-not-exists --env=test
 
       - name: Run Doctrine migrations for test
         run: php bin/console doctrine:migrations:migrate --no-interaction --env=test
