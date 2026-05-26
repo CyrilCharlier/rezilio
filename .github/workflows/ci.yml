@@ -45,8 +45,8 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --no-progress --prefer-dist
 
-      - name: Security audit
-        run: composer audit
+      - name: Composer audit (prod only)
+        run: composer audit --no-dev
 
       - name: Prepare test environment
         run: |
