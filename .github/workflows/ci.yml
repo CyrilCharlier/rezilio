@@ -2,7 +2,8 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
+  pull_request:
 
 permissions:
   contents: read
@@ -11,60 +12,65 @@ jobs:
   symfony:
     name: Symfony / PHP
     runs-on: ubuntu-latest
+
     env:
       APP_ENV: test
       APP_SECRET: test-secret
       DATABASE_URL: "sqlite:///%kernel.project_dir%/var/data.db"
+      COMPOSER_PROCESS_TIMEOUT: 0
+      COMPOSER_NO_INTERACTION: 1
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc
+        uses: shivammathur/setup-php@v2
         with:
           php-version: "8.3"
           coverage: none
           tools: composer:v2
-          extensions: mbstring, intl, pdo_sqlite
+          extensions: mbstring, intl, pdo_sqlite, sqlite3
 
       - name: Get Composer cache directory
         id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
 
       - name: Cache Composer
         uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
+          restore-keys: |
+            ${{ runner.os }}-composer-
 
       - name: Validate composer.json and composer.lock
         run: composer validate --strict
 
       - name: Install dependencies
-        run: composer install --no-interaction --no-progress --prefer-dist
+        run: composer install --no-progress --prefer-dist
 
       - name: Composer audit (prod only)
         run: composer audit --no-dev
 
-      - name: Prepare test environment
+      - name: Prepare test database file
         run: |
-          cp .env .env.test || true
+          mkdir -p var
+          rm -f var/data.db
           touch var/data.db
 
-      - name: Prepare test database
+      - name: Run Doctrine migrations for test
         run: |
-            mkdir -p var
-            php bin/console doctrine:database:create --if-not-exists --env=test
-            php bin/console doctrine:migrations:migrate --no-interaction --env=test
+          php bin/console doctrine:database:create --if-not-exists --env=test
+          php bin/console doctrine:migrations:migrate --no-interaction --env=test
 
       - name: Run PHPUnit
         run: |
           if [ -f vendor/bin/phpunit ]; then
-            vendor/bin/phpunit
+            vendor/bin/phpunit --configuration phpunit.dist.xml
           elif [ -f vendor/bin/simple-phpunit ]; then
-            vendor/bin/simple-phpunit
+            vendor/bin/simple-phpunit --configuration phpunit.dist.xml
           else
-            echo "No PHPUnit binary found, skipping tests."
+            echo "No PHPUnit binary found."
+            exit 1
           fi
