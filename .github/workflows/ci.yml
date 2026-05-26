@@ -13,27 +13,30 @@ jobs:
     name: Symfony / PHP
     runs-on: ubuntu-latest
 
+    env:
+      APP_ENV: test
+      APP_SECRET: test-secret
+      POSTGRES_DB: nis2_test
+      POSTGRES_USER: postgres
+      DATABASE_URL: "postgresql://postgres:${{ secrets.POSTGRES_PASSWORD }}@127.0.0.1:5432/nis2_test?serverVersion=17&charset=utf8"
+      COMPOSER_PROCESS_TIMEOUT: 0
+      COMPOSER_NO_INTERACTION: 1
+
     services:
       postgres:
         image: postgres:17
         env:
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
+          POSTGRES_USER: ${{ env.POSTGRES_DB }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+
         ports:
           - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_DB }}"
+          --health-cmd="pg_isready -U postgres -d nis2_test"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=10
-
-    env:
-      APP_ENV: test
-      APP_SECRET: test-secret
-      DATABASE_URL: "postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ secrets.POSTGRES_DB }}?serverVersion=17&charset=utf8"
-      COMPOSER_PROCESS_TIMEOUT: 0
-      COMPOSER_NO_INTERACTION: 1
 
     steps:
       - name: Checkout repository
