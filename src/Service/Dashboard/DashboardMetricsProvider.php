@@ -266,6 +266,32 @@ final class DashboardMetricsProvider
             'nonCompliantCount' => 0,
             'inProgressCount' => 0,
             'blockedCount' => 0,
+            'statusChart' => [
+                [
+                    'key' => MeasureReviewStatus::COMPLIANT->value,
+                    'label' => 'Conformes',
+                    'value' => 0,
+                    'color' => '#198754',
+                ],
+                [
+                    'key' => MeasureReviewStatus::IN_PROGRESS->value,
+                    'label' => 'En cours',
+                    'value' => 0,
+                    'color' => '#f59f00',
+                ],
+                [
+                    'key' => MeasureReviewStatus::NON_COMPLIANT->value,
+                    'label' => 'Non conformes',
+                    'value' => 0,
+                    'color' => '#dc3545',
+                ],
+                [
+                    'key' => MeasureReviewStatus::BLOCKED->value,
+                    'label' => 'Bloquées',
+                    'value' => 0,
+                    'color' => '#6c757d',
+                ],
+            ],
         ];
     }
 }
