@@ -60,9 +60,7 @@ jobs:
           touch var/data.db
 
       - name: Run Doctrine migrations for test
-        run: |
-          php bin/console doctrine:database:create --if-not-exists --env=test
-          php bin/console doctrine:migrations:migrate --no-interaction --env=test
+        run: php bin/console doctrine:migrations:migrate --no-interaction --env=test
 
       - name: Run PHPUnit
         run: |
