@@ -99,3 +99,8 @@ public/hot
 *.tgz
 
 ###< Divers ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache/
+###< phpunit/phpunit ###

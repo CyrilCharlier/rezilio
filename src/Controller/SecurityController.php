@@ -51,7 +51,7 @@ class SecurityController extends AbstractController
 
         // Si déjà activée, tu peux directement le rediriger vers l'accueil
         if ($user->isTotpEnabled()) {
-            return $this->redirectToRoute('app_default');
+            return $this->redirectToRoute('app_dashboard');
         }
 
         // Générer un secret si absent
@@ -89,7 +89,7 @@ class SecurityController extends AbstractController
                 $em->flush();
 
                 $this->addFlash('success', 'La double authentification est maintenant activée.');
-                return $this->redirectToRoute('app_default');
+                return $this->redirectToRoute('app_dashboard');
             }
 
             $this->addFlash('error', 'Code invalide, merci de réessayer.');
