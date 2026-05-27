@@ -18,6 +18,7 @@ jobs:
       APP_SECRET: test-secret
       POSTGRES_DB: nis2_test
       POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       DATABASE_URL: "postgresql://postgres:${{ secrets.POSTGRES_PASSWORD }}@127.0.0.1:5432/nis2_test?serverVersion=17&charset=utf8"
       COMPOSER_PROCESS_TIMEOUT: 0
       COMPOSER_NO_INTERACTION: 1
@@ -28,7 +29,7 @@ jobs:
         env:
           POSTGRES_DB: ${{ env.POSTGRES_DB }}
           POSTGRES_USER: ${{ env.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
 
         ports:
           - 5432:5432

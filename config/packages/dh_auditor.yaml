@@ -1,0 +1,18 @@
+# Full configuration reference available at:
+# https://damienharper.github.io/auditor-docs/docs/auditor-bundle/configuration/reference.html
+dh_auditor:
+    enabled: true
+    role_checker: 'dh_auditor.role_checker'
+    providers:
+        doctrine:
+            viewer: true
+            ignored_columns:
+                - createdAt
+                - updatedAt
+                - password
+                - lastLoginAt
+                - totpSecret
+            entities:
+                App\Entity\User: ~
+                App\Entity\Society: ~
+                App\Entity\Referential: ~

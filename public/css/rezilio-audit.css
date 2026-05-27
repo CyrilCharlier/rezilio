@@ -1,0 +1,619 @@
+:root {
+  --rz-surface-bg: rgba(255, 255, 255, 0.02);
+  --rz-surface-bg-soft: rgba(255, 255, 255, 0.01);
+  --rz-surface-bg-strong: rgba(255, 255, 255, 0.04);
+  --rz-surface-bg-stronger: rgba(255, 255, 255, 0.06);
+  --rz-border: rgba(255, 255, 255, 0.06);
+  --rz-border-strong: rgba(255, 255, 255, 0.1);
+  --rz-text-soft: rgba(255, 255, 255, 0.65);
+  --rz-text-muted: rgba(255, 255, 255, 0.55);
+  --rz-text-strong: rgba(255, 255, 255, 0.92);
+  --rz-text-title: #f8f9fa;
+  --rz-primary: #4f98a3;
+  --rz-primary-soft: rgba(79, 152, 163, 0.14);
+  --rz-primary-border: rgba(79, 152, 163, 0.45);
+  --rz-primary-ring: rgba(79, 152, 163, 0.18);
+  --rz-link: #8bd3dd;
+  --rz-link-hover: #bfe5ea;
+  --rz-code: #7dd3fc;
+  --rz-pink: #f472b6;
+  --rz-red: #f58ea0;
+  --rz-green: #7ed6a7;
+  --rz-purple: #b794f4;
+  --rz-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  --rz-shadow-hover: 0 16px 36px rgba(0, 0, 0, 0.24);
+  --rz-radius-lg: 1rem;
+  --rz-radius-md: 0.85rem;
+  --rz-radius-sm: 0.5rem;
+  --rz-btn-radius: 0.8rem;
+  --rz-page-bg:
+    radial-gradient(circle at top left, rgba(79, 152, 163, 0.12), transparent 28%),
+    linear-gradient(180deg, #07111b 0%, #07101a 100%);
+}
+
+/* Base */
+html {
+  background: #07111b;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--rz-page-bg) !important;
+  color: var(--rz-text-strong) !important;
+}
+
+/* Ne pas impacter la toolbar Symfony */
+.sf-toolbar,
+.sf-toolbar *,
+#sfwdt,
+#sfwdt * {
+  box-sizing: content-box;
+}
+
+/* Wrapper principal */
+body > div:first-of-type {
+  min-height: 100vh;
+}
+
+/* Top nav logo */
+body nav.bg-gray-800 {
+  background: rgba(6, 16, 27, 0.88) !important;
+  border-bottom: 1px solid var(--rz-border-strong) !important;
+  backdrop-filter: blur(10px);
+}
+
+body nav.bg-gray-800,
+body nav.bg-gray-800 * {
+  color: var(--rz-text-strong) !important;
+}
+
+body nav.bg-gray-800 a {
+  color: var(--rz-text-strong) !important;
+  text-decoration: none;
+}
+
+body nav.bg-gray-800 a:hover {
+  color: #ffffff !important;
+}
+
+/* Header */
+body header.bg-white {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-bottom: 1px solid var(--rz-border) !important;
+  backdrop-filter: blur(8px);
+}
+
+body header.bg-white,
+body header.bg-white * {
+  color: var(--rz-text-strong) !important;
+}
+
+/* Breadcrumb */
+body header.bg-white nav.bg-white {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 1rem !important;
+  box-shadow: var(--rz-shadow) !important;
+}
+
+body header.bg-white nav.bg-white,
+body header.bg-white nav.bg-white *,
+body header.bg-white nav.bg-white ol,
+body header.bg-white nav.bg-white li,
+body header.bg-white nav.bg-white div,
+body header.bg-white nav.bg-white a,
+body header.bg-white nav.bg-white span,
+body header.bg-white nav.bg-white svg,
+body header.bg-white nav.bg-white path {
+  color: var(--rz-text-strong) !important;
+  fill: currentColor !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+body header.bg-white nav.bg-white a.text-gray-400,
+body header.bg-white nav.bg-white a.hover\:text-gray-500,
+body header.bg-white nav.bg-white .text-gray-400,
+body header.bg-white nav.bg-white .text-gray-500,
+body header.bg-white nav.bg-white .text-gray-700,
+body header.bg-white nav.bg-white .hover\:text-gray-500,
+body header.bg-white nav.bg-white .hover\:text-gray-700 {
+  color: var(--rz-text-strong) !important;
+}
+
+body header.bg-white nav.bg-white a:hover,
+body header.bg-white nav.bg-white a:hover *,
+body header.bg-white nav.bg-white a:hover span,
+body header.bg-white nav.bg-white a:hover svg,
+body header.bg-white nav.bg-white a:hover path {
+  color: var(--rz-link-hover) !important;
+  fill: currentColor !important;
+}
+
+body header.bg-white nav.bg-white code,
+body header.bg-white nav.bg-white .text-pink-500 {
+  color: var(--rz-link) !important;
+  font-weight: 600;
+}
+
+body header.bg-white nav.bg-white .bg-purple-500 {
+  background: rgba(183, 148, 244, 0.18) !important;
+  color: #e9dcff !important;
+  border: 1px solid rgba(183, 148, 244, 0.28);
+  border-radius: 999px !important;
+}
+
+body header.bg-white nav.bg-white .italic {
+  color: var(--rz-text-soft) !important;
+}
+
+/* Main */
+body main {
+  background: transparent !important;
+}
+
+body main > .max-w-7xl {
+  max-width: 1320px;
+  margin-inline: auto;
+  padding-top: 2rem !important;
+  padding-bottom: 2.5rem !important;
+}
+
+/* Vue liste des entités */
+.auditor-audits {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
+  gap: 1.75rem !important;
+  margin-top: 2rem !important;
+}
+
+body .auditor-audit {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 240px;
+  overflow: hidden;
+  border-radius: var(--rz-radius-lg) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: var(--rz-shadow) !important;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease,
+    background-color 0.18s ease;
+  color: var(--rz-text-strong) !important;
+}
+
+body .auditor-audit:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(79, 152, 163, 0.42) !important;
+  box-shadow: var(--rz-shadow-hover) !important;
+}
+
+body .auditor-audit::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  border-radius: 1rem 0 0 1rem;
+  background: linear-gradient(180deg, rgba(79, 152, 163, 0.95) 0%, rgba(110, 168, 254, 0.85) 100%);
+  opacity: 0.9;
+}
+
+/* Neutralisation utilitaires tailwind dans les cards */
+body .auditor-audit.bg-white,
+body .auditor-audit .bg-white,
+body .auditor-audit .bg-gray-50,
+body .auditor-audit .group-hover\:bg-blue-100 {
+  background: transparent !important;
+}
+
+body .auditor-audit.border,
+body .auditor-audit.border-gray-200,
+body .auditor-audit .border,
+body .auditor-audit .border-gray-200,
+body .auditor-audit .group-hover\:border-blue-200 {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body .auditor-audit > div:first-child {
+  padding: 1.35rem 1.2rem 1rem !important;
+}
+
+body .auditor-audit > div:last-child {
+  padding: 0.95rem 1.2rem 1rem !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.035) 100%) !important;
+}
+
+/* Titres et textes */
+body .auditor-audit h3,
+body .auditor-audit h3 *,
+body .auditor-audit code {
+  margin: 0;
+  font-size: 1.04rem;
+  line-height: 1.45;
+  color: var(--rz-code) !important;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-shadow: 0 0 18px rgba(79, 152, 163, 0.14);
+}
+
+body .auditor-audit p,
+body .auditor-audit span,
+body .auditor-audit dt,
+body .auditor-audit dd,
+body .auditor-audit small {
+  color: var(--rz-text-soft) !important;
+}
+
+body .auditor-audit .text-gray-900,
+body .auditor-audit .text-gray-800,
+body .auditor-audit .text-gray-700 {
+  color: var(--rz-text-strong) !important;
+}
+
+body .auditor-audit .text-gray-600,
+body .auditor-audit .text-gray-500,
+body .auditor-audit .text-gray-400,
+body .text-gray-500,
+body .text-gray-400 {
+  color: var(--rz-text-soft) !important;
+}
+
+body .auditor-audit dt {
+  color: rgba(255, 255, 255, 0.88) !important;
+  font-weight: 700;
+  font-size: 0.98rem;
+}
+
+body .auditor-audit dd {
+  margin: 0;
+  text-align: right;
+}
+
+body .auditor-audit dd a,
+body .auditor-audit a.text-blue-500 {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(79, 152, 163, 0.12) !important;
+  border: 1px solid rgba(79, 152, 163, 0.22);
+  color: #bfe5ea !important;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s ease,
+    color 0.18s ease;
+}
+
+body .auditor-audit dd a:hover,
+body .auditor-audit a.text-blue-500:hover {
+  background: rgba(79, 152, 163, 0.2) !important;
+  border-color: rgba(79, 152, 163, 0.4) !important;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+}
+
+/* Timeline historique */
+body .auditor-audit-history-entry {
+  position: relative;
+}
+
+body .auditor-audit-history-entry .ring-8 {
+  --tw-ring-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+body .auditor-audit-history-entry .bg-blue-400 {
+  background: linear-gradient(180deg, rgba(79, 152, 163, 0.95) 0%, rgba(110, 168, 254, 0.9) 100%) !important;
+  color: #ffffff !important;
+}
+
+body .auditor-audit-history-entry .text-white {
+  color: #ffffff !important;
+}
+
+body .auditor-audit-history-entry-table {
+  background: rgba(255, 255, 255, 0.045) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: var(--rz-radius-lg) !important;
+  box-shadow: var(--rz-shadow) !important;
+  padding-bottom: 0.75rem !important;
+}
+
+body .auditor-audit-history-entry-table:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(79, 152, 163, 0.35) !important;
+}
+
+/* Neutraliser hover tailwind sur historique */
+body .auditor-audit-history-entry-table.bg-gray-100,
+body .auditor-audit-history-entry-table .bg-gray-100,
+body .auditor-audit-history-entry-table .hover\:bg-blue-50,
+body .auditor-audit-history-entry-table .group-hover\:border-blue-200 {
+  background: transparent !important;
+}
+
+body .auditor-audit-history-entry-table .text-gray-900,
+body .auditor-audit-history-entry-table .text-gray-800,
+body .auditor-audit-history-entry-table .font-medium.text-gray-900 {
+  color: var(--rz-text-strong) !important;
+}
+
+body .auditor-audit-history-entry-table .text-gray-700,
+body .auditor-audit-history-entry-table .text-gray-600,
+body .auditor-audit-history-entry-table .text-gray-500,
+body .auditor-audit-history-entry-table .text-gray-400 {
+  color: var(--rz-text-soft) !important;
+}
+
+body .auditor-audit-history-entry-table p {
+  color: var(--rz-text-soft) !important;
+  line-height: 1.55;
+}
+
+body .auditor-audit-history-entry-table code,
+body .auditor-audit-history-entry-table .text-pink-500 {
+  color: var(--rz-link) !important;
+  font-weight: 600;
+}
+
+body .auditor-audit-history-entry-table a.code,
+body .auditor-audit-history-entry-table a {
+  color: var(--rz-link) !important;
+  text-decoration: none;
+}
+
+body .auditor-audit-history-entry-table a.code:hover,
+body .auditor-audit-history-entry-table a:hover {
+  color: var(--rz-link-hover) !important;
+}
+
+/* Table de diff */
+body .auditor-audit-history-entry-table .overflow-hidden.border {
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: var(--rz-radius-md) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+body .auditor-audit-history-entry-table table {
+  width: 100%;
+  border-collapse: collapse;
+  background: transparent !important;
+  color: var(--rz-text-strong);
+}
+
+body .auditor-audit-history-entry-table thead,
+body .auditor-audit-history-entry-table thead tr,
+body .auditor-audit-history-entry-table th,
+body .auditor-audit-history-entry-table .bg-gray-50 {
+  background: rgba(255, 255, 255, 0.035) !important;
+}
+
+body .auditor-audit-history-entry-table th {
+  color: var(--rz-text-soft) !important;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body .auditor-audit-history-entry-table td {
+  color: var(--rz-text-soft) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+  vertical-align: top;
+}
+
+body .auditor-audit-history-entry-table tbody tr.bg-white {
+  background: transparent !important;
+}
+
+body .auditor-audit-history-entry-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.025) !important;
+}
+
+body .auditor-audit-history-entry-table td code.text-gray-700,
+body .auditor-audit-history-entry-table td .text-gray-700 {
+  color: rgba(255, 255, 255, 0.82) !important;
+}
+
+/* Ancienne / nouvelle valeur */
+body .auditor-audit-history-entry-table .text-red-500 {
+  color: var(--rz-red) !important;
+  font-weight: 600;
+}
+
+body .auditor-audit-history-entry-table .text-green-500 {
+  color: var(--rz-green) !important;
+  font-weight: 600;
+}
+
+/* Lien transaction */
+/* Lien transaction uniquement */
+body .auditor-audit-history-entry-table .text-right > a.text-xs {
+  color: var(--rz-text-soft) !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.035) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+body .auditor-audit-history-entry-table .text-right > a.text-xs:hover {
+  color: #ffffff !important;
+  border-color: rgba(79, 152, 163, 0.32);
+  background: rgba(79, 152, 163, 0.12) !important;
+}
+
+body .auditor-audit-history-entry-table .text-right a.text-xs:hover,
+body .auditor-audit-history-entry-table .text-xs.text-gray-500:hover {
+  color: #ffffff !important;
+  border-color: rgba(79, 152, 163, 0.32);
+  background: rgba(79, 152, 163, 0.12) !important;
+}
+
+/* Tables et éléments génériques ailleurs */
+body table {
+  color: var(--rz-text-strong);
+}
+
+body th {
+  color: var(--rz-text-strong) !important;
+}
+
+body td {
+  color: var(--rz-text-soft) !important;
+}
+
+/* Inputs / boutons si présents plus tard */
+body input,
+body select,
+body textarea {
+  min-height: 2.8rem;
+  border-radius: var(--rz-radius-md) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background-color: rgba(17, 24, 39, 0.62) !important;
+  color: #f8f9fa !important;
+  box-shadow: none !important;
+}
+
+body input::placeholder,
+body textarea::placeholder {
+  color: rgba(255, 255, 255, 0.38) !important;
+}
+
+body input:focus,
+body select:focus,
+body textarea:focus {
+  outline: none !important;
+  background-color: rgba(17, 24, 39, 0.78) !important;
+  border-color: var(--rz-primary-border) !important;
+  box-shadow: 0 0 0 0.22rem var(--rz-primary-ring) !important;
+}
+
+body button,
+body .btn,
+body [type="submit"],
+body [type="button"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.65rem 1rem;
+  border-radius: var(--rz-btn-radius) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--rz-text-strong) !important;
+  box-shadow: none;
+}
+
+body button:hover,
+body .btn:hover,
+body [type="submit"]:hover,
+body [type="button"]:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: var(--rz-primary-border) !important;
+}
+
+/* Responsive */
+@media (max-width: 991.98px) {
+  body main > .max-w-7xl {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .auditor-audits {
+    gap: 1rem !important;
+  }
+
+  body .auditor-audit {
+    min-height: 200px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  body .auditor-audit > div:first-child,
+  body .auditor-audit > div:last-child {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  body .auditor-audit h3,
+  body .auditor-audit h3 * {
+    font-size: 0.98rem;
+  }
+
+  body .auditor-audit-history-entry-table .min-w-0.flex-1.pt-1\.5 {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+
+/* Table de diff : rendu de colonnes vraiment lisible */
+body .auditor-audit-history-entry-table table.min-w-full {
+  width: 100% !important;
+  table-layout: fixed !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+
+/* Largeurs réelles des colonnes */
+body .auditor-audit-history-entry-table table.min-w-full thead th:nth-child(1),
+body .auditor-audit-history-entry-table table.min-w-full tbody td:nth-child(1) {
+  width: 20% !important;
+}
+
+body .auditor-audit-history-entry-table table.min-w-full thead th:nth-child(2),
+body .auditor-audit-history-entry-table table.min-w-full tbody td:nth-child(2),
+body .auditor-audit-history-entry-table table.min-w-full thead th:nth-child(3),
+body .auditor-audit-history-entry-table table.min-w-full tbody td:nth-child(3) {
+  width: 40% !important;
+}
+
+/* Header : casser l'effet "tout à gauche" */
+body .auditor-audit-history-entry-table table.min-w-full thead tr {
+  display: table-row !important;
+}
+
+body .auditor-audit-history-entry-table table.min-w-full thead th {
+  white-space: normal !important;
+  word-break: break-word !important;
+  text-align: left !important;
+  vertical-align: middle !important;
+  padding: 0.9rem 1rem !important;
+  line-height: 1.35 !important;
+}
+
+/* Body aligné exactement pareil */
+body .auditor-audit-history-entry-table table.min-w-full tbody td {
+  white-space: normal !important;
+  word-break: break-word !important;
+  vertical-align: top !important;
+  padding: 0.9rem 1rem !important;
+}
+
+/* Neutralise les classes tailwind qui biaisent la largeur */
+body .auditor-audit-history-entry-table table.min-w-full th.w-1\/3,
+body .auditor-audit-history-entry-table table.min-w-full td.w-1\/3 {
+  width: auto !important;
+}
+
+body .auditor-audit-history-entry-table table.min-w-full td.whitespace-nowrap {
+  white-space: normal !important;
+}
+
+/* Séparation visuelle plus nette entre colonnes */
+body .auditor-audit-history-entry-table table.min-w-full th + th,
+body .auditor-audit-history-entry-table table.min-w-full td + td {
+  border-left: 1px solid rgba(255, 255, 255, 0.04);
+}
