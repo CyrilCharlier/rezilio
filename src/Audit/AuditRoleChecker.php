@@ -5,7 +5,7 @@ namespace App\Audit;
 use DH\Auditor\Security\RoleCheckerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 
-final class RoleChecker implements RoleCheckerInterface
+final class AuditRoleChecker implements RoleCheckerInterface
 {
     public function __construct(
         private readonly Security $security,
